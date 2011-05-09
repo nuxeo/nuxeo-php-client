@@ -87,6 +87,8 @@
 		private $iterationNumber;
 		private $HEADER_NX_SCHEMAS;
 		private $blobList;
+		private $X_NXVoidOperation;
+		
 		
 		public function Request($url, $headers = "Content-Type:application/json+nxrequest", $requestId) {
 			$this->url = $url . "/" . $requestId;
@@ -96,6 +98,20 @@
 			$this->iterationNumber = 0;
 			$this->HEADER_NX_SCHEMAS = 'X-NXDocumentProperties:';
 			$this->blobList = null;
+			$this->X_NXVoidOperation = 'X-NXVoidOperation: true';
+		}
+		
+		/**
+		 * Set X-NXVoidOperation header
+		 * 
+		 * This header is used for the blob upload, it's noticing if the blob must be send back to the
+		 * client. If not used, i might be great to not using it because it will save time and connection
+		 * cappacity
+		 *
+		 * @author     Arthur GALLOUIN for NUXEO agallouin@nuxeo.com
+		 */
+		public function SetX_NXVoidOperation($headerValue = '*'){
+			$this->X_NXVoidOperation = 'X-NXVoidOperation:'. $headerValue;
 		}
 		
 		/**
@@ -153,12 +169,12 @@
 		}
 		
 		/**
- 		* SinglePart function
- 		* 
- 		* Function used to send a singlepart request, such as queries, or create doc function
- 		* 
- 		* @author     Arthur GALLOUIN for NUXEO agallouin@nuxeo.com
- 		*/
+ 		 * SinglePart function
+ 		 * 
+ 		 * Function used to send a singlepart request, such as queries, or create doc function
+ 		 * 
+ 		 * @author     Arthur GALLOUIN for NUXEO agallouin@nuxeo.com
+ 		 */
 		private function SinglePart(){
 			
 			if($this->blob){
@@ -203,7 +219,7 @@
  		*/
 		private function MultiPart(){
 			
-			if (sizeof($this->blobList) >= 1)
+			if (sizeof($this->blobList) >= 1 AND !isset($this->finalRequest['params']['xpath']))
 				$this->finalRequest['params']['xpath'] = 'files:files';
 			
 			$this->finalRequest = json_encode($this->finalRequest);
@@ -250,7 +266,7 @@
             
 			$final['http']['header'] = 'Accept: application/json+nxentity, */*'. "\r\n".
 	                				   'Content-Type: multipart/related;boundary="'.$boundary.
-	                				   '";type="application/json+nxrequest";start="request"';
+	                				   '";type="application/json+nxrequest";start="request"'. "\r\n". $this->X_NXVoidOperation;
 			
             $final = stream_context_create($final);
             
@@ -348,10 +364,10 @@
 	 * @author     Arthur GALLOUIN for NUXEO agallouin@nuxeo.com
 	 */
 	class Documents {
+		
 		private $documentsList;
 		
 		public function Documents($newDocList){
-			
 			$this->documentsList = null;
 			$test = true;
 			if (!empty($newDocList['entries'])){
@@ -369,8 +385,6 @@
 			}
 		}
 		
-		
-		
 		public function Output(){
 			$value = sizeof($this->documentsList);
 			echo '<table>';
@@ -383,5 +397,4 @@
 			echo '</table>';
 		}
 	}
-
 ?>
