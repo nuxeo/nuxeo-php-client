@@ -198,6 +198,9 @@
  		*/
 		private function MultiPart(){
 			
+			if (sizeof($this->blobList) >= 1)
+				$this->finalRequest['params']['xpath'] = 'files:files';
+			
 			$this->finalRequest = json_encode($this->finalRequest);
 			
 			$this->finalRequest = str_replace('\/', '/', $this->finalRequest);
@@ -230,9 +233,6 @@
 				$data = "\r\n". $data .
 	                	$blobheaders.
 	                	$this->blobList[$cpt][2] . "\r\n"."\r\n";
-	                	
-	                	
-	        	next($this->blobList);
 			}
 			
 			$data = $data ."--" . $boundary."--";
@@ -296,8 +296,6 @@
 	 *
 	 * hold a return document
 	 * 
-	 * @variables  $username : username for your session
-	 * 			  $password : password matching the usename
 	 * @author     Arthur GALLOUIN for NUXEO agallouin@nuxeo.com
 	 */
 	class Document extends Documents{
