@@ -147,7 +147,14 @@
   			return $this;
 		}
 		
-		public function SinglePart(){
+		/**
+ 		* SinglePart function
+ 		* 
+ 		* Function used to send a singlepart request, such as queries, or create doc function
+ 		* 
+ 		* @author     Arthur GALLOUIN for NUXEO agallouin@nuxeo.com
+ 		*/
+		private function SinglePart(){
 			
 			if($this->blob){
 				$this->finalRequest['input'] = 'blob: ' . $this->blob;
@@ -187,11 +194,9 @@
  		* This function is used to send a multipart request (blob + request) to Nuxeo EM, such as the
  		* AttachBlob request
  		* 
- 		* @var		  $adresse : contents the path of the file to attach
- 		* 			  $contentType : used to define the type of the blob (such as image/jpeg)
  		* @author     Arthur GALLOUIN for NUXEO agallouin@nuxeo.com
  		*/
-		public function MultiPart(){
+		private function MultiPart(){
 			
 			$this->finalRequest = json_encode($this->finalRequest);
 			
@@ -210,10 +215,11 @@
 			
 			$data = "--" . $boundary . "\r\n" .
 	     			$requestheaders . 
-	     			$this->finalRequest . "\r\n" ."\r\n".
-	                "--" . $boundary . "\r\n" ;
+	     			$this->finalRequest . "\r\n" ."\r\n";
 			
 			for ($cpt = 0; $cpt < $value; $cpt++){
+				
+				$data = $data . "--" . $boundary . "\r\n" ;
 				
 				$blobheaders = 'Content-Type:'.$this->blobList[$cpt][1]."\r\n".
 						       'Content-ID: input'. "\r\n" .
@@ -221,14 +227,15 @@
 				       	       'Content-Disposition: attachment;filename='. $this->blobList[$cpt][0].
 				       	       "\r\n" ."\r\n";
 				
-				$data = $data .
+				$data = "\r\n". $data .
 	                	$blobheaders.
-	                	$this->blobList[$cpt][2] . "\r\n";
+	                	$this->blobList[$cpt][2] . "\r\n"."\r\n";
+	                	
 	                	
 	        	next($this->blobList);
 			}
 			
-			$data = $data . "--" . $boundary . "--";
+			$data = $data ."--" . $boundary."--";
 			
 			echo 'data: ' . $data;
 			
@@ -271,18 +278,15 @@
     	/**
  		* Send_request function
  		*
- 		* This function is used to send any kind of request to Nuxeo EM (exept Blob.Attach request
- 		* which is send by the attachBlob function)
+ 		* This function is used to send any kind of request to Nuxeo EM
  		*
  		* @author     Arthur GALLOUIN for NUXEO agallouin@nuxeo.com
  		*/
 		public function Send_request(){
-			if (!$this->blobList){
-				$this->SinglePart();}
-			else{
+			if (!$this->blobList)
+				$this->SinglePart();
+			else
 				$this->MultiPart();
-			}
-				
 		}
 		
 	}

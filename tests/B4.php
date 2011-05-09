@@ -8,7 +8,7 @@
 	
 		$session = $client->getSession('Administrator','Administrator');
 	
-		$answer = $session->NewRequest("Blob.Attach")->Set('params', 'document', $filePath)->loadBlob($blob, $blobtype)->Send_request();
+		$answer = $session->NewRequest("Blob.Attach")->Set('params', 'document', $filePath)->Set('params', 'xpath', 'files:files')->loadBlob($blob, $blobtype)->loadBlob('../test2.txt')->Send_request();
 		
 		
 		if (!isset($answer) OR $answer == false)
