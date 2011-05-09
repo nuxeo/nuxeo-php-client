@@ -10,11 +10,11 @@
 		header("Content-type: text/plain");
   		header("Content-Disposition: attachment; filename=".end($eurl).'.pdf');
 		
-		$client = new phpAutomationClient('http://localhost:8080/nuxeo/site/automation');
+		$client = new PhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
 	
-		$session = $client->getSession('Administrator','Administrator');
+		$session = $client->GetSession('Administrator','Administrator');
 		
-		$answer = $session->NewRequest("Chain.")->Set('context', 'path' . $path)->Send_Request();
+		$answer = $session->NewRequest("Chain.")->Set('context', 'path' . $path)->SendRequest();
 		
 		if (!isset($answer) OR $answer == false)
 			echo '$answer is not set';

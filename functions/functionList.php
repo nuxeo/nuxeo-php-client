@@ -7,13 +7,11 @@
  	* 
  	* @author     Arthur GALLOUIN for NUXEO agallouin@nuxeo.com
  	*/
-	class phpAutomationClient {
+	class PhpAutomationClient {
 		private $url;
-		private $session;
 		
-		public function phpAutomationCLient($url = 'http://localhost:8080/nuxeo/site/automation'){
+		public function PhpAutomationCLient($url = 'http://localhost:8080/nuxeo/site/automation'){
 			$this->url = $url;
-			$this->session = NULL;
 		}
 		
 		/**
@@ -25,7 +23,7 @@
 	 	* 			  $password : password matching the usename
 	 	* @author     Arthur GALLOUIN for NUXEO agallouin@nuxeo.com
 	 	*/
-		public function getSession($username = 'Administrator', $password = 'Administrator'){
+		public function GetSession($username = 'Administrator', $password = 'Administrator'){
 			$this->session = $username . ":" . $password;
 			$session = new Session($this->url, $this->session);
 			return $session;
@@ -47,7 +45,14 @@
 		
 		public function Session( $url, $session, $headers = "Content-Type:application/json+nxrequest") {
 			$this->urlLoggedIn = str_replace("http://", "", $url);
-			$this->urlLoggedIn = "http://" . $session . "@" . $this->urlLoggedIn;
+			if (strpos($url,'https') !== false){
+				$this->urlLoggedIn = "https://" . $session . "@" . $this->urlLoggedIn;
+			}elseif(strpos($url,'http') !== false){
+				$this->urlLoggedIn = "http://" . $session . "@" . $this->urlLoggedIn;
+			}else{
+				echo 'that is a strange url .......';
+				exit;
+			}
 			$this->headers = $headers;
 		}
 		
@@ -60,7 +65,7 @@
 	 	* 			  for exemple)
 	 	* @author     Arthur GALLOUIN for NUXEO agallouin@nuxeo.com
 	 	*/
-		public function newRequest($requestType){
+		public function NewRequest($requestType){
 			$newRequest = new Request($this->urlLoggedIn, $this->headers, $requestType);
 			return $newRequest;
 		}
@@ -258,7 +263,7 @@
 			return $answer;
     	}
     	
-    	public function loadBlob($adresse, $contentType  = 'application/binary'){
+    	public function LoadBlob($adresse, $contentType  = 'application/binary'){
     		if(!$this->blobList){
     			$this->blobList = array();
     		}
@@ -282,7 +287,7 @@
  		*
  		* @author     Arthur GALLOUIN for NUXEO agallouin@nuxeo.com
  		*/
-		public function Send_request(){
+		public function SendRequest(){
 			if (!$this->blobList)
 				$this->SinglePart();
 			else
@@ -311,7 +316,7 @@
 				$this->properties = null;				
 		}
 			
-		Public function affichage(){
+		Public function Output(){
 			$value = sizeof($this->object);
 			
 			for ($test = 0; $test <$value; $test++){
@@ -328,27 +333,11 @@
 			}
 		}
 		
-		public function get($schemaNamePropertyName){
+		public function Get($schemaNamePropertyName){
 			if (array_key_exists($schemaNamePropertyName, $this->properties)){
 				echo key($this->properties) .  ' : ' . current($this->properties) . '<br />';
 			}
 		}
-		
-		/*public function getBlob(){
-			if (file_exists($answer)) {
-			    header('Content-Description: File Transfer');
-			    header('Content-Type: application/octet-stream');
-			    header('Content-Disposition: attachment; filename='.basename($answer));
-			    header('Content-Transfer-Encoding: binary');
-			    header('Expires: 0');
-			    header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-			    header('Pragma: public');
-			    header('Content-Length: ' . filesize($answer));
-			    ob_clean();
-			    flush();
-			    readfile($answer);
-			}
-		}*/
 	}
 	
 	/**
@@ -382,26 +371,17 @@
 		
 		
 		
-		public function affichage(){
+		public function Output(){
 			$value = sizeof($this->documentsList);
 			echo '<table>';
 			for ($test = 0; $test < $value; $test ++){
 				echo '<tr>';
-				current($this->documentsList)->affichage();
+				current($this->documentsList)->Output();
 				next($this->documentsList);
 				echo '</tr>';
 			}
 			echo '</table>';
 		}
-		
-		public function getBlob($rang){
-			if ($rang >= 0 AND $rang < sizeof($this->documentsList))
-				$this->documentsList[$rang].getBlob;
-			else
-				echo 'erreur, rang non valide';
-		}
 	}
-	
-	
-	
+
 ?>
