@@ -1,6 +1,6 @@
 <?php
 
-	include ('./functions/functionList.php');
+	include ('../functions/functionList.php');
 	
 	//if(!isset($_POST['month'])){
 	//	echo 'path est vide';

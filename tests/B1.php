@@ -1,5 +1,5 @@
 <?php
-	include ('./functions/functionList.php');
+	include ('../functions/functionList.php');
 	
 	//if(!isset($_POST['path'])){
 	//	echo 'path est vide';
@@ -15,7 +15,7 @@
 	
 		$session = $client->getSession('Administrator','Administrator');
 		
-		$answer = $session->NewRequest("Document.Query")->Set('params', 'query', "SELECT * FROM Document WHERE ecm:path = '". $path ."'")->setSchema($propertiesSchema)->Send_Request();
+		$answer = $session->NewRequest("Document.Query")->Set('params', 'query', "SELECT * FROM Document WHERE ecm:path = '". $path ."'")->SetSchema($propertiesSchema)->Send_Request();
 		
 		if (!isset($answer) OR $answer == false)
 			echo '$answer is not set';

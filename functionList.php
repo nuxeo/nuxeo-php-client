@@ -143,9 +143,25 @@
 				if ($this->iterationNumber === 0)
 					$this->iterationNumber = 1;
 			}
-			
+  				
   			return $this;
 		}
+		
+		/**
+ 		* Send_request function
+ 		*
+ 		* This function is used to send any kind of request to Nuxeo EM (exept Blob.Attach request
+ 		* which is send by the attachBlob function)
+ 		*
+ 		* @author     Arthur GALLOUIN for NUXEO agallouin@nuxeo.com
+ 		*/
+		public function Send_request(){
+			if (!$this->blobList)
+				SinglePart();
+			else
+				MultiPart();
+		}
+		
 		
 		public function SinglePart(){
 			
@@ -177,6 +193,7 @@
 			$answer = @stream_get_contents($fp);
 			
 			$answer = json_decode($answer, true);
+			
 			  
 			return $answer;
 		}
@@ -192,6 +209,8 @@
  		* @author     Arthur GALLOUIN for NUXEO agallouin@nuxeo.com
  		*/
 		public function MultiPart(){
+			
+			$eadresse = explode("/", $adresse);
 			
 			$this->finalRequest = json_encode($this->finalRequest);
 			
@@ -256,8 +275,7 @@
     			$this->blobList = array();
     		}
     		$eadresse = explode("/", $adresse);
-    		
-    		$fp = fopen($adresse, "r");
+    		$fp = fopen($adresse);
     		
     		if (!$fp)
 				echo 'error loading the file';
@@ -267,24 +285,6 @@
     		
     		return $this;
     	}
-    	
-    	/**
- 		* Send_request function
- 		*
- 		* This function is used to send any kind of request to Nuxeo EM (exept Blob.Attach request
- 		* which is send by the attachBlob function)
- 		*
- 		* @author     Arthur GALLOUIN for NUXEO agallouin@nuxeo.com
- 		*/
-		public function Send_request(){
-			if (!$this->blobList){
-				$this->SinglePart();}
-			else{
-				$this->MultiPart();
-			}
-				
-		}
-		
 	}
 	
 	/**
