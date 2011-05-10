@@ -169,47 +169,6 @@
 		}
 		
 		/**
- 		 * SinglePart function
- 		 * 
- 		 * Function used to send a singlepart request, such as queries, or create doc function
- 		 * 
- 		 * @author     Arthur GALLOUIN for NUXEO agallouin@nuxeo.com
- 		 */
-		private function SinglePart(){
-			
-			if($this->blob){
-				$this->finalRequest['input'] = 'blob: ' . $this->blob;
-			}
-			
-			$this->finalRequest = json_encode($this->finalRequest);
-			
-			
-			$this->finalRequest = str_replace('\/', '/', $this->finalRequest);
-			
-			print_r(json_decode($this->finalRequest, true));
-			
-			echo '<br /><br />requete : ' . $this->finalRequest . '<br /> <br />';
-						
-			$params = array('http' => array(
-			              'method' => $this->method,
-			              'content' => $this->finalRequest
-			            ));
-			if ($this->headers !== null) {
-				$params['http']['header'] = $this->headers;
-			}
-			  
-			$ctx = stream_context_create($params);
-			  
-			$fp = @fopen($this->url, 'rb', false, $ctx);
-			  
-			$answer = @stream_get_contents($fp);
-			
-			$answer = json_decode($answer, true);
-			  
-			return $answer;
-		}
-		
-		/**
  		* MultiPart function
  		* 
  		* This function is used to send a multipart request (blob + request) to Nuxeo EM, such as the
@@ -297,15 +256,38 @@
     	}
     	
     	/**
- 		* Send_request function
+ 		* SendRequest function
  		*
  		* This function is used to send any kind of request to Nuxeo EM
  		*
  		* @author     Arthur GALLOUIN for NUXEO agallouin@nuxeo.com
  		*/
 		public function SendRequest(){
-			if (!$this->blobList)
-				$this->SinglePart();
+			if (!$this->blobList){
+				$this->finalRequest = json_encode($this->finalRequest);
+			
+				$this->finalRequest = str_replace('\/', '/', $this->finalRequest);
+				
+				$params = array('http' => array(
+				'method' => $this->method,
+				'content' => $this->finalRequest
+				));
+				if ($this->headers !== null) {
+				$params['http']['header'] = $this->headers;
+				}
+				
+				$ctx = stream_context_create($params);
+				
+				$fp = @fopen($this->url, 'rb', false, $ctx);
+				
+				$answer = @stream_get_contents($fp);
+				
+				echo $answer;
+				
+				$answer = json_decode($answer, true);
+				
+				return $answer;
+			}
 			else
 				$this->MultiPart();
 		}
@@ -336,14 +318,14 @@
 			$value = sizeof($this->object);
 			
 			for ($test = 0; $test <$value; $test++){
-				echo '<td>' . key($this->object) . ' : ' . current($this->object) . '</td>';
+				echo '<tr><td>' . key($this->object) . ' </td><td> ' . current($this->object) . '</td></tr>';
 				next($this->object);
 			}
 			
 			if ($this->properties !== NULL){
 				$value = sizeof($this->properties);
 				for ($test = 0; $test <$value; $test++){
-					echo '<td>' . key($this->properties) . ' : ' . current($this->properties) . '</td>';
+					echo '<tr><td>' . key($this->properties) . ' </td><td> ' . current($this->properties) . '</td></tr>';
 					next($this->properties);
 				}
 			}
@@ -389,10 +371,8 @@
 			$value = sizeof($this->documentsList);
 			echo '<table>';
 			for ($test = 0; $test < $value; $test ++){
-				echo '<tr>';
 				current($this->documentsList)->Output();
 				next($this->documentsList);
-				echo '</tr>';
 			}
 			echo '</table>';
 		}
