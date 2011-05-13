@@ -1,13 +1,11 @@
 <?php
-	include ('../functions/functionList.php');
 
-	function GetBlob($path = '/default-domain/workspaces/jkjkj/DocumentCreate.rtf', $blobtype = 'application/binary') {
-		
+	include ('../NuxeoAutomationClient/NuxeoAutomationAPI.php');
+	
+	function GetBlob($path = '/default-domain/workspaces/jkjkj/test2.rtf', $blobtype = 'application/binary') {
 		$eurl = explode("/", $path);
-		
 		header("Content-type: text/plain");
   		header("Content-Disposition: attachment; filename=".end($eurl));
-		
 		$client = new PhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
 	
 		$session = $client->GetSession('Administrator','Administrator');
@@ -19,8 +17,14 @@
 		else{
 			print_r($answer);
 		}
-		
 	}
 	
-	getBlob();
+	if(!isset($_POST['path'])){
+		echo 'path est vide';
+		exit;
+	}
+	if(!isset($_POST['type']))
+		GetBlob($_POST['path']);
+	else
+		GetBlob($_POST['path'], $_POST['type']);
 ?>
