@@ -2,9 +2,6 @@
 	
 	include ('../NuxeoAutomationClient/NuxeoAutomationAPI.php');
 	
-	if (!isset($_POST['data']) OR empty($_POST['data']))
-		echo 'error';
-	
 	/**
 	 * 
 	 * getFileContent function
@@ -24,13 +21,16 @@
 		if (!isset($answer) OR $answer == false)
 			echo '$answer is not set';
 		else{			
-			header('Content-Description: File Transfer');
-			header('Content-Type: application/octet-stream');
+		    header('Content-Description: File Transfer');
+		    header('Content-Type: application/octet-stream');
 		    header('Content-Disposition: attachment; filename='.end($eurl).'.pdf');
 		    readfile('tempstream');
 		}
 	}
 	
-	getFileContent($_POST['data']);
-	//getFileContent('/default-domain/workspaces/jkjkj/test2.rtf');
+
+        if (!isset($_POST['data']) OR empty($_POST['data']))
+	    echo 'error';
+        else
+	    getFileContent($_POST['data']);
 ?>
