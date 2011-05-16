@@ -183,10 +183,11 @@
     		$fp = fopen($adresse, "r");
     		
     		if (!$fp)
-				echo 'error loading the file';
+		    echo 'error loading the file';
 
-			$futurBlob = stream_get_contents($fp);
-    		$this->blobList[] = array(end($eadresse), $contentType, print_r($futurBlob, true));
+		$futurBlob = stream_get_contents($fp);
+		$temp = str_replace(" ", "", end($eadresse));
+    		$this->blobList[] = array($temp, $contentType, print_r($futurBlob, true));
     		
     		return $this;
     	}
