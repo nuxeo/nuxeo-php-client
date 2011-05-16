@@ -13,48 +13,45 @@
 	    <form action="B1.php" method="post">
 			Path<input type="text" name ="path"/>
 			Schema<input type="text" name ="schema"/>
-			<input type="submit" value="Envoyer !"/>
+			<input type="submit" value="Submit"/>
 	    </form>
 	    <br />
 <?php
-	echo 'top';
+
 	include ('../NuxeoAutomationClient/NuxeoAutomationAPI.php');
-	echo 'top';
 	
 	function openDocumentPropeties($path, $propertiesSchema = '*') {
 		
 		$client = new PhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
 		
-		$session = $client->GetSession('Administrator','Administrator');
+		$session = $client->getSession('Administrator','Administrator');
 		
-		$answer = $session->NewRequest("Document.Query")->Set('params', 'query', "SELECT * FROM Document WHERE ecm:path = '". $path ."'")->SetSchema($propertiesSchema)->SendRequest();
+		$answer = $session->newRequest("Document.Query")->set('params', 'query', "SELECT * FROM Document WHERE ecm:path = '". $path ."'")->setSchema($propertiesSchema)->sendRequest();
 		
-		$DocumentsArray = $answer->GetDocumentList();
-		$value = sizeof($DocumentsArray);
+		$documentsArray = $answer->getDocumentList();
+		$value = sizeof($documentsArray);
 		echo '<table>';
 		echo '<tr><TH>uid</TH><TH>Path</TH>
 		<TH>Type</TH><TH>State</TH><TH>Title</TH><TH>Property 1</TH>
 		<TH>Property 2</TH><TH>Download as PDF</TH>';
 		for ($test = 0; $test < $value; $test ++){
 			echo '<tr>';
-			echo '<td> ' . current($DocumentsArray)->GetUid()  . '</td>';
-			echo '<td> ' . current($DocumentsArray)->GetPath()  . '</td>';
-			echo '<td> ' . current($DocumentsArray)->GetType()  . '</td>';
-			echo '<td> ' . current($DocumentsArray)->GetState()  . '</td>';
-			echo '<td> ' . current($DocumentsArray)->GetTitle()  . '</td>';
-			echo '<td> ' . current($DocumentsArray)->GetProperty('dc:description')  . '</td>';
-			echo '<td> ' . current($DocumentsArray)->GetProperty('dc:creator')  . '</td>';
+			echo '<td> ' . current($documentsArray)->getUid()  . '</td>';
+			echo '<td> ' . current($documentsArray)->getPath()  . '</td>';
+			echo '<td> ' . current($documentsArray)->getType()  . '</td>';
+			echo '<td> ' . current($documentsArray)->getState()  . '</td>';
+			echo '<td> ' . current($documentsArray)->getTitle()  . '</td>';
+			echo '<td> ' . current($documentsArray)->getProperty('dc:description')  . '</td>';
+			echo '<td> ' . current($documentsArray)->getProperty('dc:creator')  . '</td>';
 			echo '<td><form id="test" action="../tests/B5bis.php" method="post" >';
 			echo '<input type="hidden" name="data" value="'. 
-			current($DocumentsArray)->GetPath(). '"/>';
+			current($documentsArray)->getPath(). '"/>';
 			echo '<input type="submit" value="download"/>';
 			echo '</form></td></tr>';
-			next($DocumentsArray);
+			next($documentsArray);
 		}
 		echo '</table>';
 	}	
-	
-	//openDocumentPropeties('/default-domain/workspaces/jkjkj/test2.rtf', 'testtype');
 	
 	if(!isset($_POST['path']) OR empty($_POST['path'])){
 		echo 'path is empty';
@@ -65,4 +62,5 @@
 		else
 			openDocumentPropeties($_POST['path'], $_POST['schema']);
 	}
+	
 ?></body></html>

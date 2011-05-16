@@ -31,7 +31,7 @@
 		}
 		
 		/**
-		 * Set X-NXVoidOperation header
+		 * setX-NXVoidOperation header
 		 * 
 		 * This header is used for the blob upload, it's noticing if the blob must be send back to the
 		 * client. If not used, i might be great to not using it because it will save time and connection
@@ -40,25 +40,25 @@
 		 * @param      $headerValue value taken by the header
 		 * @author     Arthur GALLOUIN for NUXEO agallouin@nuxeo.com
 		 */
-		public function SetX_NXVoidOperation($headerValue = '*'){
+		public function setX_NXVoidOperation($headerValue = '*'){
 			$this->X_NXVoidOperation = 'X-NXVoidOperation:'. $headerValue;
 		}
 		
 		/**
- 		* SetSchema function
+ 		* setSchema function
  		*
  		* Set the schemas in order to obtain file properties
  		* 
  		* @param	  $schema : name the schema you want to obtain
  		* @author     Arthur GALLOUIN for NUXEO agallouin@nuxeo.com
  		*/
-		public function SetSchema($schema = '*'){
+		public function setSchema($schema = '*'){
 			$this->headers = array($this->headers, $this->HEADER_NX_SCHEMAS . $schema);
 			return $this;
 		}
 		
 		/**
- 		* Set function
+ 		* set function
  		*
  		* This function is used to load data in the request (such as input, context and params fields)
  		* 
@@ -68,7 +68,7 @@
  		* 			  $requestVarVallue : vallue of the var define in $requestContentTypeOrVarName(if needed)
  		* @author     Arthur GALLOUIN for NUXEO agallouin@nuxeo.com
  		*/
-		public function Set($requestType, $requestContentOrVarName, $requestVarVallue =  NULL){
+		public function set($requestType, $requestContentOrVarName, $requestVarVallue =  NULL){
 			
 			if ($requestVarVallue !== NULL){
 				if ($this->iterationNumber === 0){
@@ -99,14 +99,14 @@
 		}
 		
 		/**
- 		* MultiPart function
+ 		* multiPart function
  		* 
  		* This function is used to send a multipart request (blob + request) to Nuxeo EM, such as the
- 		* AttachBlob request
+ 		* attachBlob request
  		* 
  		* @author     Arthur GALLOUIN for NUXEO agallouin@nuxeo.com
  		*/
-		private function MultiPart(){
+		private function multiPart(){
 			
 			if (sizeof($this->blobList) > 1 AND !isset($this->finalRequest['params']['xpath']))
 				$this->finalRequest['params']['xpath'] = 'files:files';
@@ -168,13 +168,13 @@
     	}
     	/**
     	 * 
-    	 * Function used to load a Blob.
+    	 * loadBlob function
     	 * Many blobs could be loaded, they will be store in a blob array
     	 * 
     	 * @param $adresse : contains the path of the file to load
     	 * @param $contentType : type of the blob content (default : 'application/binary')
     	 */
-    	public function LoadBlob($adresse, $contentType  = 'application/binary'){
+    	public function loadBlob($adresse, $contentType  = 'application/binary'){
     		if(!$this->blobList){
     			$this->blobList = array();
     		}
@@ -198,7 +198,7 @@
  		*
  		* @author     Arthur GALLOUIN for NUXEO agallouin@nuxeo.com
  		*/
-		public function SendRequest(){
+		public function sendRequest(){
 			if (!$this->blobList){
 				
 				$this->finalRequest = json_encode($this->finalRequest);
@@ -235,7 +235,7 @@
 				return $documents;
 			}
 			else
-				$this->MultiPart();
+				$this->multiPart();
 		}
 		
 	}

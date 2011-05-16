@@ -25,7 +25,7 @@
 	 	 * 			   $password : password matching the usename
 	 	 * @author     Arthur GALLOUIN for NUXEO agallouin@nuxeo.com
 	 	 */
-		public function GetSession($username = 'Administrator', $password = 'Administrator'){
+		public function getSession($username = 'Administrator', $password = 'Administrator'){
 			$this->session = $username . ":" . $password;
 			$session = new Session($this->url, $this->session);
 			return $session;
@@ -66,7 +66,7 @@
 	 	 * 			  for exemple)
 	 	 * @author     Arthur GALLOUIN for NUXEO agallouin@nuxeo.com
 	 	 */
-		public function NewRequest($requestType){
+		public function newRequest($requestType){
 			$newRequest = new Request($this->urlLoggedIn, $this->headers, $requestType);
 			return $newRequest;
 		}
@@ -92,27 +92,27 @@
 				$this->properties = null;				
 		}
 		
-		public function GetUid(){
+		public function getUid(){
 			return $this->object['uid'];
 		}
 		
-		public function GetPath(){
+		public function getPath(){
 			return $this->object['path'];
 		}
 		
-		public function GetType(){
+		public function getType(){
 			return $this->object['type'];
 		}
 		
-		public function GetState(){
+		public function getState(){
 			return $this->object['state'];
 		}
 		
-		public function GetTitle(){
+		public function getTitle(){
 			return $this->object['title'];
 		}
 		
-		Public function Output(){
+		Public function output(){
 			$value = sizeof($this->object);
 			
 			for ($test = 0; $test < $value-1; $test++){
@@ -130,11 +130,11 @@
 			}
 		}
 		
-		public function GetObject(){
+		public function getObject(){
 			return $this->object;
 		}
 		
-		public function GetProperty($schemaNamePropertyName){
+		public function getProperty($schemaNamePropertyName){
 			if (array_key_exists($schemaNamePropertyName, $this->properties)){
 				return $this->properties[$schemaNamePropertyName];
 			}
@@ -154,7 +154,7 @@
 		
 		private $documentsList;
 		
-		public function Documents($newDocList){
+		public function documents($newDocList){
 			$this->documentsList = null;
 			$test = true;
 			if (!empty($newDocList['entries'])){
@@ -174,17 +174,17 @@
 			}
 		}
 		
-		public function Output(){
+		public function output(){
 			$value = sizeof($this->documentsList);
 			echo '<table>';
 			echo '<tr><TH>Entity-type</TH><TH>Repository</TH><TH>uid</TH><TH>Path</TH>
 			<TH>Type</TH><TH>State</TH><TH>Title</TH><TH>Download as PDF</TH>';
 			for ($test = 0; $test < $value; $test ++){
 				echo '<tr>';
-				current($this->documentsList)->Output();
+				current($this->documentsList)->output();
 				echo '<td><form id="test" action="../tests/B5bis.php" method="post" >';
 				echo '<input type="hidden" name="a_recup" value="'. 
-				current($this->documentsList)->GetPath(). '"/>';
+				current($this->documentsList)->getPath(). '"/>';
 				echo '<input type="submit" value="download"/>';
 				echo '</form></td></tr>';
 				next($this->documentsList);
@@ -192,7 +192,7 @@
 			echo '</table>';
 		}
 		
-		public function GetDocument($number){
+		public function getDocument($number){
 			$value = sizeof($this->documentsList);
 			if ($number < $value AND $number >= 0)
 				return $this->documentsList[$number];
@@ -200,7 +200,7 @@
 				return null;
 		}
 		
-		public function GetDocumentList(){
+		public function getDocumentList(){
 			return $this->documentsList;
 		}
 	}
@@ -214,17 +214,17 @@
 	class Utilities{
 		private $ini;
 		
-		public function DateConverterPhpToNuxeo($date){
+		public function dateConverterPhpToNuxeo($date){
 			return date_format($date, 'Y-m-d');
 		}
 		
-		public function DateConverterNuxeoToPhp($date){
+		public function dateConverterNuxeoToPhp($date){
 			$newDate = explode('T', $date);
 			$phpDate = new DateTime($newDate[0]);
 			return $phpDate;
 		}
 		
-		public function DateConverterInputToPhp($date){
+		public function dateConverterInputToPhp($date){
 			
 			$edate = explode('/', $date);
 			$day = $edate[2];
@@ -273,10 +273,10 @@
 			
 			$client = new PhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
 		
-			$session = $client->GetSession('Administrator','Administrator');
+			$session = $client->getSession('Administrator','Administrator');
 			
-			$answer = $session->NewRequest("Chain.getDocContent")->Set('context', 'path' . $path)
-					  ->SendRequest();
+			$answer = $session->newRequest("Chain.getDocContent")->set('context', 'path' . $path)
+					  ->sendRequest();
 			
 			if (!isset($answer) OR $answer == false)
 				echo '$answer is not set';

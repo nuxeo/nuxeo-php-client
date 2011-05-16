@@ -9,7 +9,7 @@
     	Execute a dc:created query to nuxeo. Fill the blank with a date format Y/M/D
     	<form action="B3.php" method="post">
 			Date<input type="text" name ="date"/><br /><br />
-			<input type="submit" value="Envoyer !"/>
+			<input type="submit" value="Submit"/>
 	    </form>
 	    <br />
 
@@ -22,30 +22,28 @@
 		
 		$client = new PhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
 	
-		$session = $client->GetSession('Administrator','Administrator');
+		$session = $client->getSession('Administrator','Administrator');
 		
-		$answer = $session->NewRequest("Document.Query")->Set('params', 'query', "SELECT * FROM Document WHERE dc:created >= DATE '". $utilities->DateConverterPhpToNuxeo($date) ."'")->SendRequest();
+		$answer = $session->newRequest("Document.Query")->set('params', 'query', "SELECT * FROM Document WHERE dc:created >= DATE '". $utilities->dateConverterPhpToNuxeo($date) ."'")->sendRequest();
 		
-		$DocumentsArray = $answer->GetDocumentList();
-		$value = sizeof($DocumentsArray);
+		$documentsArray = $answer->getDocumentList();
+		$value = sizeof($documentsArray);
 		echo '<table>';
 		echo '<tr><TH>uid</TH><TH>Path</TH>
 		<TH>Type</TH><TH>State</TH><TH>Title</TH><TH>Download as PDF</TH>';
 		for ($test = 0; $test < $value; $test ++){
 			echo '<tr>';
-			echo '<td> ' . current($DocumentsArray)->GetUid()  . '</td>';
-			echo '<td> ' . current($DocumentsArray)->GetPath()  . '</td>';
-			echo '<td> ' . current($DocumentsArray)->GetType()  . '</td>';
-			echo '<td> ' . current($DocumentsArray)->GetState()  . '</td>';
-			echo '<td> ' . current($DocumentsArray)->GetTitle()  . '</td>';
-			echo '<td> ' . current($DocumentsArray)->GetProperty('dc:description')  . '</td>';
-			echo '<td> ' . current($DocumentsArray)->GetProperty('dc:creator')  . '</td>';
+			echo '<td> ' . current($documentsArray)->getUid()  . '</td>';
+			echo '<td> ' . current($documentsArray)->getPath()  . '</td>';
+			echo '<td> ' . current($documentsArray)->getType()  . '</td>';
+			echo '<td> ' . current($documentsArray)->getState()  . '</td>';
+			echo '<td> ' . current($documentsArray)->getTitle()  . '</td>';
 			echo '<td><form id="test" action="../tests/B5bis.php" method="post" >';
 			echo '<input type="hidden" name="data" value="'. 
-			current($DocumentsArray)->GetPath(). '"/>';
+			current($documentsArray)->getPath(). '"/>';
 			echo '<input type="submit" value="download"/>';
 			echo '</form></td></tr>';
-			next($DocumentsArray);
+			next($documentsArray);
 		}
 		echo '</table>';
 	}
@@ -55,8 +53,8 @@
 	}else{
 		$top = new Utilities();
 		
-		$date = $top->DateConverterInputToPhp($_POST['date']);
+		$date = $top->dateConverterInputToPhp($_POST['date']);
 		
-		DateSearch($date);
+		dateSearch($date);
 	}
 ?></body></html>

@@ -10,7 +10,7 @@
 			<table>
 			    <tr><td>File Path</td><td><input type="text" name ="path"/></td></tr>
 			    <tr><td>Blob Type</td><td><input type="text" name ="type"/></td></tr>
-			    <tr><td><input type="submit" value="Envoyer !"/></td></tr>
+			    <tr><td><input type="submit" value="Submit"/></td></tr>
 		    </table>
 	    </form><?php
 

@@ -9,49 +9,46 @@
     	Execute a SELECT * FROM Document WHERE ecm:fulltext = '". $research ."' query to Nuxeo.
     	<form action="B2.php" method="post">
 			Search<input type="text" name ="research"/><br /> <br />
-			<input type="submit" value="Envoyer !"/>
+			<input type="submit" value="Submit"/>
 	    </form>
 	    <br/>
-
 <?php
 
 	include ('../NuxeoAutomationClient/NuxeoAutomationAPI.php');
 	
 	function fullTextSearch($research) {
-
+		
 		$client = new PhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
 	
-		$session = $client->GetSession('Administrator','Administrator');
+		$session = $client->getSession('Administrator','Administrator');
 		
-		$answer = $session->NewRequest("Document.Query")->Set('params', 'query', "SELECT * FROM Document WHERE ecm:fulltext = '". $research ."'")->SendRequest();
+		$answer = $session->newRequest("Document.Query")->set('params', 'query', "SELECT * FROM Document WHERE ecm:fulltext = '". $research ."'")->sendRequest();
 		
-		$DocumentsArray = $answer->GetDocumentList();
-		$value = sizeof($DocumentsArray);
+		$documentsArray = $answer->getDocumentList();
+		$value = sizeof($documentsArray);
 		echo '<table>';
 		echo '<tr><TH>uid</TH><TH>Path</TH>
 		<TH>Type</TH><TH>State</TH><TH>Title</TH><TH>Download as PDF</TH>';
 		for ($test = 0; $test < $value; $test ++){
 			echo '<tr>';
-			echo '<td> ' . current($DocumentsArray)->GetUid()  . '</td>';
-			echo '<td> ' . current($DocumentsArray)->GetPath()  . '</td>';
-			echo '<td> ' . current($DocumentsArray)->GetType()  . '</td>';
-			echo '<td> ' . current($DocumentsArray)->GetState()  . '</td>';
-			echo '<td> ' . current($DocumentsArray)->GetTitle()  . '</td>';
-			echo '<td> ' . current($DocumentsArray)->GetProperty('dc:description')  . '</td>';
-			echo '<td> ' . current($DocumentsArray)->GetProperty('dc:creator')  . '</td>';
+			echo '<td> ' . current($documentsArray)->getUid()  . '</td>';
+			echo '<td> ' . current($documentsArray)->getPath()  . '</td>';
+			echo '<td> ' . current($documentsArray)->getType()  . '</td>';
+			echo '<td> ' . current($documentsArray)->getState()  . '</td>';
+			echo '<td> ' . current($documentsArray)->getTitle()  . '</td>';
 			echo '<td><form id="test" action="../tests/B5bis.php" method="post" >';
 			echo '<input type="hidden" name="data" value="'. 
-			current($DocumentsArray)->GetPath(). '"/>';
+			current($documentsArray)->getPath(). '"/>';
 			echo '<input type="submit" value="download"/>';
 			echo '</form></td></tr>';
-			next($DocumentsArray);
+			next($documentsArray);
 		}
 		echo '</table>';
 	}
 	
-	if(!isset($_POST['research']) OR empty($_POST['research'])){
+	if(!isset($_POST['research']) OR empty($_POST['research']))
 		echo 'research is empty';
+	else
 		fullTextSearch($_POST['research']);
-	}
-	//fullTextSearch('test');
+	
 ?></body></html>

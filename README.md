@@ -1,15 +1,14 @@
 ## php-automation-client
 
 This project is an automation client for Nuxeo EP wrote in PHP.
-This is still in developpement.
+This is still in development.
 
 ## Content
 
-Function list which allows queries, retreiving document information from Nuxeo EP, activating Chains remotly ...
-B1 B2 B3 are examples explaining how we can send a query to nuxeo and how we can use the results.
-B4 is used to create a document and attach a blob to it. It must be call using the display_B4 page.
-B5bis is only called from B1, B2 or B3 using the download button at the right of the screen.
-B5 is never called but it's a reference concerning the headers to use and how to do a file transfert.
+Function list which allows queries, retrieving document information from Nuxeo EP, activating Chains remotely ...
+B1 B2 B3 are examples explaining how we can send a query to Nuxeo and how we can use the results.
+B4 is used to create a document and attach a blob to it. B5bis is only called from B1, B2 or B3 using the download button at the right of the screen.
+B5 is never called but it's a reference concerning the headers to use and how to do a file transfer.
 
 ## About Nuxeo
 
