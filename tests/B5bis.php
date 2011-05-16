@@ -1,6 +1,6 @@
 <?php
 	
-	include ('../NuxeoAutomationClient/NuxeoAutomationAPI.php');
+		include ('../NuxeoAutomationClient/NuxeoAutomationAPI.php');
 	
 	/**
 	 * 
@@ -14,23 +14,22 @@
 		
 		$client = new PhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
 	
-		$session = $client->GetSession('Administrator','Administrator');
+		$session = $client->getSession('Administrator','Administrator');
 		
-		$answer = $session->NewRequest("Chain.getDocContent")->Set('context', 'path', $path)->SendRequest();
+		$answer = $session->newRequest("Chain.getDocContent")->set('context', 'path', $path)->sendRequest();
 		
 		if (!isset($answer) OR $answer == false)
 			echo '$answer is not set';
 		else{			
-		    header('Content-Description: File Transfer');
-		    header('Content-Type: application/octet-stream');
+			header('Content-Description: File Transfer');
+			header('Content-Type: application/octet-stream');
 		    header('Content-Disposition: attachment; filename='.end($eurl).'.pdf');
 		    readfile('tempstream');
 		}
 	}
-	
-
-        if (!isset($_POST['data']) OR empty($_POST['data']))
-	    echo 'error';
-        else
-	    getFileContent($_POST['data']);
+		
+	if (!isset($_POST['data']) OR empty($_POST['data']))
+		echo 'error';
+	else
+		getFileContent($_POST['data']);
 ?>
