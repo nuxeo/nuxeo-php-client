@@ -1,5 +1,5 @@
 <?php
-	
+
 	include ('../NuxeoAutomationClient/NuxeoAutomationUtilities.php');
 	
 	/**
@@ -79,7 +79,7 @@
 	 * 
 	 * @author     Arthur GALLOUIN for NUXEO agallouin@nuxeo.com
 	 */
-	class Document extends Documents{
+	class Document {
 		
 		Private $object;
 		Private $properties;
@@ -105,7 +105,7 @@
 		}
 		
 		public function GetState(){
-			return DateConverterNuxeoToPhp($this->object['state']);
+			return $this->object['state'];
 		}
 		
 		public function GetTitle(){
@@ -130,18 +130,16 @@
 			}
 		}
 		
-		public function OutputSelect(){
-			echo '<option value="' . $this->GetPath() . '">' . $this->GetTitle() . '</option>';
-		}
-		
-		public function GetContent(){
+		public function GetObject(){
 			return $this->object;
 		}
 		
-		public function Get($schemaNamePropertyName){
+		public function GetProperty($schemaNamePropertyName){
 			if (array_key_exists($schemaNamePropertyName, $this->properties)){
-				echo key($this->properties) .  ' : ' . current($this->properties) . '<br />';
+				return $this->properties[$schemaNamePropertyName];
 			}
+			else
+				return null;
 		}
 	}
 	
@@ -194,21 +192,7 @@
 			echo '</table>';
 		}
 		
-		public function OutputSelect(){
-			$value = sizeof($this->documentsList);
-			echo '<select name="DocList">';
-			for ($test = 0; $test < $value; $test ++){
-				current($this->documentsList)->OutputSelect();
-				next($this->documentsList);
-			}
-			echo '</select>';
-		}
-		
-		public function GetContent(){
-			return $this->documentsList;
-		}
-		
-		public function OutputDocument($number){
+		public function GetDocument($number){
 			$value = sizeof($this->documentsList);
 			if ($number < $value AND $number >= 0)
 				return $this->documentsList[$number];
@@ -221,5 +205,88 @@
 		}
 	}
 	
+	/**
+	 * 
+	 * Contains Utilities such as date wrappers
+	 * @author agallouin
+	 *
+	 */
+	class Utilities{
+		private $ini;
+		
+		public function DateConverterPhpToNuxeo($date){
+			return date_format($date, 'Y-m-d');
+		}
+		
+		public function DateConverterNuxeoToPhp($date){
+			$newDate = explode('T', $date);
+			$phpDate = new DateTime($newDate[0]);
+			return $phpDate;
+		}
+		
+		public function DateConverterInputToPhp($date){
+			
+			$edate = explode('/', $date);
+			$day = $edate[2];
+			$month = $edate[1];
+			$year = $edate[0];
+
+			if ($month > 0 AND $month < 12)
+				if ($month%2 == 0)
+					if ($day < 1 OR $day > 31){
+						echo 'date not correct';
+						exit;
+					}
+				elseif($month == 2)
+					if (year%4 == 0)
+						if ($day > 29 OR $day < 0){
+							echo 'date not correct';
+							exit;
+						}
+				else
+					if ($day > 28 OR $day < 0){
+						echo 'date not correct';
+						exit;
+					}
+					else
+						if ($day > 30 OR $day < 0){
+							echo 'date not correct';
+							exit;
+						}
+
+			$phpDate = new DateTime($year . '-' . $month . '-' . $day);
+			
+			return $phpDate;
+		}
+		
+		/**
+		 * 
+		 * Function Used to get Data from Nuxeo, such as a blob. MUST BE PERSONALISED. (Or just move the 
+		 * headers)
+		 * 
+		 * 
+		 * @param $path path of the file
+		 */
+		function getFileContent($path = '/default-domain/workspaces/jkjkj/teezeareate.1304515647395') {
+			
+			$eurl = explode("/", $path);
+			
+			$client = new PhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
+		
+			$session = $client->GetSession('Administrator','Administrator');
+			
+			$answer = $session->NewRequest("Chain.getDocContent")->Set('context', 'path' . $path)
+					  ->SendRequest();
+			
+			if (!isset($answer) OR $answer == false)
+				echo '$answer is not set';
+			else{
+				header('Content-Description: File Transfer');
+				header('Content-Type: application/octet-stream');
+			    header('Content-Disposition: attachment; filename='.end($eurl).'.pdf');
+			    readfile('tempstream');
+			}
+		}
+	}
 	
 ?>

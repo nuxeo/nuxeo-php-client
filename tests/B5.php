@@ -4,8 +4,7 @@
 	
 	function GetBlob($path = '/default-domain/workspaces/jkjkj/test2.rtf', $blobtype = 'application/binary') {
 		$eurl = explode("/", $path);
-		header("Content-type: text/plain");
-  		header("Content-Disposition: attachment; filename=".end($eurl));
+		
 		$client = new PhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
 	
 		$session = $client->GetSession('Administrator','Administrator');
@@ -15,12 +14,15 @@
 		if (!isset($answer) OR $answer == false)
 			echo '$answer is not set';
 		else{
-			print_r($answer);
+			header('Content-Description: File Transfer');
+			header('Content-Type: application/octet-stream');
+		    header('Content-Disposition: attachment; filename='.end($eurl).'.pdf');
+		    readfile('tempstream');
 		}
 	}
 	
 	if(!isset($_POST['path'])){
-		echo 'path est vide';
+		echo 'path is empty';
 		exit;
 	}
 	if(!isset($_POST['type']))

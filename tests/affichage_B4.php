@@ -21,7 +21,14 @@
 												
 												$answer = $session->NewRequest("Document.Query")->Set('params', 'query', "SELECT * FROM Workspace")->SetSchema($propertiesSchema)->SendRequest();
 												
-												$answer->OutputSelect();
+												$array = $answer->GetDocumentList();
+												$value = sizeof($array);
+												echo '<select name="TargetDocumentPath">';
+												for ($test = 0; $test < $value; $test ++){
+													echo '<option value="' . current($array)->GetPath() . '">' . current($array)->GetTitle() . '</option>';
+													next($this->documentsList);
+												}
+												echo '</select>';
 											?></td></tr>
 			    <tr><td><input type="submit" value="Envoyer !"/></td></tr>
 		    </table>

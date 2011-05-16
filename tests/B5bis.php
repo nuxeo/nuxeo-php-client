@@ -2,9 +2,15 @@
 	
 	include ('../NuxeoAutomationClient/NuxeoAutomationAPI.php');
 	
-	if (!isset($_POST['a_recup']) OR empty($_POST['a_recup']))
-		echo ' ceci est une erreur !';
+	if (!isset($_POST['data']) OR empty($_POST['data']))
+		echo 'error';
 	
+	/**
+	 * 
+	 * getFileContent function
+	 * function used to download the blob of a file, converted into a PDF file
+	 * @param String $path contains the path of th file holding the blob
+	 */
 	function getFileContent($path = '/default-domain/workspaces/jkjkj/teezeareate.1304515647395') {
 		
 		$eurl = explode("/", $path);
@@ -25,7 +31,6 @@
 		}
 	}
 	
-	getFileContent($_POST['a_recup']);
-	echo $_POST['a_recup'];
+	getFileContent($_POST['data']);
 	//getFileContent('/default-domain/workspaces/jkjkj/test2.rtf');
 ?>

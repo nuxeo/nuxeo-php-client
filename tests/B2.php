@@ -25,7 +25,28 @@
 		
 		$answer = $session->NewRequest("Document.Query")->Set('params', 'query', "SELECT * FROM Document WHERE ecm:fulltext = '". $research ."'")->SendRequest();
 		
-		$answer->Output();
+		$DocumentsArray = $answer->GetDocumentList();
+		$value = sizeof($DocumentsArray);
+		echo '<table>';
+		echo '<tr><TH>uid</TH><TH>Path</TH>
+		<TH>Type</TH><TH>State</TH><TH>Title</TH><TH>Download as PDF</TH>';
+		for ($test = 0; $test < $value; $test ++){
+			echo '<tr>';
+			echo '<td> ' . current($DocumentsArray)->GetUid()  . '</td>';
+			echo '<td> ' . current($DocumentsArray)->GetPath()  . '</td>';
+			echo '<td> ' . current($DocumentsArray)->GetType()  . '</td>';
+			echo '<td> ' . current($DocumentsArray)->GetState()  . '</td>';
+			echo '<td> ' . current($DocumentsArray)->GetTitle()  . '</td>';
+			echo '<td> ' . current($DocumentsArray)->GetProperty('dc:description')  . '</td>';
+			echo '<td> ' . current($DocumentsArray)->GetProperty('dc:creator')  . '</td>';
+			echo '<td><form id="test" action="../tests/B5bis.php" method="post" >';
+			echo '<input type="hidden" name="data" value="'. 
+			current($DocumentsArray)->GetPath(). '"/>';
+			echo '<input type="submit" value="download"/>';
+			echo '</form></td></tr>';
+			next($DocumentsArray);
+		}
+		echo '</table>';
 	}
 	
 	if(!isset($_POST['research']) OR empty($_POST['research'])){
