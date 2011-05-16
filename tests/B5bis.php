@@ -1,6 +1,6 @@
 <?php
 	
-		include ('../NuxeoAutomationClient/NuxeoAutomationAPI.php');
+	include ('../NuxeoAutomationClient/NuxeoAutomationAPI.php');
 	
 	/**
 	 * 
@@ -11,6 +11,8 @@
 	function getFileContent($path = '/default-domain/workspaces/jkjkj/teezeareate.1304515647395') {
 		
 		$eurl = explode("/", $path);
+
+                $temp = str_replace(" ", "", end($eurl));
 		
 		$client = new PhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
 	
@@ -23,7 +25,7 @@
 		else{			
 			header('Content-Description: File Transfer');
 			header('Content-Type: application/octet-stream');
-		    header('Content-Disposition: attachment; filename='.end($eurl).'.pdf');
+		    header('Content-Disposition: attachment; filename='. $temp .'.pdf');
 		    readfile('tempstream');
 		}
 	}
