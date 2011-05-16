@@ -40,6 +40,8 @@
 	}
 	if ((isset($_FILES['blobPath'])&&($_FILES['blobPath']['error'] == UPLOAD_ERR_OK))) {    
 		$targetPath = '../blobs/';
+		if (!is_dir('../blobs'))
+			mkdir('../blobs');
 		move_uploaded_file($_FILES['blobPath']['tmp_name'], $targetPath.$_FILES['blobPath']['name']);  
 	}
 	
