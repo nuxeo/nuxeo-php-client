@@ -1,5 +1,3 @@
-## NON-FINISHED PROJECT
-
 ## php-automation-client
 
 This project is an automation client for Nuxeo EP wrote in PHP.
@@ -8,11 +6,10 @@ This is still in developpement.
 ## Content
 
 Function list which allows queries, retreiving document information from Nuxeo EP, activating Chains remotly ...
-B1 B2 B3 are mainly test functions and affichage_B1 affichage_B2 affichage_B3 are html pages which can allow 
-users to load data in function. If you want to use them, uncomment the isset part and call the function with
-parameters comming from $_POST['neededVariable']
-
-
+B1 B2 B3 are examples explaining how we can send a query to nuxeo and how we can use the results.
+B4 is used to create a document and attach a blob to it. It must be call issuing the display_B4 page.
+B5 is only called from B1? B2 or B3 using the download button at the right
+of the screen
 
 ## About Nuxeo
 
