@@ -24,7 +24,7 @@
     <link rel="stylesheet" media="screen" type="text/css" title="Designtab" href="designtab.css"/>
 </head>
 <body>
-Execute a SELECT * FROM NuxeoDocument WHERE ecm:fulltext = '". $research ."' query to Nuxeo.
+Execute a SELECT * FROM Document WHERE ecm:fulltext = '". $research ."' query to Nuxeo.
 <form action="B2.php" method="post">
     Search<input type="text" name="research"/><br/> <br/>
     <input type="submit" value="Submit"/>
@@ -37,11 +37,11 @@ function fullTextSearch($research) {
 
     $client = new NuxeoPhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
 
-    $session = $client->getNuxeoSession('Administrator', 'Administrator');
+    $session = $client->getSession('Administrator', 'Administrator');
 
-    $answer = $session->newRequest("NuxeoDocument.Query")->set('params', 'query', "SELECT * FROM NuxeoDocument WHERE ecm:fulltext = '" . $research . "'")->sendRequest();
+    $answer = $session->newRequest("Document.Query")->set('params', 'query', "SELECT * FROM Document WHERE ecm:fulltext = '" . $research . "'")->sendRequest();
 
-    $documentsArray = $answer->getNuxeoDocumentList();
+    $documentsArray = $answer->getDocumentList();
     $value = sizeof($documentsArray);
     echo '<table>';
     echo '<tr><TH>uid</TH><TH>Path</TH>

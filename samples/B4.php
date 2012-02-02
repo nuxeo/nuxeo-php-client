@@ -41,13 +41,13 @@ the blob path field to it.<br/>
 
                 $client = new NuxeoPhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
 
-                $session = $client->getNuxeoSession('Administrator', 'Administrator');
+                $session = $client->getSession('Administrator', 'Administrator');
 
-                $answer = $session->newRequest("NuxeoDocument.Query")->set('params', 'query', "SELECT * FROM Workspace")->setSchema($propertiesSchema)->sendRequest();
+                $answer = $session->newRequest("Document.Query")->set('params', 'query', "SELECT * FROM Workspace")->setSchema($propertiesSchema)->sendRequest();
 
-                $array = $answer->getNuxeoDocumentList();
+                $array = $answer->getDocumentList();
                 $value = sizeof($array);
-                echo '<select name="TargetNuxeoDocumentPath">';
+                echo '<select name="TargetDocumentPath">';
                 for ($test = 0; $test < $value; $test++) {
                     echo '<option value="' . current($array)->getPath() . '">' . current($array)->getTitle() . '</option>';
                     next($array);

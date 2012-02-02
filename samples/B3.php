@@ -39,11 +39,11 @@ function DateSearch($date) {
 
     $client = new NuxeoPhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
 
-    $session = $client->getNuxeoSession('Administrator', 'Administrator');
+    $session = $client->getSession('Administrator', 'Administrator');
 
-    $answer = $session->newRequest("NuxeoDocument.Query")->set('params', 'query', "SELECT * FROM NuxeoDocument WHERE dc:created >= DATE '" . $utilities->dateConverterPhpToNuxeo($date) . "'")->sendRequest();
+    $answer = $session->newRequest("Document.Query")->set('params', 'query', "SELECT * FROM Document WHERE dc:created >= DATE '" . $utilities->dateConverterPhpToNuxeo($date) . "'")->sendRequest();
 
-    $documentsArray = $answer->getNuxeoDocumentList();
+    $documentsArray = $answer->getDocumentList();
     $value = sizeof($documentsArray);
     echo '<table>';
     echo '<tr><TH>uid</TH><TH>Path</TH>
