@@ -25,11 +25,11 @@ require_once('NuxeoAutomationUtilities.php');
  *
  * @author     Arthur GALLOUIN for NUXEO agallouin@nuxeo.com
  */
-class PhpAutomationClient {
+class NuxeoPhpAutomationClient {
     private $url;
     private $session;
 
-    public function PhpAutomationClient($url = 'http://localhost:8080/nuxeo/site/automation') {
+    public function NuxeoPhpAutomationClient($url = 'http://localhost:8080/nuxeo/site/automation') {
         $this->url = $url;
     }
 
@@ -44,7 +44,7 @@ class PhpAutomationClient {
      */
     public function getSession($username = 'Administrator', $password = 'Administrator') {
         $this->session = $username . ":" . $password;
-        $session = new Session($this->url, $this->session);
+        $session = new NuxeoSession($this->url, $this->session);
         return $session;
     }
 }
@@ -56,13 +56,13 @@ class PhpAutomationClient {
  *
  * @author     Arthur GALLOUIN for NUXEO agallouin@nuxeo.com
  */
-class Session {
+class NuxeoSession {
 
     private $urlLoggedIn;
     private $headers;
     private $requestContent;
 
-    public function Session($url, $session, $headers = "Content-Type: application/json+nxrequest") {
+    public function NuxeoSession($url, $session, $headers = "Content-Type: application/json+nxrequest") {
         $this->urlLoggedIn = str_replace("http://", "", $url);
         if (strpos($url, 'https') !== false) {
             $this->urlLoggedIn = "https://" . $session . "@" . $this->urlLoggedIn;
@@ -84,7 +84,7 @@ class Session {
      * @author     Arthur GALLOUIN for NUXEO agallouin@nuxeo.com
      */
     public function newRequest($requestType) {
-        $newRequest = new Request($this->urlLoggedIn, $this->headers, $requestType);
+        $newRequest = new NuxeoRequest($this->urlLoggedIn, $this->headers, $requestType);
         return $newRequest;
     }
 }
@@ -96,12 +96,12 @@ class Session {
  *
  * @author     Arthur GALLOUIN for NUXEO agallouin@nuxeo.com
  */
-class Document {
+class NuxeoDocument {
 
     Private $object;
     Private $properties;
 
-    Public function Document($newDocument) {
+    Public function NuxeoDocument($newDocument) {
         $this->object = $newDocument;
         if (array_key_exists('properties', $this->object))
             $this->properties = $this->object['properties'];
@@ -167,22 +167,22 @@ class Document {
  *
  * @author     Arthur GALLOUIN for NUXEO agallouin@nuxeo.com
  */
-class Documents {
+class NuxeoDocuments {
 
     private $documentsList;
 
-    public function Documents($newDocList) {
+    public function NuxeoDocuments($newDocList) {
         $this->documentsList = null;
         $test = true;
         if (!empty($newDocList['entries'])) {
             while (false !== $test) {
-                $this->documentsList[] = new Document(current($newDocList['entries']));
+                $this->documentsList[] = new NuxeoDocument(current($newDocList['entries']));
                 $test = each($newDocList['entries']);
             }
             $test = sizeof($this->documentsList);
             unset($this->documentsList[$test - 1]);
         } elseif (!empty($newDocList['uid'])) {
-            $this->documentsList[] = new Document($newDocList);
+            $this->documentsList[] = new NuxeoDocument($newDocList);
         } elseif (is_array($newDocList)) {
             echo 'file not found';
         } else {
@@ -224,7 +224,7 @@ class Documents {
 /**
  * Contains Utilities such as date wrappers
  */
-class Utilities {
+class NuxeoUtilities {
     private $ini;
 
     public function dateConverterPhpToNuxeo($date) {
@@ -282,7 +282,7 @@ class Utilities {
 
         $eurl = explode("/", $path);
 
-        $client = new PhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
+        $client = new NuxeoPhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
 
         $session = $client->getSession('Administrator', 'Administrator');
 

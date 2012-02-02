@@ -9,7 +9,7 @@ class NuxeoTest extends PHPUnit_Framework_TestCase {
     private $URL = "http://darkstar:8080/nuxeo/site/automation";
 
     public function XXXtest1() {
-        $client = new PhpAutomationClient($this->URL);
+        $client = new NuxeoPhpAutomationClient($this->URL);
         $session = $client->getSession($this->LOGIN, $this->PASSWORD);
         $answer = $session->newRequest("Document.Query")
                 ->set('params', 'query', "SELECT * FROM Document")
@@ -35,7 +35,7 @@ class NuxeoTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test2() {
-        $client = new PhpAutomationClient($this->URL);
+        $client = new NuxeoPhpAutomationClient($this->URL);
         $session = $client->getSession($this->LOGIN, $this->PASSWORD);
 
         $answer = $session->newRequest("Document.Query")

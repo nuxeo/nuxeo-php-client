@@ -40,7 +40,7 @@ with the type of schema to output (if left blank, print all properties)<br/>
 
 function openDocumentPropeties($path, $propertiesSchema = '*') {
 
-    $client = new PhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
+    $client = new NuxeoPhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
 
     $session = $client->getSession('Administrator', 'Administrator');
 

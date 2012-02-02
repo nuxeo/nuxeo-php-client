@@ -39,7 +39,7 @@ the blob path field to it.<br/>
 
                 include ('../NuxeoAutomationClient/NuxeoAutomationAPI.php');
 
-                $client = new PhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
+                $client = new NuxeoPhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
 
                 $session = $client->getSession('Administrator', 'Administrator');
 
@@ -75,16 +75,16 @@ function attachBlob($blob = '../test.txt', $filePath = '/default-domain/workspac
     // We get the name of the file to use it for the name of the document
     $ename = explode("/", $blob);
 
-    $client = new PhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
+    $client = new NuxeoPhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
 
-    $session = $client->getSession('Administrator', 'Administrator');
+    $session = $client->getNuxeoSession('Administrator', 'Administrator');
 
 
     //We create the document that will hold the file
-    $answer = $session->newRequest("Document.Create")->set('input', 'doc:' . $filePath)->set('params', 'type', 'File')->set('params', 'name', end($ename))->sendRequest();
+    $answer = $session->newRequest("NuxeoDocument.Create")->set('input', 'doc:' . $filePath)->set('params', 'type', 'File')->set('params', 'name', end($ename))->sendRequest();
 
     //We upload the file
-    $answer = $session->newRequest("Blob.Attach")->set('params', 'document', $answer->getDocument(0)->getPath())
+    $answer = $session->newRequest("Blob.Attach")->set('params', 'document', $answer->getNuxeoDocument(0)->getPath())
             ->loadBlob($blob, $blobtype)
             ->sendRequest();
 }
@@ -93,8 +93,8 @@ if (!isset($_FILES['blobPath']) AND $_FILES['blobPath']['error'] == 0) {
     echo 'BlobPath is empty';
     exit;
 }
-if (!isset($_POST['TargetDocumentPath']) OR empty($_POST['TargetDocumentPath'])) {
-    echo 'TargetDocumentPath is empty';
+if (!isset($_POST['TargetNuxeoDocumentPath']) OR empty($_POST['TargetNuxeoDocumentPath'])) {
+    echo 'TargetNuxeoDocumentPath is empty';
     exit;
 }
 if ((isset($_FILES['blobPath']) && ($_FILES['blobPath']['error'] == UPLOAD_ERR_OK))) {
@@ -104,7 +104,7 @@ if ((isset($_FILES['blobPath']) && ($_FILES['blobPath']['error'] == UPLOAD_ERR_O
     move_uploaded_file($_FILES['blobPath']['tmp_name'], $targetPath . $_FILES['blobPath']['name']);
 }
 
-attachBlob($targetPath . $_FILES['blobPath']['name'], $_POST['TargetDocumentPath'], $_FILES['blobPath']['type']);
+attachBlob($targetPath . $_FILES['blobPath']['name'], $_POST['TargetNuxeoDocumentPath'], $_FILES['blobPath']['type']);
 unlink($targetPath . $_FILES['blobPath']['name']);
 
 ?></body>
