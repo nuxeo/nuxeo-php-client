@@ -24,7 +24,7 @@
     <link rel="stylesheet" media="screen" type="text/css" title="Designtab" href="designtab.css"/>
 </head>
 <body>
-Execute a "SELECT * FROM Document WHERE ecm:path = Path" query to Nuxeo<br/>
+Execute a "SELECT * FROM NuxeoDocument WHERE ecm:path = Path" query to Nuxeo<br/>
 and print all the document properties.<br/>
 fill the path field with a correct Path and the Schema field<br/>
 with the type of schema to output (if left blank, print all properties)<br/>
@@ -38,15 +38,15 @@ with the type of schema to output (if left blank, print all properties)<br/>
 <?php
     include ('../NuxeoAutomationClient/NuxeoAutomationAPI.php');
 
-function openDocumentPropeties($path, $propertiesSchema = '*') {
+function openNuxeoDocumentPropeties($path, $propertiesSchema = '*') {
 
-    $client = new PhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
+    $client = new NuxeoPhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
 
-    $session = $client->getSession('Administrator', 'Administrator');
+    $session = $client->getNuxeoSession('Administrator', 'Administrator');
 
-    $answer = $session->newRequest("Document.Query")->set('params', 'query', "SELECT * FROM Document WHERE ecm:path = '" . $path . "'")->setSchema($propertiesSchema)->sendRequest();
+    $answer = $session->newRequest("NuxeoDocument.Query")->set('params', 'query', "SELECT * FROM NuxeoDocument WHERE ecm:path = '" . $path . "'")->setSchema($propertiesSchema)->sendRequest();
 
-    $documentsArray = $answer->getDocumentList();
+    $documentsArray = $answer->getNuxeoDocumentList();
     $value = sizeof($documentsArray);
     echo '<table>';
     echo '<tr><TH>uid</TH><TH>Path</TH>
@@ -76,9 +76,9 @@ if (!isset($_POST['path']) OR empty($_POST['path'])) {
 }
 else {
     if (!isset($_POST['schema']) OR empty($_POST['schema']))
-        openDocumentPropeties($_POST['path']);
+        openNuxeoDocumentPropeties($_POST['path']);
     else
-        openDocumentPropeties($_POST['path'], $_POST['schema']);
+        openNuxeoDocumentPropeties($_POST['path'], $_POST['schema']);
 }
 
 ?></body>

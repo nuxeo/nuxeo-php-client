@@ -45,9 +45,9 @@
 function GetBlob($path = '/default-domain/workspaces/jkjkj/test2.rtf', $blobtype = 'application/binary') {
     $eurl = explode("/", $path);
 
-    $client = new PhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
+    $client = new NuxeoPhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
 
-    $session = $client->GetSession('Administrator', 'Administrator');
+    $session = $client->GetNuxeoSession('Administrator', 'Administrator');
 
     $answer = $session->NewRequest("Blob.Get")->Set('input', 'doc: ' . $path)->SendRequest();
 

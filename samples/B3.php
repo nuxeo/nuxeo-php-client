@@ -35,15 +35,15 @@ Execute a dc:created query to nuxeo. Fill the blank with a date format Y/M/D
     include ('../NuxeoAutomationClient/NuxeoAutomationAPI.php');
 
 function DateSearch($date) {
-    $utilities = new Utilities();
+    $utilities = new NuxeoUtilities();
 
-    $client = new PhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
+    $client = new NuxeoPhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
 
-    $session = $client->getSession('Administrator', 'Administrator');
+    $session = $client->getNuxeoSession('Administrator', 'Administrator');
 
-    $answer = $session->newRequest("Document.Query")->set('params', 'query', "SELECT * FROM Document WHERE dc:created >= DATE '" . $utilities->dateConverterPhpToNuxeo($date) . "'")->sendRequest();
+    $answer = $session->newRequest("NuxeoDocument.Query")->set('params', 'query', "SELECT * FROM NuxeoDocument WHERE dc:created >= DATE '" . $utilities->dateConverterPhpToNuxeo($date) . "'")->sendRequest();
 
-    $documentsArray = $answer->getDocumentList();
+    $documentsArray = $answer->getNuxeoDocumentList();
     $value = sizeof($documentsArray);
     echo '<table>';
     echo '<tr><TH>uid</TH><TH>Path</TH>
@@ -68,7 +68,7 @@ function DateSearch($date) {
 if (!isset($_POST['date']) OR empty($_POST['date'])) {
     echo 'date is empty';
 } else {
-    $top = new Utilities();
+    $top = new NuxeoUtilities();
 
     $date = $top->dateConverterInputToPhp($_POST['date']);
 

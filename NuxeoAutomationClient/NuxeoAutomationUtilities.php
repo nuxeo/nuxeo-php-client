@@ -23,7 +23,7 @@
  *
  * @author     Arthur GALLOUIN for NUXEO agallouin@nuxeo.com
  */
-class Request {
+class NuxeoRequest {
 
     private $finalRequest;
     private $url;
@@ -35,7 +35,7 @@ class Request {
     private $X_NXVoidOperation;
 
 
-    public function Request($url, $headers = "Content-Type:application/json+nxrequest", $requestId) {
+    public function NuxeoRequest($url, $headers = "Content-Type:application/json+nxrequest", $requestId) {
         $this->url = $url . "/" . $requestId;
         $this->headers = $headers;
         $this->finalRequest = '{}';
@@ -150,7 +150,7 @@ class Request {
             $blobheaders = 'Content-Type:' . $this->blobList[$cpt][1] . "\r\n" .
                            'Content-ID: input' . "\r\n" .
                            'Content-Transfer-Encoding: binary' . "\r\n" .
-                           'Content-Disposition: attachment;filename=' . $this->blobList[$cpt][0] .
+                           'Content-Disposition: attachment;filename="' . $this->blobList[$cpt][0] . '"' .
                            "\r\n" . "\r\n";
 
             $data = "\r\n" . $data .
@@ -197,7 +197,7 @@ class Request {
             echo 'error loading the file';
 
         $futurBlob = stream_get_contents($fp);
-        $temp = str_replace(" ", "", end($eadresse));
+	$temp = end($eadresse);
         $this->blobList[] = array($temp, $contentType, print_r($futurBlob, true));
 
         return $this;
@@ -236,7 +236,7 @@ class Request {
                 }
                 else {
                     $answer = json_decode($answer, true);
-                    $documents = new Documents($answer);
+                    $documents = new NuxeoDocuments($answer);
                 }
             }
 
