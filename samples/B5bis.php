@@ -28,7 +28,7 @@ function getFileContent($path = '/default-domain/workspaces/jkjkj/teezeareate.13
 
     $eurl = explode("/", $path);
     $temp = str_replace(" ", "", end($eurl));
-    $client = new PhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
+    $client = new NuxeoPhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
     $session = $client->getSession('Administrator', 'Administrator');
     $answer = $session->newRequest("Chain.getDocContent")->set('context', 'path', $path)->sendRequest();
 

@@ -35,7 +35,7 @@ Execute a SELECT * FROM Document WHERE ecm:fulltext = '". $research ."' query to
 
 function fullTextSearch($research) {
 
-    $client = new PhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
+    $client = new NuxeoPhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
 
     $session = $client->getSession('Administrator', 'Administrator');
 
