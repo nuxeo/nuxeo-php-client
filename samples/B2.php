@@ -53,7 +53,7 @@ function fullTextSearch($research) {
         echo '<td> ' . current($documentsArray)->getType() . '</td>';
         echo '<td> ' . current($documentsArray)->getState() . '</td>';
         echo '<td> ' . current($documentsArray)->getTitle() . '</td>';
-        echo '<td><form id="test" action="../tests/B5bis.php" method="post" >';
+        echo '<td><form id="test" action="./B5bis.php" method="post" >';
         echo '<input type="hidden" name="data" value="' .
              current($documentsArray)->getPath() . '"/>';
         echo '<input type="submit" value="download"/>';
