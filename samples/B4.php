@@ -43,11 +43,11 @@ the blob path field to it.<br/>
 
                 $session = $client->getSession('Administrator', 'Administrator');
 
-                $answer = $session->newRequest("Document.Query")->set('params', 'query', "SELECT * FROM Workspace")->setSchema($propertiesSchema)->sendRequest();
+                $answer = $session->newRequest("Document.Query")->set('params', 'query', "SELECT * FROM Workspace")->sendRequest();
 
                 $array = $answer->getDocumentList();
                 $value = sizeof($array);
-                echo '<select name="TargetDocumentPath">';
+                echo '<select name="TargetNuxeoDocumentPath">';
                 for ($test = 0; $test < $value; $test++) {
                     echo '<option value="' . current($array)->getPath() . '">' . current($array)->getTitle() . '</option>';
                     next($array);
@@ -69,22 +69,23 @@ the blob path field to it.<br/>
  * @param String $filePath contains the path of the folder where the fille holding the blob will be created
  * @param String $blobtype contains the type of the blob (given by the $_FILES['blobPath']['type'])
  */
-function attachBlob($blob = '../test.txt', $filePath = '/default-domain/workspaces/jkjkj/teezeareate.1304515647395', $blobtype = 'application/binary') {
+function attachBlob($blob = '../test.txt', $filePath = '/default-domain/workspaces/document', $blobtype = 'application/binary') {
 
     //only works on LINUX / MAC
     // We get the name of the file to use it for the name of the document
     $ename = explode("/", $blob);
-
+    $filename = end($ename);
     $client = new NuxeoPhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
 
-    $session = $client->getNuxeoSession('Administrator', 'Administrator');
+    $session = $client->getSession('Administrator', 'Administrator');
 
+    $properties = "dc:title=". $filename;
 
     //We create the document that will hold the file
-    $answer = $session->newRequest("NuxeoDocument.Create")->set('input', 'doc:' . $filePath)->set('params', 'type', 'File')->set('params', 'name', end($ename))->sendRequest();
+    $answer = $session->newRequest("Document.Create")->set('input', 'doc:' . $filePath)->set('params', 'type', 'File')->set('params', 'name', end($ename))->set('params', 'properties', $properties)->sendRequest();
 
     //We upload the file
-    $answer = $session->newRequest("Blob.Attach")->set('params', 'document', $answer->getNuxeoDocument(0)->getPath())
+    $answer = $session->newRequest("Blob.Attach")->set('params', 'document', $answer->getDocument(0)->getPath())
             ->loadBlob($blob, $blobtype)
             ->sendRequest();
 }
