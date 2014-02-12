@@ -176,11 +176,13 @@ class NuxeoDocuments {
         $test = true;
         if (!empty($newDocList['entries'])) {
             while (false !== $test) {
-                $this->documentsList[] = new NuxeoDocument(current($newDocList['entries']));
+            	if (is_array(current($newDocList['entries']))) {
+                    $this->documentsList[] = new NuxeoDocument(current($newDocList['entries']));
+            	}
                 $test = each($newDocList['entries']);
             }
             $test = sizeof($this->documentsList);
-            unset($this->documentsList[$test - 1]);
+            unset($this->documentsList[$test]);
         } elseif (!empty($newDocList['uid'])) {
             $this->documentsList[] = new NuxeoDocument($newDocList);
         } elseif (is_array($newDocList)) {
