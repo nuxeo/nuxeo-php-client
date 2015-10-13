@@ -40,12 +40,12 @@
         </tr>
     </table>
 </form><?php
-    include ('../NuxeoAutomationClient/NuxeoAutomationAPI.php');
+include ('../vendor/autoload.php');
 
 function GetBlob($path = '/default-domain/workspaces/jkjkj/test2.rtf', $blobtype = 'application/binary') {
     $eurl = explode("/", $path);
 
-    $client = new NuxeoPhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
+    $client = new \Nuxeo\Automation\Client\NuxeoPhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
 
     $session = $client->GetSession('Administrator', 'Administrator');
 

@@ -31,11 +31,11 @@ Execute a SELECT * FROM Document WHERE ecm:fulltext = '". $research ."' query to
 </form>
 <br/>
 <?php
-    include ('../NuxeoAutomationClient/NuxeoAutomationAPI.php');
+include ('../vendor/autoload.php');
 
 function fullTextSearch($research) {
 
-    $client = new NuxeoPhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
+    $client = new \Nuxeo\Automation\Client\NuxeoPhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
 
     $session = $client->getSession('Administrator', 'Administrator');
 

@@ -1,3 +1,4 @@
+<?php
 /*
  * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
@@ -15,22 +16,44 @@
  *     Pierre-Gildas MILLON <pgmillon@nuxeo.com>
  */
 
-@CHARSET "UTF-8";
 
-h1 {
-	text-align: center;
-	font-family: "Arial-Black", Arial, Verdanna, serif;
-	font-size: large;
-}
+namespace Nuxeo\Automation\Client;
 
-description {
-	margin-left: 30px;
-	margin-bottom: 20px;
-	font-family: "Times new Roman", Arial, Verdanna, serif;
-	display: block;
-}
 
-table {
-	margin-left: 50px;
-	margin-right: 40%;
+class BasicAuth {
+
+  /**
+   * @var string
+   */
+  protected $username;
+
+  /**
+   * @var string
+   */
+  protected $password;
+
+  /**
+   * BasicAuth constructor.
+   * @param $username
+   * @param $password
+   */
+  public function __construct($username, $password) {
+    $this->username = $username;
+    $this->password = $password;
+  }
+
+  /**
+   * @return string
+   */
+  public function getUsername() {
+    return $this->username;
+  }
+
+  /**
+   * @return string
+   */
+  public function getPassword() {
+    return $this->password;
+  }
+
 }

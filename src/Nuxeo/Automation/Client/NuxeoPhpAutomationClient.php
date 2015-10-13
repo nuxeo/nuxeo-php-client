@@ -1,3 +1,4 @@
+<?php
 /*
  * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
@@ -15,22 +16,31 @@
  *     Pierre-Gildas MILLON <pgmillon@nuxeo.com>
  */
 
-@CHARSET "UTF-8";
+namespace Nuxeo\Automation\Client;
 
-h1 {
-	text-align: center;
-	font-family: "Arial-Black", Arial, Verdanna, serif;
-	font-size: large;
-}
 
-description {
-	margin-left: 30px;
-	margin-bottom: 20px;
-	font-family: "Times new Roman", Arial, Verdanna, serif;
-	display: block;
-}
+/**
+ * Class NuxeoPhpAutomationClient
+ * @package Nuxeo\Automation\Client
+ */
+class NuxeoPhpAutomationClient {
 
-table {
-	margin-left: 50px;
-	margin-right: 40%;
+  protected $url;
+
+  /**
+   * @param string $url
+   */
+  public function __construct($url = 'http://localhost:8080/nuxeo/site/automation') {
+    $this->url = $url;
+  }
+
+  /**
+   * @param string $username
+   * @param string $password
+   * @return NuxeoSession
+   */
+  public function getSession($username = 'Administrator', $password = 'Administrator') {
+    $session = new NuxeoSession($this->url, new BasicAuth($username, $password));
+    return $session;
+  }
 }

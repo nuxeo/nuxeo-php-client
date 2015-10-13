@@ -32,12 +32,12 @@ Execute a dc:created query to nuxeo. Fill the blank with a date format Y/M/D
 <br/>
 
 <?php
-    include ('../NuxeoAutomationClient/NuxeoAutomationAPI.php');
+include ('../vendor/autoload.php');
 
 function DateSearch($date) {
-    $utilities = new NuxeoUtilities();
+    $utilities = new \Nuxeo\Automation\Client\NuxeoUtilities();
 
-    $client = new NuxeoPhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
+    $client = new \Nuxeo\Automation\Client\NuxeoPhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
 
     $session = $client->getSession('Administrator', 'Administrator');
 
@@ -68,7 +68,7 @@ function DateSearch($date) {
 if (!isset($_POST['date']) OR empty($_POST['date'])) {
     echo 'date is empty';
 } else {
-    $top = new NuxeoUtilities();
+    $top = new \Nuxeo\Automation\Client\NuxeoUtilities();
 
     $date = $top->dateConverterInputToPhp($_POST['date']);
 

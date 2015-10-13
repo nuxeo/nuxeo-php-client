@@ -36,11 +36,11 @@ with the type of schema to output (if left blank, print all properties)<br/>
 </form>
 <br/>
 <?php
-    include ('../NuxeoAutomationClient/NuxeoAutomationAPI.php');
+include ('../vendor/autoload.php');
 
 function openDocumentPropeties($path, $propertiesSchema = '*') {
 
-    $client = new NuxeoPhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
+    $client = new \Nuxeo\Automation\Client\NuxeoPhpAutomationClient('http://172.17.42.1:8080/nuxeo/site/automation');
 
     $session = $client->getSession('Administrator', 'Administrator');
 
@@ -61,7 +61,7 @@ function openDocumentPropeties($path, $propertiesSchema = '*') {
         echo '<td> ' . current($documentsArray)->getTitle() . '</td>';
         echo '<td> ' . current($documentsArray)->getProperty('dc:description') . '</td>';
         echo '<td> ' . current($documentsArray)->getProperty('dc:creator') . '</td>';
-        echo '<td><form id="test" action="../tests/B5bis.php" method="post" >';
+        echo '<td><form id="test" action="../samples/B5bis.php" method="post" >';
         echo '<input type="hidden" name="data" value="' .
              current($documentsArray)->getPath() . '"/>';
         echo '<input type="submit" value="download"/>';

@@ -37,9 +37,9 @@ the blob path field to it.<br/>
             <td>File Path</td>
             <td><?php
 
-                include ('../NuxeoAutomationClient/NuxeoAutomationAPI.php');
+                include ('../vendor/autoload.php');
 
-                $client = new NuxeoPhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
+                $client = new \Nuxeo\Automation\Client\NuxeoPhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
 
                 $session = $client->getSession('Administrator', 'Administrator');
 
@@ -75,7 +75,7 @@ function attachBlob($blob = '../test.txt', $filePath = '/default-domain/workspac
     // We get the name of the file to use it for the name of the document
     $ename = explode("/", $blob);
     $filename = end($ename);
-    $client = new NuxeoPhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
+    $client = new \Nuxeo\Automation\Client\NuxeoPhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
 
     $session = $client->getSession('Administrator', 'Administrator');
 
