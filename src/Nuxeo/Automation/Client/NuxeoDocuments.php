@@ -69,6 +69,10 @@ class NuxeoDocuments {
     echo '</table>';
   }
 
+  /**
+   * @param $number
+   * @return NuxeoDocument|null
+   */
   public function getDocument($number) {
     $value = sizeof($this->documentsList);
     if ($number < $value AND $number >= 0)

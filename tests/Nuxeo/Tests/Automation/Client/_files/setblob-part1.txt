@@ -1,0 +1,6 @@
+Content-Type: application/json+nxrequest; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Content-ID: request
+Content-Length:104
+
+{"params":{"document":{"entity-type":"string","value":"/default-domain/workspaces/MyWorkspace/MyFile"}}}

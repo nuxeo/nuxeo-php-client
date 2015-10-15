@@ -22,6 +22,6 @@
     "psr-4": { "Nuxeo\\": "src/Nuxeo" }
   },
   "autoload-dev" : {
-    "psr-4": { "Nuxeo\\Tests\\" : "tests/Silex/Tests" }
+    "psr-4": { "Nuxeo\\Tests\\" : "tests/Nuxeo/Tests" }
   }
 }
