@@ -37,7 +37,7 @@ include ('../vendor/autoload.php');
 function DateSearch($date) {
     $utilities = new \Nuxeo\Automation\Client\NuxeoUtilities();
 
-    $client = new \Nuxeo\Automation\Client\NuxeoPhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
+    $client = new \Nuxeo\Automation\Client\NuxeoPhpAutomationClient('http://nuxeo:8080/nuxeo/site/automation');
 
     $session = $client->getSession('Administrator', 'Administrator');
 

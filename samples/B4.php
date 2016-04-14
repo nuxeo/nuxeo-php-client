@@ -75,7 +75,7 @@ function attachBlob($blob = '../test.txt', $filePath = '/default-domain/workspac
     // We get the name of the file to use it for the name of the document
     $ename = explode("/", $blob);
     $filename = end($ename);
-    $client = new \Nuxeo\Automation\Client\NuxeoPhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
+    $client = new \Nuxeo\Automation\Client\NuxeoPhpAutomationClient('http://nuxeo:8080/nuxeo/site/automation');
 
     $session = $client->getSession('Administrator', 'Administrator');
 

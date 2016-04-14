@@ -27,7 +27,7 @@ include ('../vendor/autoload.php');
 function getFileContent($path = '/default-domain/workspaces/jkjkj/teezeareate.1304515647395') {
     $eurl = explode("/", $path);
     $temp = str_replace(" ", "", end($eurl));
-    $client = new \Nuxeo\Automation\Client\NuxeoPhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
+    $client = new \Nuxeo\Automation\Client\NuxeoPhpAutomationClient('http://nuxeo:8080/nuxeo/site/automation');
     $session = $client->getSession('Administrator', 'Administrator');
     $answer = $session->newRequest("Blob.Get")->set('input', 'doc:'. $path)->sendRequest();
 
