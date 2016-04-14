@@ -70,7 +70,7 @@ if (!isset($_POST['date']) OR empty($_POST['date'])) {
 } else {
     $top = new \Nuxeo\Automation\Client\NuxeoUtilities();
 
-    $date = $top->dateConverterInputToPhp($_POST['date']);
+    $date = DateTime::createFromFormat("Y/m/d", $_POST['date']);
 
     dateSearch($date);
 }
