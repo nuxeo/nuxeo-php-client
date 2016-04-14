@@ -60,6 +60,22 @@ class TestNuxeoClient extends \PHPUnit_Framework_TestCase {
     $this->assertNotNull($request);
   }
 
+  /**
+   * @expectedException \Nuxeo\Automation\Client\Internals\NuxeoClientException
+   */
+  public function testUnauthorized() {
+    $client = new NuxeoPhpAutomationClient($this->server->getUrl());
+    $session = $client->getSession(self::LOGIN, null);
+
+    $this->server->enqueue(array(
+      new Response(401, null, "Unauthorized")
+    ));
+
+    $answer = $session->newRequest("Document.Query")->sendRequest();
+
+    $this->assertEquals(1, count($this->server->getReceivedRequests()));
+  }
+
   public function testListDocuments() {
     $client = new NuxeoPhpAutomationClient($this->server->getUrl());
     $session = $client->getSession(self::LOGIN, self::PASSWORD);
@@ -108,6 +124,18 @@ class TestNuxeoClient extends \PHPUnit_Framework_TestCase {
 
     $this->assertEquals(self::MYFILE_CONTENT, $answer);
 
+  }
+
+  /**
+   * @expectedException \Nuxeo\Automation\Client\Internals\NuxeoClientException
+   */
+  public function testCannotLoadBlob() {
+    $client = new NuxeoPhpAutomationClient($this->server->getUrl());
+    $session = $client->getSession(self::LOGIN, self::PASSWORD);
+
+    $request = $session->newRequest("Blob.Attach")->loadBlob("void");
+
+    $this->assertEquals(0, count($this->server->getReceivedRequests()));
   }
 
   public function testLoadBlob() {

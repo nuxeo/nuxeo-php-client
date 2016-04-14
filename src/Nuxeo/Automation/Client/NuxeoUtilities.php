@@ -18,6 +18,8 @@
 
 namespace Nuxeo\Automation\Client;
 
+use Nuxeo\Automation\Client\Internals\NuxeoClientException;
+
 
 /**
  * Contains Utilities such as date wrappers
@@ -62,7 +64,7 @@ class NuxeoUtilities {
       ->sendRequest();
 
     if (!isset($answer) OR $answer == false)
-      echo '$answer is not set';
+      throw new NuxeoClientException('$answer is not set');
     else {
       header('Content-Description: File Transfer');
       header('Content-Type: application/octet-stream');

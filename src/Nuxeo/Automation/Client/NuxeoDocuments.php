@@ -18,6 +18,8 @@
 
 namespace Nuxeo\Automation\Client;
 
+use Nuxeo\Automation\Client\Internals\NuxeoClientException;
+
 
 /**
  * Documents class
@@ -45,7 +47,7 @@ class NuxeoDocuments {
     } elseif (!empty($newDocList['uid'])) {
       $this->documentsList[] = new NuxeoDocument($newDocList);
     } elseif (is_array($newDocList)) {
-      echo 'file not found';
+      throw new NuxeoClientException('file not found');
     } else {
       return $newDocList;
     }

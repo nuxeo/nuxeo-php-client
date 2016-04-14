@@ -22,6 +22,7 @@ use Guzzle\Http\Exception\RequestException;
 use Guzzle\Http\Message\EntityEnclosingRequest;
 use Guzzle\Http\Message\RequestInterface;
 use Guzzle\Http\Url;
+use Nuxeo\Automation\Client\Internals\NuxeoClientException;
 use Nuxeo\Automation\Client\NuxeoDocuments;
 
 /**
@@ -197,10 +198,10 @@ class NuxeoRequest {
     }
     $eadresse = explode("/", $path);
 
-    $fp = fopen($path, "r");
+    $fp = @fopen($path, "r");
 
     if (!$fp)
-      echo 'error loading the file';
+      throw new NuxeoClientException('error loading the file');
 
     $futurBlob = stream_get_contents($fp);
     $temp = end($eadresse);
@@ -223,7 +224,7 @@ class NuxeoRequest {
         $response = $this->request->send();
         $answer = $response->getBody(true);
       } catch(RequestException $ex) {
-        echo 'Error Server';
+        throw new NuxeoClientException("error", NuxeoClientException::INTERNAL_ERROR_STATUS, $ex);
       }
 
       if (null == json_decode($answer, true)) {
