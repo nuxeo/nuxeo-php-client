@@ -1,0 +1,13 @@
+{
+  "entity-type": "document",
+  "repository": null,
+  "uid": "Administrator",
+  "path": null,
+  "type": "user",
+  "state": null,
+  "parentRef": null,
+  "isCheckedOut": true,
+  "changeToken": null,
+  "title": "Administrator",
+  "facets": []
+}

@@ -58,7 +58,7 @@ class NuxeoRequest {
 
     $this->url = $url;
     $this->request = $request;
-    $this->finalRequest = '{}';
+    $this->finalRequest = array();
     $this->method = 'POST';
     $this->iterationNumber = 0;
     $this->blobList = null;
@@ -216,7 +216,7 @@ class NuxeoRequest {
    */
   public function sendRequest() {
     if (!$this->blobList) {
-      $content = str_replace('\/', '/', json_encode($this->finalRequest));
+      $content = str_replace('\/', '/', json_encode($this->finalRequest, JSON_FORCE_OBJECT));
       $this->request->setBody($content);
 
       $answer = '';

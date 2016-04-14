@@ -55,9 +55,17 @@ class TestNuxeoClient extends \PHPUnit_Framework_TestCase {
   public function testGetRequest() {
     $client = new NuxeoPhpAutomationClient($this->server->getUrl());
     $session = $client->getSession(self::LOGIN, self::PASSWORD);
-    $request = $session->newRequest("Document.Query");
 
+    $this->server->enqueue(array(
+      new Response(200, null, file_get_contents(__DIR__.'/_files/user.json'))
+    ));
+
+    $request = $session->newRequest("User.Get");
     $this->assertNotNull($request);
+    $answer = $request->sendRequest();
+    $userDoc = $answer->getDocument(0);
+    $this->assertNotNull($userDoc);
+    $this->assertEquals(self::LOGIN, $userDoc->getUid());
   }
 
   /**
