@@ -1,4 +1,3 @@
 .PHONY: test
 test:
-	phpunit tests/tests.php
-
+	phpunit --bootstrap vendor/autoload.php tests/Nuxeo/Tests/Automation/Client/TestNuxeoClient.php

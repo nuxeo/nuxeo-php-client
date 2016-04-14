@@ -48,7 +48,7 @@ class TestNuxeoClient extends \PHPUnit_Framework_TestCase {
   }
 
   public function readPartFromFile($path) {
-    $part = file_get_contents($path);
+    $part = file_get_contents(__DIR__."/".$path);
     return str_replace(PHP_EOL, "\r\n", $part);
   }
 
@@ -65,7 +65,7 @@ class TestNuxeoClient extends \PHPUnit_Framework_TestCase {
     $session = $client->getSession(self::LOGIN, self::PASSWORD);
 
     $this->server->enqueue(array(
-      new Response(200, null, file_get_contents('_files/document-list.json'))
+      new Response(200, null, file_get_contents(__DIR__.'/_files/document-list.json'))
     ));
 
       $answer = $session->newRequest("Document.Query")
@@ -119,7 +119,7 @@ class TestNuxeoClient extends \PHPUnit_Framework_TestCase {
         "entity-type" => "string",
         "value" => self::MYFILE_DOCPATH
       ))
-      ->loadBlob(self::NEWFILE_PATH, self::NEWFILE_TYPE);
+      ->loadBlob(__DIR__."/".self::NEWFILE_PATH, self::NEWFILE_TYPE);
 
     $blobList = $request->getBlobList();
 
@@ -132,7 +132,7 @@ class TestNuxeoClient extends \PHPUnit_Framework_TestCase {
     $this->assertEquals(3, count($blob));
     $this->assertEquals(self::NEWFILE_NAME, $blob[0]);
     $this->assertEquals(self::NEWFILE_TYPE, $blob[1]);
-    $this->assertEquals(file_get_contents(self::NEWFILE_PATH), $blob[2]);
+    $this->assertEquals(file_get_contents(__DIR__."/".self::NEWFILE_PATH), $blob[2]);
   }
 
   public function testAttachBlob() {
@@ -148,7 +148,7 @@ class TestNuxeoClient extends \PHPUnit_Framework_TestCase {
         "entity-type" => "string",
         "value" => self::MYFILE_DOCPATH
       ))
-      ->loadBlob(self::NEWFILE_PATH, self::NEWFILE_TYPE)
+      ->loadBlob(__DIR__."/".self::NEWFILE_PATH, self::NEWFILE_TYPE)
       ->sendRequest();
 
     $requests = $this->server->getReceivedRequests(true);
@@ -171,7 +171,6 @@ class TestNuxeoClient extends \PHPUnit_Framework_TestCase {
 
     $this->assertContains($this->readPartFromFile('_files/setblob-part1.txt'), $request->getBody()->__toString());
     $this->assertContains($this->readPartFromFile('_files/setblob-part2.txt'), $request->getBody()->__toString());
-
   }
 
 }
