@@ -40,13 +40,16 @@ include ('../vendor/autoload.php');
 
 function openDocumentPropeties($path, $propertiesSchema = '*') {
 
-    $client = new \Nuxeo\Automation\Client\NuxeoPhpAutomationClient('http://nuxeo:8080/nuxeo/site/automation');
+    $client = new \Nuxeo\Client\Api\NuxeoClient('http://nuxeo:8080/nuxeo', 'Administrator', 'Administrator');
 
-    $session = $client->getSession('Administrator', 'Administrator');
+    /** @var \Nuxeo\Client\Api\Objects\Documents $documents */
+    $documents = $client
+      ->schemas($propertiesSchema)
+      ->automation("Document.Query")
+      ->param('query', "SELECT * FROM Document WHERE ecm:path = '" . $path . "'")
+      ->execute(\Nuxeo\Client\Api\Objects\Documents::class);
 
-    $answer = $session->newRequest("Document.Query")->set('params', 'query', "SELECT * FROM Document WHERE ecm:path = '" . $path . "'")->setSchema($propertiesSchema)->sendRequest();
-
-    $documentsArray = $answer->getDocumentList();
+    $documentsArray = $documents->getDocuments();
     $value = sizeof($documentsArray);
     echo '<table>';
     echo '<tr><TH>uid</TH><TH>Path</TH>

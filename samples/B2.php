@@ -35,13 +35,15 @@ include ('../vendor/autoload.php');
 
 function fullTextSearch($research) {
 
-    $client = new \Nuxeo\Automation\Client\NuxeoPhpAutomationClient('http://nuxeo:8080/nuxeo/site/automation');
+    $client = new \Nuxeo\Client\Api\NuxeoClient('http://nuxeo:8080/nuxeo', 'Administrator', 'Administrator');
 
-    $session = $client->getSession('Administrator', 'Administrator');
+    /** @var \Nuxeo\Client\Api\Objects\Documents $documents */
+    $documents = $client
+      ->automation("Document.Query")
+      ->param('query', "SELECT * FROM Document WHERE ecm:fulltext = '" . $research . "'")
+      ->execute(\Nuxeo\Client\Api\Objects\Documents::class);
 
-    $answer = $session->newRequest("Document.Query")->set('params', 'query', "SELECT * FROM Document WHERE ecm:fulltext = '" . $research . "'")->sendRequest();
-
-    $documentsArray = $answer->getDocumentList();
+    $documentsArray = $documents->getDocuments();
     $value = sizeof($documentsArray);
     echo '<table>';
     echo '<tr><TH>uid</TH><TH>Path</TH>

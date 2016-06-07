@@ -35,15 +35,17 @@ Execute a dc:created query to nuxeo. Fill the blank with a date format Y/M/D
 include ('../vendor/autoload.php');
 
 function DateSearch($date) {
-    $utilities = new \Nuxeo\Automation\Client\NuxeoUtilities();
+    $utilities = new \Nuxeo\Client\NuxeoUtilities();
 
-    $client = new \Nuxeo\Automation\Client\NuxeoPhpAutomationClient('http://nuxeo:8080/nuxeo/site/automation');
+    $client = new \Nuxeo\Client\Api\NuxeoClient('http://nuxeo:8080/nuxeo', 'Administrator', 'Administrator');
 
-    $session = $client->getSession('Administrator', 'Administrator');
+    /** @var \Nuxeo\Client\Api\Objects\Documents $documents */
+    $documents = $client
+      ->automation("Document.Query")
+      ->param('query', "SELECT * FROM Document WHERE dc:created >= DATE '" . $utilities->dateConverterPhpToNuxeo($date) . "'")
+      ->execute(\Nuxeo\Client\Api\Objects\Documents::class);
 
-    $answer = $session->newRequest("Document.Query")->set('params', 'query', "SELECT * FROM Document WHERE dc:created >= DATE '" . $utilities->dateConverterPhpToNuxeo($date) . "'")->sendRequest();
-
-    $documentsArray = $answer->getDocumentList();
+    $documentsArray = $documents->getDocuments();
     $value = sizeof($documentsArray);
     echo '<table>';
     echo '<tr><TH>uid</TH><TH>Path</TH>
@@ -55,7 +57,7 @@ function DateSearch($date) {
         echo '<td> ' . current($documentsArray)->getType() . '</td>';
         echo '<td> ' . current($documentsArray)->getState() . '</td>';
         echo '<td> ' . current($documentsArray)->getTitle() . '</td>';
-        echo '<td><form id="test" action="../tests/B5bis.php" method="post" >';
+        echo '<td><form id="test" action="../samples/B5bis.php" method="post" >';
         echo '<input type="hidden" name="data" value="' .
              current($documentsArray)->getPath() . '"/>';
         echo '<input type="submit" value="download"/>';
@@ -68,11 +70,11 @@ function DateSearch($date) {
 if (!isset($_POST['date']) OR empty($_POST['date'])) {
     echo 'date is empty';
 } else {
-    $top = new \Nuxeo\Automation\Client\NuxeoUtilities();
+    $top = new \Nuxeo\Client\NuxeoUtilities();
 
     $date = DateTime::createFromFormat("Y/m/d", $_POST['date']);
 
-    dateSearch($date);
+    DateSearch($date);
 }
 ?></body>
 </html>

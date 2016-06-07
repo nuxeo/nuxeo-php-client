@@ -1,6 +1,6 @@
 <?php
-/*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
+/**
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -16,12 +16,14 @@
  *     Pierre-Gildas MILLON <pgmillon@nuxeo.com>
  */
 
-namespace Nuxeo\Tests\Automation\Client;
+namespace Nuxeo\Tests\Client;
 
 use Guzzle\Http\Message\EntityEnclosingRequest;
 use Guzzle\Http\Message\Response;
 use Guzzle\Tests\Http\Server;
-use Nuxeo\Automation\Client\NuxeoPhpAutomationClient;
+use Nuxeo\Client\Api\NuxeoClient;
+use Nuxeo\Client\Api\Objects\Document;
+use Nuxeo\Client\Api\Objects\Documents;
 
 class TestNuxeoClient extends \PHPUnit_Framework_TestCase {
 
@@ -53,55 +55,50 @@ class TestNuxeoClient extends \PHPUnit_Framework_TestCase {
   }
 
   public function testGetRequest() {
-    $client = new NuxeoPhpAutomationClient($this->server->getUrl());
-    $session = $client->getSession(self::LOGIN, self::PASSWORD);
+    $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, self::PASSWORD);
 
     $this->server->enqueue(array(
-      new Response(200, null, file_get_contents(__DIR__.'/_files/user.json'))
+      new Response(200, null, file_get_contents(__DIR__ . '/_files/user.json'))
     ));
 
-    $request = $session->newRequest("User.Get");
-    $this->assertNotNull($request);
-    $answer = $request->sendRequest();
-    $userDoc = $answer->getDocument(0);
-    $this->assertNotNull($userDoc);
+    $userDoc = $client->automation("User.Get")->execute(Document::class);
+    $this->assertInstanceOf(Document::class, $userDoc);
     $this->assertEquals(self::LOGIN, $userDoc->getUid());
   }
 
   /**
-   * @expectedException \Nuxeo\Automation\Client\Internals\NuxeoClientException
+   * @expectedException \Nuxeo\Client\Internals\NuxeoClientException
    */
   public function testUnauthorized() {
-    $client = new NuxeoPhpAutomationClient($this->server->getUrl());
-    $session = $client->getSession(self::LOGIN, null);
+    $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, null);
 
     $this->server->enqueue(array(
       new Response(401, null, "Unauthorized")
     ));
 
-    $answer = $session->newRequest("Document.Query")->sendRequest();
+    $client->automation("Document.Query")->execute(Document::class);
 
     $this->assertEquals(1, count($this->server->getReceivedRequests()));
   }
 
   public function testListDocuments() {
-    $client = new NuxeoPhpAutomationClient($this->server->getUrl());
-    $session = $client->getSession(self::LOGIN, self::PASSWORD);
+    $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, self::PASSWORD);
 
     $this->server->enqueue(array(
-      new Response(200, null, file_get_contents(__DIR__.'/_files/document-list.json'))
+      new Response(200, null, file_get_contents(__DIR__ . '/_files/document-list.json'))
     ));
 
-      $answer = $session->newRequest("Document.Query")
-      ->set('params', 'query', "SELECT * FROM Document")
-      ->setSchema("*")
-      ->sendRequest();
+    /** @var Documents $documents */
+    $documents = $client
+      ->schemas("*")
+      ->automation("Document.Query")
+      ->param('query', "SELECT * FROM Document")
+      ->execute(Documents::class);
 
-    $documentsArray = $answer->getDocumentList();
+    $this->assertInstanceOf(Documents::class, $documents);
+    $this->assertEquals(5, $documents->size());
 
-    $this->assertEquals(5, sizeof($documentsArray));
-
-    foreach ($documentsArray as $document) {
+    foreach ($documents->getDocuments() as $document) {
       $this->assertNotNull($document->getUid());
       $this->assertNotNull($document->getPath());
       $this->assertNotNull($document->getType());
@@ -110,7 +107,7 @@ class TestNuxeoClient extends \PHPUnit_Framework_TestCase {
       $this->assertNotNull($document->getProperty('dc:created'));
     }
 
-    $domain = $answer->getDocument(0);
+    $domain = $documents->getDocument(0);
     $this->assertNotNull($domain);
     $this->assertEquals('Domain', $domain->getType());
     $this->assertEquals('Domain', $domain->getProperty('dc:title'));
@@ -119,14 +116,13 @@ class TestNuxeoClient extends \PHPUnit_Framework_TestCase {
   }
 
   public function testGetBlob() {
-    $client = new NuxeoPhpAutomationClient($this->server->getUrl());
-    $session = $client->getSession(self::LOGIN, self::PASSWORD);
+    $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, self::PASSWORD);
 
     $this->server->enqueue(array(
       new Response(200, null, self::MYFILE_CONTENT)
     ));
 
-    $answer = $session->newRequest("Blob.Get")
+    $answer = $client->newRequest("Blob.Get")
       ->set('input', 'doc:'.self::MYFILE_DOCPATH)
       ->sendRequest();
 
@@ -135,22 +131,20 @@ class TestNuxeoClient extends \PHPUnit_Framework_TestCase {
   }
 
   /**
-   * @expectedException \Nuxeo\Automation\Client\Internals\NuxeoClientException
+   * @expectedException \Nuxeo\Client\Internals\NuxeoClientException
    */
   public function testCannotLoadBlob() {
-    $client = new NuxeoPhpAutomationClient($this->server->getUrl());
-    $session = $client->getSession(self::LOGIN, self::PASSWORD);
+    $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, self::PASSWORD);
 
-    $request = $session->newRequest("Blob.Attach")->loadBlob("void");
+    $request = $client->newRequest("Blob.Attach")->loadBlob("void");
 
     $this->assertEquals(0, count($this->server->getReceivedRequests()));
   }
 
   public function testLoadBlob() {
-    $client = new NuxeoPhpAutomationClient($this->server->getUrl());
-    $session = $client->getSession(self::LOGIN, self::PASSWORD);
+    $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, self::PASSWORD);
 
-    $request = $session->newRequest("Blob.Attach")
+    $request = $client->newRequest("Blob.Attach")
       ->set('params', 'document', array(
         "entity-type" => "string",
         "value" => self::MYFILE_DOCPATH
@@ -172,14 +166,13 @@ class TestNuxeoClient extends \PHPUnit_Framework_TestCase {
   }
 
   public function testAttachBlob() {
-    $client = new NuxeoPhpAutomationClient($this->server->getUrl());
-    $session = $client->getSession(self::LOGIN, self::PASSWORD);
+    $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, self::PASSWORD);
 
     $this->server->enqueue(array(
       new Response(200)
     ));
 
-    $session->newRequest("Blob.Attach")
+    $client->newRequest("Blob.Attach")
       ->set('params', 'document', array(
         "entity-type" => "string",
         "value" => self::MYFILE_DOCPATH
