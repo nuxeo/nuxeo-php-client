@@ -21,27 +21,13 @@
  * @author Pierre-Gildas MILLON <pgmillon@gmail.com>
  */
 
-namespace Nuxeo\Client\Api;
+namespace Nuxeo\Client\Api\Marshaller;
 
 
-class Constants {
+interface NuxeoMarshaller {
 
-  const API_PATH = 'api/v1/';
+  public function read($in);
 
-  const AUTOMATION_PATH = Constants::API_PATH.'automation/';
-
-  const HEADER_PROPERTIES = 'X-NXProperties';
-
-  const HEADER_VOID_OPERATION = 'X-NXVoidOperation';
-
-  const CONTENT_TYPE_JSON = "application/json";
-
-  const CONTENT_TYPE_JSON_NXENTITY = "application/json+nxentity";
-
-  const ENTITY_TYPE_DOCUMENT = 'document';
-
-  const ENTITY_TYPE_DOCUMENTS = 'documents';
-
-  const ENTITY_TYPE_OPERATION = 'operation';
+  public function write($object);
 
 }

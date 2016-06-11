@@ -26,8 +26,11 @@ use Guzzle\Http\Message\Request;
 use Guzzle\Http\Message\RequestInterface;
 use Guzzle\Http\Message\Response;
 use Guzzle\Http\Url;
-use Nuxeo\Client\Internals\NuxeoClientException;
+use Nuxeo\Client\Api\Marshaller\DocRefMarshaller;
+use Nuxeo\Client\Api\Marshaller\NuxeoConverter;
+use Nuxeo\Client\Api\Objects\DocRef;
 use Nuxeo\Client\Api\Objects\Operation;
+use Nuxeo\Client\Internals\Spi\NuxeoClientException;
 
 AnnotationRegistry::registerLoader('class_exists');
 
@@ -47,6 +50,11 @@ class NuxeoClient {
   private $httpClient;
 
   /**
+   * @var NuxeoConverter
+   */
+  private $converter;
+
+  /**
    * @param string $url
    * @param string $username
    * @param string $password
@@ -54,6 +62,9 @@ class NuxeoClient {
   public function __construct($url = 'http://localhost:8080/nuxeo', $username = 'Administrator', $password = 'Administrator') {
     $this->baseUrl = Url::factory($url);
     $this->httpClient = new Client($url);
+    $this->converter = new NuxeoConverter();
+
+    $this->converter->registerMarshaller(DocRef::class, new DocRefMarshaller());
 
     $self = $this;
 
@@ -128,6 +139,13 @@ class NuxeoClient {
     } catch(InvalidArgumentException $ex) {
       throw new NuxeoClientException("error", NuxeoClientException::INTERNAL_ERROR_STATUS, $ex);
     }
+  }
+
+  /**
+   * @return NuxeoConverter
+   */
+  public function getConverter() {
+    return $this->converter;
   }
 
   /**

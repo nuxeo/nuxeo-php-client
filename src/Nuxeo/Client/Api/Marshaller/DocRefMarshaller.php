@@ -16,10 +16,32 @@
  *     Pierre-Gildas MILLON <pgmillon@nuxeo.com>
  */
 
-namespace Nuxeo\Client\Internals;
+/**
+ *
+ * @author Pierre-Gildas MILLON <pgmillon@gmail.com>
+ */
 
-class NuxeoClientException extends \RuntimeException {
+namespace Nuxeo\Client\Api\Marshaller;
 
-  const INTERNAL_ERROR_STATUS = 666;
+
+use Nuxeo\Client\Api\Objects\DocRef;
+
+class DocRefMarshaller implements NuxeoMarshaller {
+
+  /**
+   * @param DocRef $object
+   * @return string
+   */
+  public function write($object) {
+    return 'doc:'.$object->getRef();
+  }
+
+  /**
+   * @param string $in
+   * @return DocRef
+   */
+  public function read($in) {
+    return new DocRef($in);
+  }
 
 }

@@ -21,27 +21,29 @@
  * @author Pierre-Gildas MILLON <pgmillon@gmail.com>
  */
 
-namespace Nuxeo\Client\Api;
+namespace Nuxeo\Client\Internals\Util;
 
 
-class Constants {
+use Guzzle\Stream\Stream;
 
-  const API_PATH = 'api/v1/';
+class IOUtils {
 
-  const AUTOMATION_PATH = Constants::API_PATH.'automation/';
+  /**
+   * @param resource $in
+   * @return \SplFileInfo
+   */
+  public static function copyToTempFile($in) {
+    $fileName = tempnam(sys_get_temp_dir(), 'nx-');
+    $out = fopen($fileName, 'w+');
+    $originalPos = ftell($in);
 
-  const HEADER_PROPERTIES = 'X-NXProperties';
+    fseek($in, 0);
+    stream_copy_to_stream($in, $out, -1, 0);
+    fseek($in, $originalPos);
 
-  const HEADER_VOID_OPERATION = 'X-NXVoidOperation';
+    fclose($out);
 
-  const CONTENT_TYPE_JSON = "application/json";
-
-  const CONTENT_TYPE_JSON_NXENTITY = "application/json+nxentity";
-
-  const ENTITY_TYPE_DOCUMENT = 'document';
-
-  const ENTITY_TYPE_DOCUMENTS = 'documents';
-
-  const ENTITY_TYPE_OPERATION = 'operation';
+    return new \SplFileInfo($fileName);
+  }
 
 }

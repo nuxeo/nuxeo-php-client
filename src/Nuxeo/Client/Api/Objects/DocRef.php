@@ -21,27 +21,32 @@
  * @author Pierre-Gildas MILLON <pgmillon@gmail.com>
  */
 
-namespace Nuxeo\Client\Api;
+namespace Nuxeo\Client\Api\Objects;
 
 
-class Constants {
+use JMS\Serializer\Annotation as Serializer;
 
-  const API_PATH = 'api/v1/';
+class DocRef {
 
-  const AUTOMATION_PATH = Constants::API_PATH.'automation/';
+  /**
+   * @var string
+   * @Serializer\Type("string")
+   */
+  private $ref;
 
-  const HEADER_PROPERTIES = 'X-NXProperties';
+  /**
+   * DocRef constructor.
+   * @param $ref
+   */
+  public function __construct($ref) {
+    $this->ref = $ref;
+  }
 
-  const HEADER_VOID_OPERATION = 'X-NXVoidOperation';
-
-  const CONTENT_TYPE_JSON = "application/json";
-
-  const CONTENT_TYPE_JSON_NXENTITY = "application/json+nxentity";
-
-  const ENTITY_TYPE_DOCUMENT = 'document';
-
-  const ENTITY_TYPE_DOCUMENTS = 'documents';
-
-  const ENTITY_TYPE_OPERATION = 'operation';
+  /**
+   * @return string
+   */
+  public function getRef() {
+    return $this->ref;
+  }
 
 }

@@ -19,9 +19,14 @@
 namespace Nuxeo\Tests\Client;
 
 use Guzzle\Http\Message\EntityEnclosingRequest;
+use Guzzle\Http\Message\EntityEnclosingRequestInterface;
+use Guzzle\Http\Message\RequestInterface;
 use Guzzle\Http\Message\Response;
 use Guzzle\Tests\Http\Server;
+use Nuxeo\Client\Api\Constants;
 use Nuxeo\Client\Api\NuxeoClient;
+use Nuxeo\Client\Api\Objects\Blob;
+use Nuxeo\Client\Api\Objects\DocRef;
 use Nuxeo\Client\Api\Objects\Document;
 use Nuxeo\Client\Api\Objects\Documents;
 
@@ -58,7 +63,7 @@ class TestNuxeoClient extends \PHPUnit_Framework_TestCase {
     $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, self::PASSWORD);
 
     $this->server->enqueue(array(
-      new Response(200, null, file_get_contents(__DIR__ . '/_files/user.json'))
+      new Response(200, array('Content-Type' => Constants::CONTENT_TYPE_JSON), file_get_contents(__DIR__ . '/_files/user.json'))
     ));
 
     $userDoc = $client->automation("User.Get")->execute(Document::class);
@@ -67,13 +72,13 @@ class TestNuxeoClient extends \PHPUnit_Framework_TestCase {
   }
 
   /**
-   * @expectedException \Nuxeo\Client\Internals\NuxeoClientException
+   * @expectedException \Nuxeo\Client\Internals\Spi\NuxeoClientException
    */
   public function testUnauthorized() {
     $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, null);
 
     $this->server->enqueue(array(
-      new Response(401, null, "Unauthorized")
+      new Response(401, array('Content-Type' => Constants::CONTENT_TYPE_JSON), "Unauthorized")
     ));
 
     $client->automation("Document.Query")->execute(Document::class);
@@ -85,7 +90,7 @@ class TestNuxeoClient extends \PHPUnit_Framework_TestCase {
     $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, self::PASSWORD);
 
     $this->server->enqueue(array(
-      new Response(200, null, file_get_contents(__DIR__ . '/_files/document-list.json'))
+      new Response(200, array('Content-Type' => Constants::CONTENT_TYPE_JSON), file_get_contents(__DIR__ . '/_files/document-list.json'))
     ));
 
     /** @var Documents $documents */
@@ -112,7 +117,6 @@ class TestNuxeoClient extends \PHPUnit_Framework_TestCase {
     $this->assertEquals('Domain', $domain->getType());
     $this->assertEquals('Domain', $domain->getProperty('dc:title'));
     $this->assertNull($domain->getProperty('dc:nonexistent'));
-
   }
 
   public function testGetBlob() {
@@ -122,21 +126,25 @@ class TestNuxeoClient extends \PHPUnit_Framework_TestCase {
       new Response(200, null, self::MYFILE_CONTENT)
     ));
 
-    $answer = $client->newRequest("Blob.Get")
-      ->set('input', 'doc:'.self::MYFILE_DOCPATH)
-      ->sendRequest();
+    /** @var Blob $blob */
+    $blob = $client->automation("Blob.Get")
+      ->input(new DocRef(self::MYFILE_DOCPATH))
+      ->execute(Blob::class);
 
-    $this->assertEquals(self::MYFILE_CONTENT, $answer);
+    /** @var EntityEnclosingRequestInterface $request */
+    $request = $this->server->getReceivedRequests(true)[0];
 
+    $this->assertEquals(sprintf('{"params":{},"input":"%s"}', 'doc:'.self::MYFILE_DOCPATH), (string) $request->getBody());
+    $this->assertEquals(self::MYFILE_CONTENT, file_get_contents($blob->getFile()->getPathname()));
   }
 
   /**
-   * @expectedException \Nuxeo\Client\Internals\NuxeoClientException
+   * @expectedException \Nuxeo\Client\Internals\Spi\NuxeoClientException
    */
   public function testCannotLoadBlob() {
     $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, self::PASSWORD);
 
-    $request = $client->newRequest("Blob.Attach")->loadBlob("void");
+    $blob = $client->automation("Blob.Attach")->input(Blob::fromFilename('/void', null))->execute(Blob::class);
 
     $this->assertEquals(0, count($this->server->getReceivedRequests()));
   }
@@ -144,7 +152,7 @@ class TestNuxeoClient extends \PHPUnit_Framework_TestCase {
   public function testLoadBlob() {
     $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, self::PASSWORD);
 
-    $request = $client->newRequest("Blob.Attach")
+    $request = $client->newRequest("Blob.AttachOnDocument")
       ->set('params', 'document', array(
         "entity-type" => "string",
         "value" => self::MYFILE_DOCPATH

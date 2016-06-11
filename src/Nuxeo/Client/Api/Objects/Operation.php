@@ -36,14 +36,9 @@ class Operation extends NuxeoEntity {
   protected $operationId;
 
   /**
-   * @var NuxeoClient
-   */
-  private $nuxeoClient;
-
-  /**
    * @var Url
    */
-  private $apiUrl;
+  protected $apiUrl;
 
   /**
    * @var array
@@ -59,10 +54,9 @@ class Operation extends NuxeoEntity {
    * @param Url $apiUrl
    */
   public function __construct($operationId, $nuxeoClient, $apiUrl) {
-    parent::__construct(Constants::ENTITY_TYPE_OPERATION);
+    parent::__construct(Constants::ENTITY_TYPE_OPERATION, $nuxeoClient);
 
     $this->operationId = $operationId;
-    $this->nuxeoClient = $nuxeoClient;
     $this->apiUrl = $apiUrl;
   }
 
@@ -112,10 +106,11 @@ class Operation extends NuxeoEntity {
    */
   public function execute($clazz) {
     $body = str_replace('\/', '/', json_encode(array(
-      'params' => $this->getParams()
+      'params' => $this->getParams(),
+      'input' => $this->nuxeoClient->getConverter()->write($this->getInput())
     ), JSON_FORCE_OBJECT));
 
-    $response = $this->getNuxeoClient()->post($this->computeRequestUrl(), $body);
+    $response = $this->nuxeoClient->post($this->computeRequestUrl(), $body);
 
     return $this->computeResponse($response, $clazz);
   }
@@ -128,10 +123,10 @@ class Operation extends NuxeoEntity {
   }
 
   /**
-   * @return NuxeoClient
+   * @return mixed
    */
-  protected function getNuxeoClient() {
-    return $this->nuxeoClient;
+  public function getInput() {
+    return $this->input;
   }
 
   /**
