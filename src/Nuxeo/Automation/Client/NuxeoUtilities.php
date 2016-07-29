@@ -25,7 +25,6 @@ use Nuxeo\Automation\Client\Internals\NuxeoClientException;
  * Contains Utilities such as date wrappers
  */
 class NuxeoUtilities {
-  private $ini;
 
   public function dateConverterPhpToNuxeo($date) {
     return date_format($date, 'Y-m-d');
@@ -33,39 +32,44 @@ class NuxeoUtilities {
 
   public function dateConverterNuxeoToPhp($date) {
     $newDate = explode('T', $date);
-    $phpDate = new \DateTime($newDate[0]);
-    return $phpDate;
+    return new \DateTime($newDate[0]);
   }
 
   /**
-   * @param $date
+   * @param string $date
    * @return \DateTime
-   * @deprecated since 1.1.0 please use \DateTime::createFromFormat
+   * @deprecated 1.1.0 please use \DateTime::createFromFormat
    */
   public function dateConverterInputToPhp($date) {
-    return \DateTime::createFromFormat("Y/m/d", $date);
+    return \DateTime::createFromFormat('Y/m/d', $date);
   }
 
   /**
    * Function Used to get Data from Nuxeo, such as a blob. MUST BE PERSONALISED. (Or just move the
    * headers)
    *
-   * @param $path path of the file
+   * @param string $path path of the file
+   * @throws NuxeoClientException
+   * @deprecated Use \Nuxeo\Client\Api\Objects\Blob::fromFilename
    */
   function getFileContent($path) {
 
-    $eurl = explode("/", $path);
+    $eurl = explode('/', $path);
 
     $client = new NuxeoPhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
 
-    $session = $client->getSession('Administrator', 'Administrator');
+    try {
+      $session = $client->getSession('Administrator', 'Administrator');
+    } catch(\Nuxeo\Client\Internals\Spi\NuxeoClientException $ex) {
+      throw new NuxeoClientException($ex->getMessage());
+    }
 
-    $answer = $session->newRequest("Chain.getDocContent")->set('context', 'path' . $path)
+    $answer = $session->newRequest('Chain.getDocContent')->set('context', 'path' . $path)
       ->sendRequest();
 
-    if (!isset($answer) OR $answer == false)
+    if(null === $answer or false === $answer) {
       throw new NuxeoClientException('$answer is not set');
-    else {
+    } else {
       header('Content-Description: File Transfer');
       header('Content-Type: application/octet-stream');
       header('Content-Disposition: attachment; filename=' . end($eurl) . '.pdf');

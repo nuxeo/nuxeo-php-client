@@ -16,15 +16,15 @@
  *     Pierre-Gildas MILLON <pgmillon@nuxeo.com>
  */
 
-/**
- *
- * @author Pierre-Gildas MILLON <pgmillon@gmail.com>
- */
-
 namespace Nuxeo\Client\Api\Objects;
 
 
+use Nuxeo\Client\Internals\Spi\NoSuchFileException;
+use Nuxeo\Client\Internals\Spi\NuxeoClientException;
+
 class Blob extends NuxeoEntity {
+
+  const className = __CLASS__;
 
   /**
    * @var string
@@ -52,9 +52,15 @@ class Blob extends NuxeoEntity {
    * @param string $filename
    * @param string $mimeType
    * @return Blob
+   * @throws NuxeoClientException
    */
   public static function fromFilename($filename, $mimeType) {
-    return new Blob(new \SplFileInfo($filename), $mimeType);
+    $fileInfo = new \SplFileInfo($filename);
+    if($fileInfo->isReadable()) {
+      return new Blob(new \SplFileInfo($filename), $mimeType);
+    } else {
+      throw NuxeoClientException::fromPrevious(new NoSuchFileException($filename));
+    }
   }
 
   /**

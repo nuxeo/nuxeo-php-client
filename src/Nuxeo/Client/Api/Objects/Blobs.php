@@ -16,27 +16,46 @@
  *     Pierre-Gildas MILLON <pgmillon@nuxeo.com>
  */
 
-namespace Nuxeo\Client\Internals\Util;
+namespace Nuxeo\Client\Api\Objects;
+
+use JMS\Serializer\Annotation as Serializer;
 
 
-class IOUtils {
+class Blobs extends NuxeoEntity implements \Countable {
+
+  const className = __CLASS__;
 
   /**
-   * @param resource $in
-   * @return \SplFileInfo
+   * @var Blob[]
+   * @Serializer\Exclude()
    */
-  public static function copyToTempFile($in) {
-    $fileName = tempnam(sys_get_temp_dir(), 'nx-');
-    $out = fopen($fileName, 'w+');
-    $originalPos = ftell($in);
+  protected $blobs = array();
 
-    fseek($in, 0);
-    stream_copy_to_stream($in, $out, -1, 0);
-    fseek($in, $originalPos);
+  /**
+   * Blobs constructor.
+   * @param Blob[] $blobs
+   */
+  public function __construct($blobs = array()) {
+    parent::__construct(null);
 
-    fclose($out);
-
-    return new \SplFileInfo($fileName);
+    $this->blobs = $blobs;
   }
 
+  /**
+   * @return Blob[]
+   */
+  public function getBlobs() {
+    return $this->blobs;
+  }
+
+  /**
+   * @param Blob $blob
+   */
+  public function add($blob) {
+    $this->blobs[] = $blob;
+  }
+
+  public function count() {
+    return count($this->blobs);
+  }
 }

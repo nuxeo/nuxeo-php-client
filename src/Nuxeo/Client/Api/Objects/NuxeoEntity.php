@@ -16,25 +16,19 @@
  *     Pierre-Gildas MILLON <pgmillon@nuxeo.com>
  */
 
-/**
- *
- * @author Pierre-Gildas MILLON <pgmillon@gmail.com>
- */
-
 namespace Nuxeo\Client\Api\Objects;
 
 
 use Guzzle\Http\Message\Response;
 use JMS\Serializer\Annotation as Serializer;
-use JMS\Serializer\Naming\IdenticalPropertyNamingStrategy;
-use JMS\Serializer\Naming\SerializedNameAnnotationStrategy;
-use JMS\Serializer\SerializerBuilder;
 use Nuxeo\Client\Api\Constants;
 use Nuxeo\Client\Api\NuxeoClient;
 use Nuxeo\Client\Internals\Spi\ClassCastException;
 use Nuxeo\Client\Internals\Util\IOUtils;
 
 abstract class NuxeoEntity {
+
+  const className = __CLASS__;
 
   /**
    * @Serializer\SerializedName("entity-type")
@@ -44,6 +38,7 @@ abstract class NuxeoEntity {
 
   /**
    * @var NuxeoClient
+   * @Serializer\Exclude()
    */
   protected $nuxeoClient;
 
@@ -53,8 +48,6 @@ abstract class NuxeoEntity {
    */
   private $repositoryName;
 
-  protected $serializer;
-
   /**
    * NuxeoEntity constructor.
    * @param $entityType
@@ -63,32 +56,28 @@ abstract class NuxeoEntity {
   public function __construct($entityType, $nuxeoClient=null) {
     $this->entityType = $entityType;
     $this->nuxeoClient = $nuxeoClient;
-    $this->serializer = SerializerBuilder::create()
-      ->setPropertyNamingStrategy(new SerializedNameAnnotationStrategy(new IdenticalPropertyNamingStrategy()))
-      ->build();
   }
 
   /**
    * @param Response $response
    * @param string $clazz
    * @return mixed
+   * @throws ClassCastException
    */
   protected function computeResponse($response, $clazz) {
     if(false === (
         $response->isContentType(Constants::CONTENT_TYPE_JSON) ||
         $response->isContentType(Constants::CONTENT_TYPE_JSON_NXENTITY))) {
 
-      if(Blob::class !== $clazz) {
-        throw new ClassCastException(sprintf("Cannot cast %s as %s", Blob::class, $clazz));
+      if(Blob::className !== $clazz) {
+        throw new ClassCastException(sprintf('Cannot cast %s as %s', Blob::className, $clazz));
       }
-
 
       return new Blob(IOUtils::copyToTempFile($response->getBody()->getStream()), $response->getBody()->getContentType());
     }
     $body = $response->getBody(true);
-    $responseObj = $this->serializer->deserialize($body, $clazz, 'json');
 
-    return $responseObj;
+    return $this->nuxeoClient->getConverter()->read($body, $clazz);
   }
 
 }

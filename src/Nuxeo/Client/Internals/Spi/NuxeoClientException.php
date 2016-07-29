@@ -18,8 +18,23 @@
 
 namespace Nuxeo\Client\Internals\Spi;
 
+use Exception;
+
 class NuxeoClientException extends \RuntimeException {
 
   const INTERNAL_ERROR_STATUS = 666;
+
+  public function __construct($message = '', $code = self::INTERNAL_ERROR_STATUS, Exception $previous = null) {
+    if(null !== $previous && '' === $message) {
+      $message = $previous->getMessage();
+    }
+
+    parent::__construct($message, $code, $previous);
+  }
+
+
+  public static function fromPrevious($previous, $message='', $code=self::INTERNAL_ERROR_STATUS) {
+    return new NuxeoClientException($message, $code, $previous);
+  }
 
 }

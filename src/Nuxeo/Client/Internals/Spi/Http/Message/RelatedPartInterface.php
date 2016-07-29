@@ -16,27 +16,22 @@
  *     Pierre-Gildas MILLON <pgmillon@nuxeo.com>
  */
 
-namespace Nuxeo\Client\Internals\Util;
+namespace Nuxeo\Client\Internals\Spi\Http\Message;
 
 
-class IOUtils {
+interface RelatedPartInterface {
 
-  /**
-   * @param resource $in
-   * @return \SplFileInfo
-   */
-  public static function copyToTempFile($in) {
-    $fileName = tempnam(sys_get_temp_dir(), 'nx-');
-    $out = fopen($fileName, 'w+');
-    $originalPos = ftell($in);
+  const className = __CLASS__;
 
-    fseek($in, 0);
-    stream_copy_to_stream($in, $out, -1, 0);
-    fseek($in, $originalPos);
+  const DISPOSITION_INLINE = 'inline';
+  const DISPOSITION_ATTACHMENT = 'attachment';
 
-    fclose($out);
+  public function getContentType();
 
-    return new \SplFileInfo($fileName);
-  }
+  public function getContentLength();
+
+  public function getContentDisposition();
+
+  public function getContent();
 
 }

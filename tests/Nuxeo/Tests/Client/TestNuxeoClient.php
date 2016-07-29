@@ -30,34 +30,7 @@ use Nuxeo\Client\Api\Objects\DocRef;
 use Nuxeo\Client\Api\Objects\Document;
 use Nuxeo\Client\Api\Objects\Documents;
 
-class TestNuxeoClient extends \PHPUnit_Framework_TestCase {
-
-  const LOGIN = "Administrator";
-  const PASSWORD = "Administrator";
-  const MYFILE_CONTENT = 'Hello World';
-  const MYFILE_DOCPATH = '/default-domain/workspaces/MyWorkspace/MyFile';
-  const NEWFILE_NAME = 'myfile.txt';
-  const NEWFILE_PATH = '_files/'.self::NEWFILE_NAME;
-  const NEWFILE_TYPE = 'text/plain';
-
-  /**
-   * @var Server
-   */
-  protected $server;
-
-  protected function setUp() {
-    $this->server = new Server();
-    $this->server->start();
-  }
-
-  protected function tearDown() {
-    $this->server->stop();
-  }
-
-  public function readPartFromFile($path) {
-    $part = file_get_contents(__DIR__."/".$path);
-    return str_replace(PHP_EOL, "\r\n", $part);
-  }
+class TestNuxeoClient extends NuxeoTestCase {
 
   public function testGetRequest() {
     $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, self::PASSWORD);
@@ -66,8 +39,8 @@ class TestNuxeoClient extends \PHPUnit_Framework_TestCase {
       new Response(200, array('Content-Type' => Constants::CONTENT_TYPE_JSON), file_get_contents(__DIR__ . '/_files/user.json'))
     ));
 
-    $userDoc = $client->automation("User.Get")->execute(Document::class);
-    $this->assertInstanceOf(Document::class, $userDoc);
+    $userDoc = $client->automation()->execute(Document::className, 'User.Get');
+    $this->assertInstanceOf(Document::className, $userDoc);
     $this->assertEquals(self::LOGIN, $userDoc->getUid());
   }
 
@@ -78,12 +51,12 @@ class TestNuxeoClient extends \PHPUnit_Framework_TestCase {
     $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, null);
 
     $this->server->enqueue(array(
-      new Response(401, array('Content-Type' => Constants::CONTENT_TYPE_JSON), "Unauthorized")
+      new Response(401, array('Content-Type' => Constants::CONTENT_TYPE_JSON), 'Unauthorized')
     ));
 
-    $client->automation("Document.Query")->execute(Document::class);
+    $client->automation()->execute(Document::className, 'Document.Query');
 
-    $this->assertEquals(1, count($this->server->getReceivedRequests()));
+    $this->assertCount(1, $this->server->getReceivedRequests());
   }
 
   public function testListDocuments() {
@@ -95,12 +68,12 @@ class TestNuxeoClient extends \PHPUnit_Framework_TestCase {
 
     /** @var Documents $documents */
     $documents = $client
-      ->schemas("*")
-      ->automation("Document.Query")
-      ->param('query', "SELECT * FROM Document")
-      ->execute(Documents::class);
+      ->schemas('*')
+      ->automation()
+      ->param('query', 'SELECT * FROM Document')
+      ->execute(Documents::className, 'Document.Query');
 
-    $this->assertInstanceOf(Documents::class, $documents);
+    $this->assertInstanceOf(Documents::className, $documents);
     $this->assertEquals(5, $documents->size());
 
     foreach ($documents->getDocuments() as $document) {
@@ -127,14 +100,14 @@ class TestNuxeoClient extends \PHPUnit_Framework_TestCase {
     ));
 
     /** @var Blob $blob */
-    $blob = $client->automation("Blob.Get")
-      ->input(new DocRef(self::MYFILE_DOCPATH))
-      ->execute(Blob::class);
+    $blob = $client->automation('Blob.Get')
+      ->input(self::MYFILE_DOCPATH)
+      ->execute(Blob::className);
 
     /** @var EntityEnclosingRequestInterface $request */
-    $request = $this->server->getReceivedRequests(true)[0];
+    $request = ($this->server->getReceivedRequests(true))[0];
 
-    $this->assertEquals(sprintf('{"params":{},"input":"%s"}', 'doc:'.self::MYFILE_DOCPATH), (string) $request->getBody());
+    $this->assertEquals(sprintf('{"input":"%s"}', self::MYFILE_DOCPATH), (string) $request->getBody());
     $this->assertEquals(self::MYFILE_CONTENT, file_get_contents($blob->getFile()->getPathname()));
   }
 
@@ -144,70 +117,39 @@ class TestNuxeoClient extends \PHPUnit_Framework_TestCase {
   public function testCannotLoadBlob() {
     $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, self::PASSWORD);
 
-    $blob = $client->automation("Blob.Attach")->input(Blob::fromFilename('/void', null))->execute(Blob::class);
+    $this->server->enqueue(array(
+      new Response(200, null, null)
+    ));
 
-    $this->assertEquals(0, count($this->server->getReceivedRequests()));
+    $client->automation('Blob.Attach')->input(Blob::fromFilename('/void', null))->execute(Blob::className);
+
+    $this->assertCount(0, $this->server->getReceivedRequests());
   }
 
   public function testLoadBlob() {
-    $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, self::PASSWORD);
-
-    $request = $client->newRequest("Blob.AttachOnDocument")
-      ->set('params', 'document', array(
-        "entity-type" => "string",
-        "value" => self::MYFILE_DOCPATH
-      ))
-      ->loadBlob(__DIR__."/".self::NEWFILE_PATH, self::NEWFILE_TYPE);
-
-    $blobList = $request->getBlobList();
-
-    $this->assertTrue(is_array($blobList));
-    $this->assertEquals(1, count($blobList));
-
-    $blob = $blobList[0];
-
-    $this->assertTrue(is_array($blob));
-    $this->assertEquals(3, count($blob));
-    $this->assertEquals(self::NEWFILE_NAME, $blob[0]);
-    $this->assertEquals(self::NEWFILE_TYPE, $blob[1]);
-    $this->assertEquals(file_get_contents(__DIR__."/".self::NEWFILE_PATH), $blob[2]);
-  }
-
-  public function testAttachBlob() {
     $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, self::PASSWORD);
 
     $this->server->enqueue(array(
       new Response(200)
     ));
 
-    $client->newRequest("Blob.Attach")
-      ->set('params', 'document', array(
-        "entity-type" => "string",
-        "value" => self::MYFILE_DOCPATH
-      ))
-      ->loadBlob(__DIR__."/".self::NEWFILE_PATH, self::NEWFILE_TYPE)
-      ->sendRequest();
+    $client->automation('Blob.AttachOnDocument')
+      ->param('document', self::MYFILE_DOCPATH)
+      ->input(Blob::fromFilename(__DIR__ . '/_files/nuxeo.png', null))
+      ->execute(Blob::className);
 
     $requests = $this->server->getReceivedRequests(true);
 
-    $this->assertEquals(1, count($requests));
+    $this->assertCount(1, $requests);
 
     /** @var EntityEnclosingRequest $request */
     $request = $requests[0];
 
     $this->assertArrayHasKey('content-type', $request->getHeaders());
     $this->assertStringMatchesFormat(
-      'multipart/related;boundary="%s";type="application/json+nxrequest";start="request"',
+      'multipart/related;boundary=%s',
       $request->getHeader('content-type')->__toString());
 
-    $this->assertArrayHasKey('x-nxvoidoperation', $request->getHeaders());
-    $this->assertEquals('true', $request->getHeader('x-nxvoidoperation')->__toString());
-
-    $this->assertArrayHasKey('accept', $request->getHeaders());
-    $this->assertEquals('application/json+nxentity, */*', $request->getHeader('accept')->__toString());
-
-    $this->assertContains($this->readPartFromFile('_files/setblob-part1.txt'), $request->getBody()->__toString());
-    $this->assertContains($this->readPartFromFile('_files/setblob-part2.txt'), $request->getBody()->__toString());
   }
 
 }

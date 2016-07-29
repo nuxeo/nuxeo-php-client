@@ -16,17 +16,16 @@
  *     Pierre-Gildas MILLON <pgmillon@nuxeo.com>
  */
 
-/**
- *
- * @author Pierre-Gildas MILLON <pgmillon@gmail.com>
- */
-
 namespace Nuxeo\Client\Api\Objects;
 
 
 use Guzzle\Http\Url;
+use JMS\Serializer\Annotation as Serializer;
 use Nuxeo\Client\Api\Constants;
 use Nuxeo\Client\Api\NuxeoClient;
+use Nuxeo\Client\Internals\Spi\ClassCastException;
+use Nuxeo\Client\Internals\Spi\NoSuchOperationException;
+use Nuxeo\Client\Internals\Spi\NuxeoClientException;
 
 class Operation extends NuxeoEntity {
 
@@ -37,27 +36,27 @@ class Operation extends NuxeoEntity {
 
   /**
    * @var Url
+   * @Serializer\Exclude()
    */
   protected $apiUrl;
 
   /**
-   * @var array
+   * @var OperationBody
    */
-  private $params = array();
-
-  private $input;
+  private $body;
 
   /**
    * Operation constructor.
-   * @param string $operationId
    * @param NuxeoClient $nuxeoClient
    * @param Url $apiUrl
+   * @param string $operationId
    */
-  public function __construct($operationId, $nuxeoClient, $apiUrl) {
+  public function __construct($nuxeoClient, $apiUrl, $operationId = null) {
     parent::__construct(Constants::ENTITY_TYPE_OPERATION, $nuxeoClient);
 
     $this->operationId = $operationId;
     $this->apiUrl = $apiUrl;
+    $this->body = new OperationBody();
   }
 
   /**
@@ -67,7 +66,7 @@ class Operation extends NuxeoEntity {
    * @return Operation
    */
   public function param($name, $value) {
-    $this->params[$name] = $value;
+    $this->body->addParameter($name, $value);
     return $this;
   }
 
@@ -77,7 +76,7 @@ class Operation extends NuxeoEntity {
    * @return Operation
    */
   public function params($params) {
-    $this->params = array_merge($this->params, $params);
+    $this->body->addParameters($params);
     return $this;
   }
 
@@ -87,7 +86,7 @@ class Operation extends NuxeoEntity {
    * @return Operation
    */
   public function parameters($params) {
-    $this->params = $params;
+    $this->body->setParameters($params);
     return $this;
   }
 
@@ -96,44 +95,67 @@ class Operation extends NuxeoEntity {
    * @return Operation
    */
   public function input($input) {
-    $this->input = $input;
+    $this->body->setInput($input);
     return $this;
   }
 
   /**
-   * @param $clazz
+   * @param string $clazz
+   * @param string $operationId
    * @return mixed
+   * @throws NuxeoClientException
+   * @throws NoSuchOperationException
+   * @throws ClassCastException
    */
-  public function execute($clazz) {
-    $body = str_replace('\/', '/', json_encode(array(
-      'params' => $this->getParams(),
-      'input' => $this->nuxeoClient->getConverter()->write($this->getInput())
-    ), JSON_FORCE_OBJECT));
-
-    $response = $this->nuxeoClient->post($this->computeRequestUrl(), $body);
-
+  public function execute($clazz, $operationId = null) {
+    $response = $this->_doExecute($operationId);
     return $this->computeResponse($response, $clazz);
   }
 
   /**
-   * @return array
-   */
-  protected function getParams() {
-    return $this->params;
-  }
-
-  /**
-   * @return mixed
-   */
-  public function getInput() {
-    return $this->input;
-  }
-
-  /**
+   * @param string $operationId
    * @return Url
    */
-  protected function computeRequestUrl() {
-    return $this->apiUrl->addPath($this->operationId);
+  protected function computeRequestUrl($operationId) {
+    return $this->apiUrl->addPath($operationId);
+  }
+
+  /**
+   * @param $operationId
+   * @return \Guzzle\Http\Message\Response
+   * @throws NuxeoClientException
+   * @throws NoSuchOperationException
+   * @throws ClassCastException
+   */
+  protected function _doExecute($operationId) {
+    $operationId = null === $operationId ? $this->operationId : $operationId;
+    $input = $this->body->getInput();
+
+    if(null === $operationId) {
+      throw new NoSuchOperationException($operationId);
+    }
+
+    if($input instanceof Blob) {
+      $input = new Blobs(array($input));
+    }
+
+    if($input instanceof Blobs) {
+      $blobs = array();
+      foreach($input->getBlobs() as $blob) {
+        $blobs[] = $blob->getFile()->getPathname();
+      }
+      $this->nuxeoClient->voidOperation(true);
+
+      $response = $this->nuxeoClient->post(
+        $this->computeRequestUrl($operationId),
+        $this->nuxeoClient->getConverter()->write($this->body),
+        $blobs);
+    } else {
+      $response = $this->nuxeoClient->post(
+        $this->computeRequestUrl($operationId),
+        $this->nuxeoClient->getConverter()->write($this->body));
+    }
+    return $response;
   }
 
 }

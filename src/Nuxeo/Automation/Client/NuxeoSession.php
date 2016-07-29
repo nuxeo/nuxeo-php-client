@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
@@ -18,9 +18,10 @@
 
 namespace Nuxeo\Automation\Client;
 
-use Guzzle\Http\Client;
-use Guzzle\Http\Message\Request;
 use Nuxeo\Automation\Client\Utilities\NuxeoRequest;
+use Nuxeo\Client\Api\NuxeoClient;
+use Nuxeo\Client\Internals\Compat\Request;
+use Nuxeo\Client\Internals\Spi\NuxeoClientException;
 
 
 /**
@@ -29,30 +30,24 @@ use Nuxeo\Automation\Client\Utilities\NuxeoRequest;
  * Class which stocks username,password, and open requests
  *
  * @author     Arthur GALLOUIN for NUXEO agallouin@nuxeo.com
+ * @deprecated Use \Nuxeo\Client\Api\NuxeoClient
  */
 class NuxeoSession {
 
-  private $headers;
-
   /**
-   * @var Client
+   * @var NuxeoClient
    */
   private $client;
-
-  /**
-   * @var BasicAuth
-   */
-  private $auth;
 
   /**
    * @param $url
    * @param BasicAuth $auth
    * @param array $headers
+   * @throws NuxeoClientException
    */
-  public function __construct($url, BasicAuth $auth, $headers = array("Content-Type" => "application/json+nxrequest")) {
-    $this->client = new Client($url);
-    $this->auth = $auth;
-    $this->headers = $headers;
+  public function __construct($url, BasicAuth $auth, $headers = array('Content-Type' => 'application/json+nxrequest')) {
+    //TODO: use headers
+    $this->client = new NuxeoClient($url, $auth->getUsername(), $auth->getPassword());
   }
 
   /**
@@ -62,10 +57,6 @@ class NuxeoSession {
    */
 
   public function newRequest($operation) {
-    $request = $this->client->createRequest(Request::POST, $operation, $this->headers);
-    $request->setAuth($this->auth->getUsername(), $this->auth->getPassword());
-
-    $newRequest = new NuxeoRequest($request);
-    return $newRequest;
+    return new Request($this->client, $operation);
   }
 }

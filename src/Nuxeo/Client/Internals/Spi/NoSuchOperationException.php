@@ -16,27 +16,13 @@
  *     Pierre-Gildas MILLON <pgmillon@nuxeo.com>
  */
 
-namespace Nuxeo\Client\Internals\Util;
+namespace Nuxeo\Client\Internals\Spi;
 
 
-class IOUtils {
+class NoSuchOperationException extends NuxeoClientException {
 
-  /**
-   * @param resource $in
-   * @return \SplFileInfo
-   */
-  public static function copyToTempFile($in) {
-    $fileName = tempnam(sys_get_temp_dir(), 'nx-');
-    $out = fopen($fileName, 'w+');
-    $originalPos = ftell($in);
-
-    fseek($in, 0);
-    stream_copy_to_stream($in, $out, -1, 0);
-    fseek($in, $originalPos);
-
-    fclose($out);
-
-    return new \SplFileInfo($fileName);
+  public function __construct($operationId) {
+    parent::__construct('No such operation: ' . $operationId);
   }
 
 }

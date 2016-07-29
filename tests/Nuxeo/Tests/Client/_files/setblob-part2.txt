@@ -1,6 +1,5 @@
-Content-Type:text/plain
-Content-ID: input
-Content-Transfer-Encoding: binary
+Content-Type: text/plain
+Content-Length: 30
 Content-Disposition: attachment;filename="myfile.txt"
 
 All your base are belong to us

@@ -16,11 +16,6 @@
  *     Pierre-Gildas MILLON <pgmillon@nuxeo.com>
  */
 
-/**
- *
- * @author Pierre-Gildas MILLON <pgmillon@gmail.com>
- */
-
 namespace Nuxeo\Client\Api\Marshaller;
 
 

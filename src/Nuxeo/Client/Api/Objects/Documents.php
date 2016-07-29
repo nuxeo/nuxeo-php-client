@@ -16,11 +16,6 @@
  *     Pierre-Gildas MILLON <pgmillon@nuxeo.com>
  */
 
-/**
- *
- * @author Pierre-Gildas MILLON <pgmillon@gmail.com>
- */
-
 namespace Nuxeo\Client\Api\Objects;
 
 
@@ -28,6 +23,8 @@ use JMS\Serializer\Annotation as Serializer;
 use Nuxeo\Client\Api\Constants;
 
 class Documents extends NuxeoEntity {
+
+  const className = __CLASS__;
 
   /**
    * @var Document[]

@@ -16,17 +16,14 @@
  *     Pierre-Gildas MILLON <pgmillon@nuxeo.com>
  */
 
-/**
- *
- * @author Pierre-Gildas MILLON <pgmillon@gmail.com>
- */
-
 namespace Nuxeo\Client\Api\Objects;
 
 
 use JMS\Serializer\Annotation as Serializer;
 
 class DocRef {
+
+  const className = __CLASS__;
 
   /**
    * @var string

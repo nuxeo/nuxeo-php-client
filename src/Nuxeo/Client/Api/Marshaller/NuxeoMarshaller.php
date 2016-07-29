@@ -16,11 +16,6 @@
  *     Pierre-Gildas MILLON <pgmillon@nuxeo.com>
  */
 
-/**
- *
- * @author Pierre-Gildas MILLON <pgmillon@gmail.com>
- */
-
 namespace Nuxeo\Client\Api\Marshaller;
 
 
@@ -29,5 +24,7 @@ interface NuxeoMarshaller {
   public function read($in);
 
   public function write($object);
+
+  const className = __CLASS__;
 
 }

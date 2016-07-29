@@ -25,18 +25,18 @@ namespace Nuxeo\Automation\Client;
  * hold a return document
  *
  * @author     Arthur GALLOUIN for NUXEO agallouin@nuxeo.com
+ * @deprecated Use \Nuxeo\Client\Api\Objects\Document
  */
 class NuxeoDocument {
 
-  Private $object;
-  Private $properties;
+  private $object;
+  private $properties;
 
-  Public function __construct($newDocument) {
+  public function __construct($newDocument) {
     $this->object = $newDocument;
-    if (array_key_exists('properties', $this->object))
+    if(array_key_exists('properties', $this->object)) {
       $this->properties = $this->object['properties'];
-    else
-      $this->properties = null;
+    }
   }
 
   public function getUid() {
@@ -59,8 +59,8 @@ class NuxeoDocument {
     return $this->object['title'];
   }
 
-  Public function output() {
-    $value = sizeof($this->object);
+  public function output() {
+    $value = count($this->object);
 
     for ($test = 0; $test < $value - 1; $test++) {
       echo '<td> ' . current($this->object) . '</td>';
@@ -68,7 +68,7 @@ class NuxeoDocument {
     }
 
     if ($this->properties !== NULL) {
-      $value = sizeof($this->properties);
+      $value = count($this->properties);
       for ($test = 0; $test < $value; $test++) {
         echo '<td>' . key($this->properties) . ' : ' .
           current($this->properties) . '</td>';
@@ -84,8 +84,8 @@ class NuxeoDocument {
   public function getProperty($schemaNamePropertyName) {
     if (array_key_exists($schemaNamePropertyName, $this->properties)) {
       return $this->properties[$schemaNamePropertyName];
-    }
-    else
+    } else {
       return null;
+    }
   }
 }

@@ -18,8 +18,13 @@
 
 namespace Nuxeo\Automation\Client\Internals;
 
-class NuxeoClientException extends \RuntimeException {
+use Nuxeo\Client\Internals\Spi\NuxeoClientException as BaseException;
 
-  const INTERNAL_ERROR_STATUS = 666;
-  
+/**
+ * Class NuxeoClientException
+ * @package Nuxeo\Automation\Client\Internals
+ * @deprecated Use \Nuxeo\Client\Internals\Spi\NuxeoClientException
+ */
+class NuxeoClientException extends BaseException {
+
 }

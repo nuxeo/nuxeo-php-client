@@ -1,6 +1,6 @@
 <?php
-/*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
+/**
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -19,17 +19,17 @@
 namespace Nuxeo\Automation\Client;
 
 
+use Nuxeo\Client\Internals\Spi\NuxeoClientException;
+
 /**
  * Class NuxeoPhpAutomationClient
  * @package Nuxeo\Automation\Client
+ * @deprecated Use \Nuxeo\Client\Api\NuxeoClient
  */
 class NuxeoPhpAutomationClient {
 
   protected $url;
 
-  /**
-   * @param string $url
-   */
   public function __construct($url = 'http://localhost:8080/nuxeo/site/automation') {
     $this->url = $url;
   }
@@ -38,9 +38,9 @@ class NuxeoPhpAutomationClient {
    * @param string $username
    * @param string $password
    * @return NuxeoSession
+   * @throws NuxeoClientException
    */
   public function getSession($username = 'Administrator', $password = 'Administrator') {
-    $session = new NuxeoSession($this->url, new BasicAuth($username, $password));
-    return $session;
+    return new NuxeoSession($this->url, new BasicAuth($username, $password));
   }
 }

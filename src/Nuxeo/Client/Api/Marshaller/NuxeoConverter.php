@@ -16,18 +16,18 @@
  *     Pierre-Gildas MILLON <pgmillon@nuxeo.com>
  */
 
-/**
- *
- * @author Pierre-Gildas MILLON <pgmillon@gmail.com>
- */
-
 namespace Nuxeo\Client\Api\Marshaller;
 
 
+use JMS\Serializer\GraphNavigator;
+use JMS\Serializer\Handler\HandlerRegistry;
+use JMS\Serializer\JsonDeserializationVisitor;
+use JMS\Serializer\JsonSerializationVisitor;
 use JMS\Serializer\Naming\IdenticalPropertyNamingStrategy;
 use JMS\Serializer\Naming\SerializedNameAnnotationStrategy;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
+use JMS\Serializer\VisitorInterface;
 
 class NuxeoConverter {
 
@@ -39,16 +39,7 @@ class NuxeoConverter {
   /**
    * @var Serializer
    */
-  protected $serializer;
-
-  /**
-   * NuxeoConverter constructor.
-   */
-  public function __construct() {
-    $this->serializer = SerializerBuilder::create()
-      ->setPropertyNamingStrategy(new SerializedNameAnnotationStrategy(new IdenticalPropertyNamingStrategy()))
-      ->build();
-  }
+  private $serializer = null;
 
   /**
    * @param string $type
@@ -65,13 +56,7 @@ class NuxeoConverter {
    * @return string
    */
   public function write($object) {
-    $clazz = get_class($object);
-    if(array_key_exists($clazz, $this->marshallers)) {
-      $marshaller = $this->marshallers[$clazz];
-      return $marshaller->write($object);
-    }
-
-    return $this->serializer->serialize($object, 'json');
+    return $this->getSerializer()->serialize($object, 'json');
   }
 
   /**
@@ -80,12 +65,49 @@ class NuxeoConverter {
    * @return mixed
    */
   public function read($data, $clazz) {
-    if(array_key_exists($clazz, $this->marshallers)) {
-      $marshaller = $this->marshallers[$clazz];
-      return $marshaller->read($data);
-    }
+    return $this->getSerializer()->deserialize($data, $clazz, 'json');
+  }
 
-    return $this->serializer->deserialize($data, $clazz, 'json');
+  /**
+   * @return Serializer
+   */
+  protected function getSerializer() {
+    if(null === $this->serializer) {
+      $strategy = new SerializedNameAnnotationStrategy(new IdenticalPropertyNamingStrategy());
+
+      $jsonSerializer = new JsonSerializationVisitor($strategy);
+      $jsonSerializer->setOptions(JSON_UNESCAPED_SLASHES);
+
+      $self = $this;
+
+      $this->serializer = SerializerBuilder::create()
+        ->setSerializationVisitor('json', $jsonSerializer)
+        ->setDeserializationVisitor('json', new JsonDeserializationVisitor($strategy))
+        ->configureHandlers(function(HandlerRegistry $registry) use ($self) {
+          foreach(array_keys($self->marshallers) as $type) {
+            $registry->registerHandler(
+              GraphNavigator::DIRECTION_SERIALIZATION,
+              $type,
+              'json',
+              function(VisitorInterface $visitor, $object, array $type) use ($self) {
+                $marshaller = $self->marshallers[$type['name']];
+                return $marshaller->write($object);
+              }
+            );
+            $registry->registerHandler(
+              GraphNavigator::DIRECTION_DESERIALIZATION,
+              $type,
+              'json',
+              function(VisitorInterface $visitor, $object, array $type) use ($self) {
+                $marshaller = $self->marshallers[$type['name']];
+                return $marshaller->read($object);
+              }
+            );
+          }
+        })
+        ->build();
+    }
+    return $this->serializer;
   }
 
 }

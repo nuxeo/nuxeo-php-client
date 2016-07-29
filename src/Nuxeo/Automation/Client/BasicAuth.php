@@ -19,7 +19,11 @@
 
 namespace Nuxeo\Automation\Client;
 
-
+/**
+ * Class BasicAuth
+ * @package Nuxeo\Automation\Client
+ * @deprecated
+ */
 class BasicAuth {
 
   /**

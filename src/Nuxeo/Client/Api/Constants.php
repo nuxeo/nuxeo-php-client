@@ -16,11 +16,6 @@
  *     Pierre-Gildas MILLON <pgmillon@nuxeo.com>
  */
 
-/**
- *
- * @author Pierre-Gildas MILLON <pgmillon@gmail.com>
- */
-
 namespace Nuxeo\Client\Api;
 
 
@@ -28,15 +23,15 @@ class Constants {
 
   const API_PATH = 'api/v1/';
 
-  const AUTOMATION_PATH = Constants::API_PATH.'automation/';
+  const AUTOMATION_PATH = 'api/v1/automation/';
 
   const HEADER_PROPERTIES = 'X-NXProperties';
 
   const HEADER_VOID_OPERATION = 'X-NXVoidOperation';
 
-  const CONTENT_TYPE_JSON = "application/json";
+  const CONTENT_TYPE_JSON = 'application/json';
 
-  const CONTENT_TYPE_JSON_NXENTITY = "application/json+nxentity";
+  const CONTENT_TYPE_JSON_NXENTITY = 'application/json+nxentity';
 
   const ENTITY_TYPE_DOCUMENT = 'document';
 
