@@ -21,10 +21,10 @@ namespace Nuxeo\Tests\Client;
 
 use Guzzle\Tests\Http\Server;
 
-class NuxeoTestCase extends \PHPUnit_Framework_TestCase {
+abstract class NuxeoTestCase extends \PHPUnit_Framework_TestCase {
   const NEWFILE_NAME = 'myfile.txt';
   const PASSWORD = 'Administrator';
-  const NEWFILE_PATH = '_files/myfile.txt';
+  const NEWFILE_PATH = 'myfile.txt';
   const LOGIN = 'Administrator';
   const MYFILE_CONTENT = 'Hello World';
   const NEWFILE_TYPE = 'text/plain';
@@ -36,7 +36,7 @@ class NuxeoTestCase extends \PHPUnit_Framework_TestCase {
   protected $server;
 
   public function readPartFromFile($path) {
-    $part = file_get_contents(__DIR__ . '/' . $path);
+    $part = file_get_contents($this->getResource($path));
     return str_replace(PHP_EOL, "\r\n", $part);
   }
 
@@ -48,4 +48,15 @@ class NuxeoTestCase extends \PHPUnit_Framework_TestCase {
   protected function tearDown() {
     $this->server->stop();
   }
+
+  /**
+   * Get the full path to a file located in the tests resources
+   * @param string $relativePath
+   * @return string
+   */
+  public function getResource($relativePath) {
+    $file = new \SplFileObject($relativePath, 'rb', true);
+    return $file->getRealPath();
+  }
+
 }

@@ -23,7 +23,7 @@ use Guzzle\Http\Message\EntityEnclosingRequest;
 use Guzzle\Http\Message\Response;
 use Nuxeo\Automation\Client\NuxeoPhpAutomationClient;
 
-class TestNuxeoClientCompat extends NuxeoTestCase {
+class TestNuxeoClientCompat extends NuxeoTestCase  {
 
 
   public function testGetRequest() {
@@ -31,7 +31,7 @@ class TestNuxeoClientCompat extends NuxeoTestCase {
     $session = $client->getSession(self::LOGIN, self::PASSWORD);
 
     $this->server->enqueue(array(
-      new Response(200, null, file_get_contents(__DIR__.'/_files/user.json'))
+      new Response(200, null, file_get_contents('user.json', FILE_USE_INCLUDE_PATH))
     ));
 
     $request = $session->newRequest('User.Get');
@@ -63,7 +63,7 @@ class TestNuxeoClientCompat extends NuxeoTestCase {
     $session = $client->getSession(self::LOGIN, self::PASSWORD);
 
     $this->server->enqueue(array(
-      new Response(200, null, file_get_contents(__DIR__.'/_files/document-list.json'))
+      new Response(200, null, file_get_contents('document-list.json', FILE_USE_INCLUDE_PATH))
     ));
 
     $answer = $session->newRequest('Document.Query')
@@ -129,7 +129,7 @@ class TestNuxeoClientCompat extends NuxeoTestCase {
         'entity-type' => 'string',
         'value' => self::MYFILE_DOCPATH
       ))
-      ->loadBlob(__DIR__.'/'.self::NEWFILE_PATH, self::NEWFILE_TYPE);
+      ->loadBlob($this->getResource(self::NEWFILE_PATH), self::NEWFILE_TYPE);
 
     $blobList = $request->getBlobList();
 
@@ -142,7 +142,7 @@ class TestNuxeoClientCompat extends NuxeoTestCase {
     $this->assertCount(3, $blob);
     $this->assertEquals(self::NEWFILE_NAME, $blob[0]);
     $this->assertEquals(self::NEWFILE_TYPE, $blob[1]);
-    $this->assertEquals(file_get_contents(__DIR__.'/'.self::NEWFILE_PATH), $blob[2]);
+    $this->assertEquals(file_get_contents($this->getResource(self::NEWFILE_PATH)), $blob[2]);
   }
 
   public function testAttachBlob() {
@@ -158,7 +158,7 @@ class TestNuxeoClientCompat extends NuxeoTestCase {
         'entity-type' => 'string',
         'value' => self::MYFILE_DOCPATH
       ))
-      ->loadBlob(__DIR__.'/'.self::NEWFILE_PATH, self::NEWFILE_TYPE)
+      ->loadBlob($this->getResource(self::NEWFILE_PATH), self::NEWFILE_TYPE)
       ->sendRequest();
 
     $requests = $this->server->getReceivedRequests(true);
@@ -179,8 +179,8 @@ class TestNuxeoClientCompat extends NuxeoTestCase {
 //    $this->assertArrayHasKey('accept', $request->getHeaders());
 //    $this->assertEquals('application/json+nxentity, */*', $request->getHeader('accept')->__toString());
 
-    $this->assertContains($this->readPartFromFile('_files/setblob-part1.txt'), $request->getBody()->__toString());
-    $this->assertContains($this->readPartFromFile('_files/setblob-part2.txt'), $request->getBody()->__toString());
+    $this->assertContains($this->readPartFromFile('setblob-part1.txt'), $request->getBody()->__toString());
+    $this->assertContains($this->readPartFromFile('setblob-part2.txt'), $request->getBody()->__toString());
   }
 
 }

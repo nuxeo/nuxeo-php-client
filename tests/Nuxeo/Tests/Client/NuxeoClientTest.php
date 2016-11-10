@@ -20,13 +20,10 @@ namespace Nuxeo\Tests\Client;
 
 use Guzzle\Http\Message\EntityEnclosingRequest;
 use Guzzle\Http\Message\EntityEnclosingRequestInterface;
-use Guzzle\Http\Message\RequestInterface;
 use Guzzle\Http\Message\Response;
-use Guzzle\Tests\Http\Server;
 use Nuxeo\Client\Api\Constants;
 use Nuxeo\Client\Api\NuxeoClient;
 use Nuxeo\Client\Api\Objects\Blob;
-use Nuxeo\Client\Api\Objects\DocRef;
 use Nuxeo\Client\Api\Objects\Document;
 use Nuxeo\Client\Api\Objects\Documents;
 
@@ -36,7 +33,7 @@ class TestNuxeoClient extends NuxeoTestCase {
     $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, self::PASSWORD);
 
     $this->server->enqueue(array(
-      new Response(200, array('Content-Type' => Constants::CONTENT_TYPE_JSON), file_get_contents(__DIR__ . '/_files/user.json'))
+      new Response(200, array('Content-Type' => Constants::CONTENT_TYPE_JSON), file_get_contents($this->getResource('user.json')))
     ));
 
     $userDoc = $client->automation()->execute(Document::className, 'User.Get');
@@ -63,7 +60,7 @@ class TestNuxeoClient extends NuxeoTestCase {
     $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, self::PASSWORD);
 
     $this->server->enqueue(array(
-      new Response(200, array('Content-Type' => Constants::CONTENT_TYPE_JSON), file_get_contents(__DIR__ . '/_files/document-list.json'))
+      new Response(200, array('Content-Type' => Constants::CONTENT_TYPE_JSON), file_get_contents($this->getResource('document-list.json')))
     ));
 
     /** @var Documents $documents */
@@ -135,7 +132,7 @@ class TestNuxeoClient extends NuxeoTestCase {
 
     $client->automation('Blob.AttachOnDocument')
       ->param('document', self::MYFILE_DOCPATH)
-      ->input(Blob::fromFilename(__DIR__ . '/_files/nuxeo.png', null))
+      ->input(Blob::fromFilename($this->getResource('user.json'), null))
       ->execute(Blob::className);
 
     $requests = $this->server->getReceivedRequests(true);
