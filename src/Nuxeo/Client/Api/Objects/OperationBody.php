@@ -26,7 +26,7 @@ class OperationBody {
    * @Serializer\SerializedName("params")
    * @var array
    */
-  protected $parameters;
+  protected $parameters = array();
 
   /**
    * @var array

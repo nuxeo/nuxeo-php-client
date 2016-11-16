@@ -52,6 +52,21 @@ class NuxeoConverter {
   }
 
   /**
+   * @return NuxeoMarshaller[]
+   */
+  public function getMarshallers() {
+    return $this->marshallers;
+  }
+
+  /**
+   * @param string $type
+   * @return NuxeoMarshaller
+   */
+  public function getMarshaller($type) {
+    return $this->marshallers[$type];
+  }
+
+  /**
    * @param mixed $object
    * @return string
    */
@@ -75,8 +90,14 @@ class NuxeoConverter {
     if(null === $this->serializer) {
       $strategy = new SerializedNameAnnotationStrategy(new IdenticalPropertyNamingStrategy());
 
-      $jsonSerializer = new JsonSerializationVisitor($strategy);
-      $jsonSerializer->setOptions(JSON_UNESCAPED_SLASHES);
+      if(defined('JSON_UNESCAPED_SLASHES')) {
+        $jsonSerializer = new JsonSerializationVisitor($strategy);
+        $jsonSerializer->setOptions(JSON_UNESCAPED_SLASHES);
+      } else {
+        $jsonSerializer = new \Nuxeo\Client\Internals\Spi\Serializer\JsonSerializationVisitor($strategy);
+      }
+
+      $jsonSerializer->setOptions($jsonSerializer->getOptions()|JSON_FORCE_OBJECT);
 
       $self = $this;
 
@@ -84,13 +105,13 @@ class NuxeoConverter {
         ->setSerializationVisitor('json', $jsonSerializer)
         ->setDeserializationVisitor('json', new JsonDeserializationVisitor($strategy))
         ->configureHandlers(function(HandlerRegistry $registry) use ($self) {
-          foreach(array_keys($self->marshallers) as $type) {
+          foreach($self->getMarshallers() as $type => $marshaller) {
             $registry->registerHandler(
               GraphNavigator::DIRECTION_SERIALIZATION,
               $type,
               'json',
               function(VisitorInterface $visitor, $object, array $type) use ($self) {
-                $marshaller = $self->marshallers[$type['name']];
+                $marshaller = $self->getMarshaller($type['name']);
                 return $marshaller->write($object);
               }
             );
@@ -99,7 +120,7 @@ class NuxeoConverter {
               $type,
               'json',
               function(VisitorInterface $visitor, $object, array $type) use ($self) {
-                $marshaller = $self->marshallers[$type['name']];
+                $marshaller = $self->getMarshaller($type['name']);
                 return $marshaller->read($object);
               }
             );

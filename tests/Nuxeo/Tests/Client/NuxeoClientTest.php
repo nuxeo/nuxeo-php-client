@@ -104,7 +104,7 @@ class TestNuxeoClient extends NuxeoTestCase {
     /** @var EntityEnclosingRequestInterface $request */
     $request = ($this->server->getReceivedRequests(true))[0];
 
-    $this->assertEquals(sprintf('{"input":"%s"}', self::MYFILE_DOCPATH), (string) $request->getBody());
+    $this->assertEquals(sprintf('{"params":{},"input":"%s"}', self::MYFILE_DOCPATH), (string) $request->getBody());
     $this->assertEquals(self::MYFILE_CONTENT, file_get_contents($blob->getFile()->getPathname()));
   }
 
@@ -118,7 +118,7 @@ class TestNuxeoClient extends NuxeoTestCase {
       new Response(200, null, null)
     ));
 
-    $client->automation('Blob.Attach')->input(Blob::fromFilename('/void', null))->execute(Blob::className);
+    $client->automation('Blob.Attach')->input(Blob::fromFile('/void', null))->execute(Blob::className);
 
     $this->assertCount(0, $this->server->getReceivedRequests());
   }
@@ -132,7 +132,7 @@ class TestNuxeoClient extends NuxeoTestCase {
 
     $client->automation('Blob.AttachOnDocument')
       ->param('document', self::MYFILE_DOCPATH)
-      ->input(Blob::fromFilename($this->getResource('user.json'), null))
+      ->input(Blob::fromFile($this->getResource('user.json'), null))
       ->execute(Blob::className);
 
     $requests = $this->server->getReceivedRequests(true);
