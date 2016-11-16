@@ -1,12 +1,11 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <?php
-/*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+/**
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,99 +13,126 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Gallouin Arthur
+ *     Pierre-Gildas MILLON <pgmillon@nuxeo.com>
  */
+
+require_once '../vendor/autoload.php';
+
+$documents = null;
+$client = new \Nuxeo\Client\Api\NuxeoClient('http://nuxeo:8080/nuxeo', 'Administrator', 'Administrator');
+
+$blobTempStorage = __DIR__ . DIRECTORY_SEPARATOR . 'blobs';
+
+if(!@mkdir($blobTempStorage) && !is_dir($blobTempStorage)) {
+    throw new \Symfony\Component\HttpFoundation\File\Exception\FileException(sprintf('Could not create %s: ', $blobTempStorage));
+}
+
+/** @var \Nuxeo\Client\Api\Objects\Documents $availablePaths */
+$availablePaths = $client
+  ->automation('Document.Query')
+  ->param('query', 'SELECT * FROM Workspace')
+  ->execute(\Nuxeo\Client\Api\Objects\Documents::className);
+
+$httpRequest = \Symfony\Component\HttpFoundation\Request::createFromGlobals();
+$document = null;
+
+if($httpRequest->files->has('blob') && $httpRequest->request->has('path')) {
+    $path = $httpRequest->get('path');
+    $uploadedBlob = $httpRequest->files->get('blob');
+    /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $uploadedBlob */
+
+    $blob = $uploadedBlob->move($blobTempStorage, $uploadedBlob->getClientOriginalName());
+
+    try {
+        /** @var \Nuxeo\Client\Api\Objects\Document $document */
+        $document = $client->automation('Document.Create')
+          ->input('doc:' . $path)
+          ->params(array(
+            'type' => 'File',
+            'name' => $blob->getFilename(),
+            'properties' => 'dc:title=' . $blob->getFilename()
+          ))
+          ->execute(\Nuxeo\Client\Api\Objects\Document::className);
+    } catch(\Nuxeo\Client\Internals\Spi\NuxeoClientException $ex) {
+        throw new RuntimeException(sprintf('Could not create Document %s: ' . $ex->getMessage(), $blob->getFilename()));
+    }
+
+    try {
+        if(null !== $document) {
+            $client->automation('Blob.Attach')
+              ->input(\Nuxeo\Client\Api\Objects\Blob::fromFile($blob->getPathname(), $blob->getMimeType()))
+              ->param('document', $document->getPath())
+              ->execute(\Nuxeo\Client\Api\Objects\Blob::className);
+        }
+    } catch(\Nuxeo\Client\Internals\Spi\NuxeoClientException $ex) {
+        throw new RuntimeException('Could not attach blob to document: ' . $ex->getMessage());
+    }
+}
+
 ?>
-<html>
+<!DOCTYPE html>
+
+<html lang="en">
 <head>
-    <title>B4 test php Client</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
-    <link rel="stylesheet" media="screen" type="text/css" title="Design" href="design.css"/>
+  <meta charset="UTF-8">
+  <title>B4 test php Client</title>
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+  <link rel="stylesheet" href="samples.css">
 </head>
 <body>
-Create a file at the path chosen with file path and attach the blob chosen in<br/>
-the blob path field to it.<br/>
-
-<form action="B4.php" method="post" enctype="multipart/form-data">
-    <table>
+<div class="container">
+    <div class="jumbotron">
+        <h3>Create a file at the path chosen with file path and attach the blob chosen in the blob path field to it</h3>
+    </div>
+    <form action="" method="post" enctype="multipart/form-data" class="form-inline">
+      <div class="form-group">
+        <input type="file" name="blob" />
+      </div>
+      <div class="form-group">
+        <label for="path">Path</label>
+        <select name="path" class="form-control">
+          <?php foreach($availablePaths->getDocuments() as $path) {
+            /** @var \Nuxeo\Client\Api\Objects\Document $path */
+            printf('<option value="%s">%s</option>', $path->getPath(), $path->getTitle());
+          }
+          ?>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-default">Submit</button>
+    </form>
+    <?php if(null !== $document): ?>
+      <table class="table">
         <tr>
-            <td>Blob Path</td>
-            <td><input type="file" name="blobPath"/></td>
+          <th>UID</th>
+          <th>Path</th>
+          <th>Type</th>
+          <th>State</th>
+          <th>Title</th>
+          <th>Download</th>
         </tr>
         <tr>
-            <td>File Path</td>
-            <td><?php
-
-                include ('../vendor/autoload.php');
-
-                $client = new \Nuxeo\Automation\Client\NuxeoPhpAutomationClient('http://localhost:8080/nuxeo/site/automation');
-
-                $session = $client->getSession('Administrator', 'Administrator');
-
-                $answer = $session->newRequest("Document.Query")->set('params', 'query', "SELECT * FROM Workspace")->sendRequest();
-
-                $array = $answer->getDocumentList();
-                $value = sizeof($array);
-                echo '<select name="TargetNuxeoDocumentPath">';
-                for ($test = 0; $test < $value; $test++) {
-                    echo '<option value="' . current($array)->getPath() . '">' . current($array)->getTitle() . '</option>';
-                    next($array);
-                }
-                echo '</select>';
-                ?></td>
+          <td><?php echo $document->getUid() ?></td>
+          <td><?php echo $document->getPath() ?></td>
+          <td><?php echo $document->getType() ?></td>
+          <td><?php echo $document->getState() ?></td>
+          <td><?php echo $document->getTitle() ?></td>
+          <td>
+            <form action="B5.php" method="post">
+              <input type="hidden" name="path" value="<?php echo $document->getPath() ?>" />
+              <button type="submit" class="btn btn-default">Download</button>
+            </form>
+          </td>
         </tr>
-        <tr>
-            <td><input type="submit" value="Submit"/></td>
-        </tr>
-    </table>
-</form><?php
-
-/**
- *
- * AttachBlob function
- *
- * @param String $blob contains the path of the blob to load as an attachment
- * @param String $filePath contains the path of the folder where the fille holding the blob will be created
- * @param String $blobtype contains the type of the blob (given by the $_FILES['blobPath']['type'])
- */
-function attachBlob($blob = '../test.txt', $filePath = '/default-domain/workspaces/document', $blobtype = 'application/binary') {
-
-    //only works on LINUX / MAC
-    // We get the name of the file to use it for the name of the document
-    $ename = explode("/", $blob);
-    $filename = end($ename);
-    $client = new \Nuxeo\Automation\Client\NuxeoPhpAutomationClient('http://nuxeo:8080/nuxeo/site/automation');
-
-    $session = $client->getSession('Administrator', 'Administrator');
-
-    $properties = "dc:title=". $filename;
-
-    //We create the document that will hold the file
-    $answer = $session->newRequest("Document.Create")->set('input', 'doc:' . $filePath)->set('params', 'type', 'File')->set('params', 'name', end($ename))->set('params', 'properties', $properties)->sendRequest();
-
-    //We upload the file
-    $answer = $session->newRequest("Blob.Attach")->set('params', 'document', $answer->getDocument(0)->getPath())
-            ->loadBlob($blob, $blobtype)
-            ->sendRequest();
-}
-
-if (!isset($_FILES['blobPath']) AND $_FILES['blobPath']['error'] == 0) {
-    echo 'BlobPath is empty';
-    exit;
-}
-if (!isset($_POST['TargetNuxeoDocumentPath']) OR empty($_POST['TargetNuxeoDocumentPath'])) {
-    echo 'TargetNuxeoDocumentPath is empty';
-    exit;
-}
-if ((isset($_FILES['blobPath']) && ($_FILES['blobPath']['error'] == UPLOAD_ERR_OK))) {
-    $targetPath = '../blobs/';
-    if (!is_dir('../blobs'))
-        mkdir('../blobs');
-    move_uploaded_file($_FILES['blobPath']['tmp_name'], $targetPath . $_FILES['blobPath']['name']);
-}
-
-attachBlob($targetPath . $_FILES['blobPath']['name'], $_POST['TargetNuxeoDocumentPath'], $_FILES['blobPath']['type']);
-unlink($targetPath . $_FILES['blobPath']['name']);
-
-?></body>
+      </table>
+    <?php endif ?>
+</div>
+</body>
 </html>

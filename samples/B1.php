@@ -1,12 +1,11 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <?php
-/*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+/**
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,75 +13,84 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Gallouin Arthur
+ *     Pierre-Gildas MILLON <pgmillon@nuxeo.com>
  */
+
+require_once '../vendor/autoload.php';
+
+$documents = null;
+$client = new \Nuxeo\Client\Api\NuxeoClient('http://nuxeo:8080/nuxeo', 'Administrator', 'Administrator');
+
+if(!empty($_POST['path'])) {
+  $path = $_POST['path'];
+  $schema = $_POST['schema'] ?: '*';
+
+  /** @var \Nuxeo\Client\Api\Objects\Documents $documents */
+  $documents = $client
+    ->schemas($schema)
+    ->automation('Document.Query')
+    ->param('query', sprintf('SELECT * FROM Document WHERE ecm:path = "%s"', $path))
+    ->execute(\Nuxeo\Client\Api\Objects\Documents::className);
+}
 ?>
-<html>
+<!DOCTYPE html>
+
+<html lang="en">
 <head>
-    <title>B1 test php Client</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
-    <link rel="stylesheet" media="screen" type="text/css" title="Designtab" href="designtab.css"/>
+  <meta charset="UTF-8">
+  <title>B1 test php Client</title>
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+  <link rel="stylesheet" href="samples.css">
 </head>
 <body>
-Execute a "SELECT * FROM Document WHERE ecm:path = Path" query to Nuxeo<br/>
-and print all the document properties.<br/>
-fill the path field with a correct Path and the Schema field<br/>
-with the type of schema to output (if left blank, print all properties)<br/>
-
-<form action="B1.php" method="post">
-    Path<input type="text" name="path"/>
-    Schema<input type="text" name="schema"/>
-    <input type="submit" value="Submit"/>
-</form>
-<br/>
-<?php
-include ('../vendor/autoload.php');
-
-function openDocumentPropeties($path, $propertiesSchema = '*') {
-
-    $client = new \Nuxeo\Client\Api\NuxeoClient('http://nuxeo:8080/nuxeo', 'Administrator', 'Administrator');
-
-    /** @var \Nuxeo\Client\Api\Objects\Documents $documents */
-    $documents = $client
-      ->schemas($propertiesSchema)
-      ->automation("Document.Query")
-      ->param('query', "SELECT * FROM Document WHERE ecm:path = '" . $path . "'")
-      ->execute(\Nuxeo\Client\Api\Objects\Documents::class);
-
-    $documentsArray = $documents->getDocuments();
-    $value = sizeof($documentsArray);
-    echo '<table>';
-    echo '<tr><TH>uid</TH><TH>Path</TH>
-		<TH>Type</TH><TH>State</TH><TH>Title</TH><TH>Property 1</TH>
-		<TH>Property 2</TH><TH>Download as PDF</TH>';
-    for ($test = 0; $test < $value; $test++) {
-        echo '<tr>';
-        echo '<td> ' . current($documentsArray)->getUid() . '</td>';
-        echo '<td> ' . current($documentsArray)->getPath() . '</td>';
-        echo '<td> ' . current($documentsArray)->getType() . '</td>';
-        echo '<td> ' . current($documentsArray)->getState() . '</td>';
-        echo '<td> ' . current($documentsArray)->getTitle() . '</td>';
-        echo '<td> ' . current($documentsArray)->getProperty('dc:description') . '</td>';
-        echo '<td> ' . current($documentsArray)->getProperty('dc:creator') . '</td>';
-        echo '<td><form id="test" action="../samples/B5bis.php" method="post" >';
-        echo '<input type="hidden" name="data" value="' .
-             current($documentsArray)->getPath() . '"/>';
-        echo '<input type="submit" value="download"/>';
-        echo '</form></td></tr>';
-        next($documentsArray);
-    }
-    echo '</table>';
-}
-
-if (!isset($_POST['path']) OR empty($_POST['path'])) {
-    echo 'path is empty';
-}
-else {
-    if (!isset($_POST['schema']) OR empty($_POST['schema']))
-        openDocumentPropeties($_POST['path']);
-    else
-        openDocumentPropeties($_POST['path'], $_POST['schema']);
-}
-
-?></body>
+<div class="container">
+  <div class="jumbotron">
+    <h3>Execute a "SELECT * FROM Document WHERE ecm:path = Path"</h3>
+    Fill the path field with a correct Path and the Schema field with the type of schema to output (if left blank, print all properties)
+  </div>
+  <form action="" method="post" class="form-inline">
+      <div class="form-group">
+        <label for="path" class="sr-only" >Path</label>
+        <input type="text" name="path" class="form-control" placeholder="Path" <?php echo isset($_POST['path']) ? sprintf('value="%s"', $_POST['path']):'' ?>/>
+      </div>
+      <div class="form-group">
+        <label for="schema" class="sr-only" >Schema</label>
+        <input type="text" name="schema" class="form-control" placeholder="Schema" <?php echo isset($_POST['schema']) ? sprintf('value="%s"', $_POST['schema']):'' ?>/>
+      </div>
+      <button type="submit" class="btn btn-default">Submit</button>
+  </form>
+  <?php if(null !== $documents): ?>
+    <table class="table">
+      <tr>
+        <th>UID</th>
+        <th>Path</th>
+        <th>Type</th>
+        <th>State</th>
+        <th>Title</th>
+        <th>Property 1</th>
+        <th>Property 2</th>
+      </tr>
+      <?php foreach($documents->getDocuments() as $document): /** @var \Nuxeo\Client\Api\Objects\Document */ ?>
+        <tr>
+          <td><?php echo $document->getUid() ?></td>
+          <td><?php echo $document->getPath() ?></td>
+          <td><?php echo $document->getType() ?></td>
+          <td><?php echo $document->getState() ?></td>
+          <td><?php echo $document->getTitle() ?></td>
+          <td><?php echo $document->getProperty('dc:description') ?></td>
+          <td><?php echo $document->getProperty('dc:creator') ?></td>
+        </tr>
+      <?php endforeach ?>
+    </table>
+  <?php endif ?>
+</div>
+</body>
 </html>

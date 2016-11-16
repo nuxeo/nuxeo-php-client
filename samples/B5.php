@@ -1,12 +1,11 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <?php
-/*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+/**
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,60 +13,64 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Gallouin Arthur
+ *     Pierre-Gildas MILLON <pgmillon@nuxeo.com>
  */
-?>
 
-<html>
-<head>
-    <title>B4 test php Client</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
-    <link rel="stylesheet" media="screen" type="text/css" title="Design" href="design.css"/>
-</head>
-<body>
-<form action="B5.php" method="post">
-    <table>
-        <tr>
-            <td>File Path</td>
-            <td><input type="text" name="path"/></td>
-        </tr>
-        <tr>
-            <td>Blob Type</td>
-            <td><input type="text" name="type"/></td>
-        </tr>
-        <tr>
-            <td><input type="submit" value="Submit"/></td>
-        </tr>
-    </table>
-</form><?php
-include ('../vendor/autoload.php');
+require_once '../vendor/autoload.php';
 
-function GetBlob($path = '/default-domain/workspaces/jkjkj/test2.rtf', $blobtype = 'application/binary') {
-    $eurl = explode("/", $path);
+$client = new \Nuxeo\Client\Api\NuxeoClient('http://nuxeo:8080/nuxeo', 'Administrator', 'Administrator');
 
-    $client = new \Nuxeo\Automation\Client\NuxeoPhpAutomationClient('http://nuxeo:8080/nuxeo/site/automation');
+if(!empty($_POST['path'])) {
+    $path = $_POST['path'];
 
-    $session = $client->GetSession('Administrator', 'Administrator');
+    try {
+        /** @var \Nuxeo\Client\Api\Objects\Blob $blob */
+        $blob = $client
+          ->automation('Blob.Get')
+          ->input('doc:' . $path)
+          ->execute(\Nuxeo\Client\Api\Objects\Blob::className);
 
-    $answer = $session->NewRequest("Blob.Get")->Set('input', 'doc: ' . $path)->SendRequest();
+        $response = new \Symfony\Component\HttpFoundation\BinaryFileResponse($blob->getFile());
+        $response->setContentDisposition(
+          \Symfony\Component\HttpFoundation\ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+          $blob->getFilename()
+        );
 
-    if (!isset($answer) OR $answer == false)
-        echo '$answer is not set';
-    else {
-        header('Content-Description: File Transfer');
-        header('Content-Type: application/octet-stream');
-        header('Content-Disposition: attachment; filename=' . end($eurl) . '.pdf');
-        readfile('tempstream');
+        $response->prepare(\Symfony\Component\HttpFoundation\Request::createFromGlobals())->send();
+    } catch(\Nuxeo\Client\Internals\Spi\NuxeoClientException $ex) {
+        throw new RuntimeException(sprintf('Could not fetch blob of %s: ', $path) . $ex->getMessage());
     }
 }
+?>
+<!DOCTYPE html>
 
-if (!isset($_POST['path'])) {
-    echo 'path is empty';
-    exit;
-}
-if (!isset($_POST['type']))
-    GetBlob($_POST['path']);
-else
-    GetBlob($_POST['path'], $_POST['type']);
-?></body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>B5 test php Client</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="samples.css">
+</head>
+<body>
+<div class="container">
+    <div class="jumbotron">
+        <h3>Download the blob attached to a document</h3>
+    </div>
+    <form action="" method="post" class="form-inline">
+        <div class="form-group">
+            <label for="path" class="sr-only">Path</label>
+            <input type="text" name="path" class="form-control" placeholder="Path"/>
+        </div>
+        <button type="submit" class="btn btn-default">Submit</button>
+    </form>
+</div>
+</body>
 </html>

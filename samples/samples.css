@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -15,22 +15,10 @@
  *     Pierre-Gildas MILLON <pgmillon@nuxeo.com>
  */
 
-@CHARSET "UTF-8";
-
-h1 {
-	text-align: center;
-	font-family: "Arial-Black", Arial, Verdanna, serif;
-	font-size: large;
+body {
+    padding-top: 40px;
 }
 
-description {
-	margin-left: 30px;
-	margin-bottom: 20px;
-	font-family: "Times new Roman", Arial, Verdanna, serif;
-	display: block;
-}
-
-table {
-	margin-left: 50px;
-	margin-right: 40%;
+form {
+    padding-bottom: 10px;
 }
