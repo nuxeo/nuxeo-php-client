@@ -85,7 +85,7 @@ class Request extends NuxeoRequest {
 
   public function loadBlob($path, $contentType = 'application/binary') {
     try {
-      $this->getBlobs()->add(Blob::fromFilename($path, $contentType));
+      $this->getBlobs()->add(Blob::fromFile($path, $contentType));
     } catch(\Nuxeo\Client\Internals\Spi\NuxeoClientException $ex) {
       throw new NuxeoClientException($ex->getMessage());
     }

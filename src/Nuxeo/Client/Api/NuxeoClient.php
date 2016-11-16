@@ -80,8 +80,6 @@ class NuxeoClient {
       throw NuxeoClientException::fromPrevious($ex);
     }
 
-    $this->httpClient->addSubscriber(LogPlugin::getDebugPlugin(true, fopen('debug.txt', 'w+')));
-
     $this->httpClient->setRequestFactory(new RequestFactory());
 
     $self = $this;
@@ -121,6 +119,16 @@ class NuxeoClient {
    */
   public function voidOperation($value) {
     $this->header(Constants::HEADER_VOID_OPERATION, $value ? 'true' : 'false');
+    return $this;
+  }
+
+  /**
+   * @param string $outputFile
+   * @return NuxeoClient
+   */
+  public function debug($outputFile = null) {
+    $stream = $outputFile ? fopen($outputFile, 'w+b') : null;
+    $this->httpClient->addSubscriber(LogPlugin::getDebugPlugin(true, $stream));
     return $this;
   }
 

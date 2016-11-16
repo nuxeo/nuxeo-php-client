@@ -19,8 +19,11 @@
 namespace Nuxeo\Client\Api\Objects;
 
 
+use Guzzle\Http\Message\Response;
+use Nuxeo\Client\Internals\Spi\Http\Header\ContentDisposition;
 use Nuxeo\Client\Internals\Spi\NoSuchFileException;
 use Nuxeo\Client\Internals\Spi\NuxeoClientException;
+use Nuxeo\Client\Internals\Util\IOUtils;
 
 class Blob extends NuxeoEntity {
 
@@ -37,15 +40,22 @@ class Blob extends NuxeoEntity {
   protected $file;
 
   /**
+   * @var string
+   */
+  protected $filename;
+
+  /**
    * Blob constructor.
+   * @param string $filename ASCII-only filename
    * @param \SplFileInfo $file
    * @param string $mimeType
    */
-  public function __construct($file, $mimeType) {
+  public function __construct($filename, $file, $mimeType) {
     parent::__construct(null);
 
     $this->file = $file;
     $this->mimeType = $mimeType;
+    $this->filename = $filename;
   }
 
   /**
@@ -54,13 +64,26 @@ class Blob extends NuxeoEntity {
    * @return Blob
    * @throws NuxeoClientException
    */
-  public static function fromFilename($filename, $mimeType) {
+  public static function fromFile($filename, $mimeType) {
     $fileInfo = new \SplFileInfo($filename);
     if($fileInfo->isReadable()) {
-      return new Blob(new \SplFileInfo($filename), $mimeType);
+      return new Blob($fileInfo->getFilename(), $fileInfo, $mimeType);
     } else {
       throw NuxeoClientException::fromPrevious(new NoSuchFileException($filename));
     }
+  }
+
+  /**
+   * @param Response $response
+   * @return Blob
+   */
+  public static function fromHttpResponse($response) {
+    $disposition = new ContentDisposition($response->getContentDisposition());
+
+    return new Blob(
+      $disposition->getFilename(),
+      IOUtils::copyToTempFile($response->getBody()->getStream()),
+      $response->getBody()->getContentType());
   }
 
   /**
@@ -68,6 +91,13 @@ class Blob extends NuxeoEntity {
    */
   public function getMimeType() {
     return $this->mimeType;
+  }
+
+  /**
+   * @return string
+   */
+  public function getFilename() {
+    return $this->filename;
   }
 
   /**

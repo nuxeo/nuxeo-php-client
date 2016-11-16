@@ -73,7 +73,7 @@ abstract class NuxeoEntity {
         throw new ClassCastException(sprintf('Cannot cast %s as %s', Blob::className, $clazz));
       }
 
-      return new Blob(IOUtils::copyToTempFile($response->getBody()->getStream()), $response->getBody()->getContentType());
+      return Blob::fromHttpResponse($response);
     }
     $body = $response->getBody(true);
 
