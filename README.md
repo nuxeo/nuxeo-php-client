@@ -1,29 +1,146 @@
-# About Nuxeo PHP Automation Client
 
-This project is an automation client for Nuxeo EP wrote in PHP.
-This is still in development.
+[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=Client/nuxeo-automation-php-client-master)](https://qa.nuxeo.org/jenkins/job/Client/job/nuxeo-automation-php-client-master)
 
-# Content
+# Nuxeo Automation PHP Client
 
-Function list which allows queries, retrieving document information from Nuxeo EP, activating Chains remotely ...
+The Nuxeo Automation PHP Client is a PHP client library for Nuxeo Automation API.
 
-B1, B2, B3 are examples explaining how we can send a query to Nuxeo and how we can use the results.
+This is supported by Nuxeo and compatible with Nuxeo LTS 2015 and latest Fast Tracks.
 
-B4 is used to create a document and attach a blob to it. B5bis is only called from B1, B2 or B3 using the download button at the right of the screen.
+# Code
 
-B5 is never called but it's a reference concerning the headers to use and how to do a file transfer.
+## Requirements
 
-## Reporting issues
+ * PHP >= 5.3.23
+ * [Composer](https://getcomposer.org/)
 
-You can report issues on [answers.nuxeo.com](http://answers.nuxeo.com).
+## Getting Started
 
-# Licensing
+### Server
 
-Most of the source code in the Nuxeo Platform is copyright Nuxeo SA and
-contributors, and licensed under the GNU Lesser General Public License v2.1.
+- [Download a Nuxeo server](http://www.nuxeo.com/en/downloads) (the zip version)
 
-See [/licenses](/licenses) and the documentation page [Licenses](http://doc.nuxeo.com/x/gIK7) for details.
+- Unzip it
+
+- Linux/Mac:
+    - `NUXEO_HOME/bin/nuxeoctl start`
+- Windows:
+    - `NUXEO_HOME\bin\nuxeoctl.bat start`
+
+- From your browser, go to `http://localhost:8080/nuxeo`
+
+- Follow Nuxeo Wizard by clicking 'Next' buttons, re-start once completed
+
+- Check Nuxeo correctly re-started `http://localhost:8080/nuxeo`
+  - username: Administrator
+  - password: Administrator
+
+### Library import
+
+Download [Nuxeo Automation PHP Client 1.1.0](https://github.com/nuxeo/nuxeo-automation-php-client/archive/1.1.0.tar.gz).
+
+Composer:
+
+```
+  "require": {
+    "nuxeo/nuxeo-automation-php-client": "~1.1.0"
+  }
+```
+
+### Usage
+
+#### Creating a Client
+
+For a given `url`:
+
+```php
+$url = 'http://localhost:8080/nuxeo';
+```
+
+And given credentials:
+
+```php
+use Nuxeo\Client\Api\NuxeoClient;
+
+$client = new NuxeoClient($url, 'Administrator', 'Administrator');
+```
+
+```php
+// For defining all schemas
+$client = $client.schemas("*");
+```
+
+#### APIs
+
+##### Automation API
+
+To use the Automation API, `Nuxeo\Client\Api\NuxeoClient#automation()` is the entry point for all calls:
+
+```php
+use Nuxeo\Client\Api\Objects\Document;
+
+// Fetch the root document
+$result = $client.automation('Repository.GetDocument').param("value", "/").execute(Document::className);
+```
+
+```php
+use Nuxeo\Client\Api\Objects\Documents;
+
+// Execute query
+$operation = $client.automation('Repository.Query').param('query', 'SELECT * FROM Document');
+$result = $operation.execute(Documents::className);
+```
+
+```php
+use Nuxeo\Client\Api\Objects\Blob;
+use Nuxeo\Client\Api\Objects\Blobs;
+
+// To upload|download blob(s)
+
+$fileBlob = Blob::fromFile('/local/file.txt', 'text/plain');
+$blob = $client.automation('Blob.AttachOnDocument').param('document', '/folder/file').input($fileBlob).execute(Blob::className);
+
+$inputBlobs = new Blobs();
+$inputBlobs.add('/local/file1.txt', 'text/plain');
+$inputBlobs.add('/local/file2.txt', 'text/plain');
+$blobs = $client.automation('Blob.AttachOnDocument').param('xpath', 'files:files').param('document', '/folder/file').input($inputBlobs).execute(Blobs::className);
+
+$resultBlob = $client.automation('Document.GetBlob').input('folder/file').execute(Blob::className);
+```
+
+#### Errors/Exceptions
+
+The main exception type is `Nuxeo\Client\Internals\Spi\NuxeoClientException` and contains:
+
+- The HTTP error status code (666 for internal errors)
+
+- An info message
+
+## Docker
+
+We provide a [docker-compose.yml](https://github.com/nuxeo/nuxeo-automation-php-client/blob/master/docker-compose.yml) for quick testing
+
+Just install docker-compose and run `docker-compose up`, you'll have a nuxeo running on http://localhost:9081/ and nginx on http://localhost:9080/
+
+You can access the samples with http://localhost:9080/samples/B1.php for example.
+
+# Contributing / Reporting issues
+
+We are glad to welcome new developers, and even simple usage feedback is great
+
+ * Ask your questions on http://answers.nuxeo.com/
+ * Report issues on this GitHub repository (see [issues link](https://github.com/nuxeo/nuxeo-automation-php-client/issues) on the right)
+
+# License
+
+[Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html)
 
 # About Nuxeo
 
-Nuxeo dramatically improves how content-based applications are built, managed and deployed, making customers more agile, innovative and successful. Nuxeo provides a next generation, enterprise ready platform for building traditional and cutting-edge content oriented applications. Combining a powerful application development environment with SaaS-based tools and a modular architecture, the Nuxeo Platform and Products provide clear business value to some of the most recognizable brands including Verizon, Electronic Arts, Sharp, FICO, the U.S. Navy, and Boeing. Nuxeo is headquartered in New York and Paris. More information is available at [www.nuxeo.com](http://www.nuxeo.com).
+The [Nuxeo Platform](http://www.nuxeo.com/products/content-management-platform/) is an open source customizable and extensible content management platform for building business applications. It provides the foundation for developing [document management](http://www.nuxeo.com/solutions/document-management/), [digital asset management](http://www.nuxeo.com/solutions/digital-asset-management/), [case management application](http://www.nuxeo.com/solutions/case-management/) and [knowledge management](http://www.nuxeo.com/solutions/advanced-knowledge-base/). You can easily add features using ready-to-use addons or by extending the platform using its extension point system.
+
+The Nuxeo Platform is developed and supported by Nuxeo, with contributions from the community.
+
+Nuxeo dramatically improves how content-based applications are built, managed and deployed, making customers more agile, innovative and successful. Nuxeo provides a next generation, enterprise ready platform for building traditional and cutting-edge content oriented applications. Combining a powerful application development environment with
+SaaS-based tools and a modular architecture, the Nuxeo Platform and Products provide clear business value to some of the most recognizable brands including Verizon, Electronic Arts, Sharp, FICO, the U.S. Navy, and Boeing. Nuxeo is headquartered in New York and Paris.
+More information is available at [www.nuxeo.com](http://www.nuxeo.com).
