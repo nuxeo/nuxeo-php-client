@@ -27,7 +27,7 @@ node('SLAVE') {
                 stage 'build'
                 sh 'rm -rf vendor && composer install'
                 stage 'tests'
-                sh 'phpunit --bootstrap vendor/autoload.php tests/Nuxeo/Tests/Client/TestNuxeoClient.php'
+                sh 'phpunit'
             }
         }
     } catch (e) {
