@@ -104,7 +104,7 @@ class TestNuxeoClient extends NuxeoTestCase {
       ->execute(Blob::className);
 
     /** @var EntityEnclosingRequestInterface $request */
-    $request = ($this->server->getReceivedRequests(true))[0];
+    list($request) = $this->server->getReceivedRequests(true);
 
     $this->assertEquals(sprintf('{"params":{},"input":"%s"}', self::MYFILE_DOCPATH), (string) $request->getBody());
     $this->assertEquals(self::MYFILE_CONTENT, file_get_contents($blob->getFile()->getPathname()));
