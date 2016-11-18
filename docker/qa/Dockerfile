@@ -12,4 +12,4 @@ RUN php /tmp/composer-setup.php --no-ansi --install-dir=/usr/local/bin --filenam
 
 ENV PATH=$PATH:vendor/bin
 
-RUN apt-get update && apt-get install -y nodejs-legacy git
+RUN apt-get update && apt-get install -y nodejs-legacy git unzip
