@@ -32,7 +32,7 @@ Execute a dc:created query to nuxeo. Fill the blank with a date format Y/M/D
 <br/>
 
 <?php
-include ('../vendor/autoload.php');
+require_once '../vendor/autoload.php';
 
 function DateSearch($date) {
     $utilities = new \Nuxeo\Automation\Client\NuxeoUtilities();

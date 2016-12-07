@@ -36,7 +36,7 @@ with the type of schema to output (if left blank, print all properties)<br/>
 </form>
 <br/>
 <?php
-include ('../vendor/autoload.php');
+require_once '../vendor/autoload.php';
 
 function openDocumentPropeties($path, $propertiesSchema = '*') {
 

@@ -18,9 +18,6 @@
 
 namespace Nuxeo\Automation\Client;
 
-use Nuxeo\Automation\Client\Internals\NuxeoClientException;
-
-
 /**
  * Documents class
  *
@@ -30,31 +27,22 @@ use Nuxeo\Automation\Client\Internals\NuxeoClientException;
  */
 class NuxeoDocuments {
 
-  private $documentsList;
+  private $documentsList = array();
 
   public function __construct($newDocList) {
-    $this->documentsList = null;
-    $test = true;
-    if (!empty($newDocList['entries'])) {
-      while (false !== $test) {
-        if (is_array(current($newDocList['entries']))) {
-          $this->documentsList[] = new NuxeoDocument(current($newDocList['entries']));
-        }
-        $test = each($newDocList['entries']);
+    if(!empty($newDocList['entries']) && is_array($newDocList['entries'])) {
+      foreach($newDocList['entries'] as $entry) {
+        $this->documentsList[] = new NuxeoDocument($entry);
       }
-      $test = sizeof($this->documentsList);
-      unset($this->documentsList[$test]);
-    } elseif (!empty($newDocList['uid'])) {
+    } elseif(!empty($newDocList['uid'])) {
       $this->documentsList[] = new NuxeoDocument($newDocList);
-    } elseif (is_array($newDocList)) {
-      throw new NuxeoClientException('file not found');
-    } else {
-      return $newDocList;
+    } elseif(is_array($newDocList)) {
+      throw new \InvalidArgumentException('Could not create documents from given array');
     }
   }
 
   public function output() {
-    $value = sizeof($this->documentsList);
+    $value = count($this->documentsList);
     echo '<table>';
     echo '<tr><TH>Entity-type</TH><TH>Repository</TH><TH>uid</TH><TH>Path</TH>
 			<TH>Type</TH><TH>State</TH><TH>Title</TH><TH>Download as PDF</TH>';
@@ -76,11 +64,11 @@ class NuxeoDocuments {
    * @return NuxeoDocument|null
    */
   public function getDocument($number) {
-    $value = sizeof($this->documentsList);
-    if ($number < $value AND $number >= 0)
-      return $this->documentsList[$number];
-    else
+    if($number > count($this->documentsList)) {
       return null;
+    } else {
+      return $this->documentsList[$number];
+    }
   }
 
   public function getDocumentList() {

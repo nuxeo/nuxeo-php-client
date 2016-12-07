@@ -40,7 +40,7 @@
         </tr>
     </table>
 </form><?php
-include ('../vendor/autoload.php');
+require_once '../vendor/autoload.php';
 
 function GetBlob($path = '/default-domain/workspaces/jkjkj/test2.rtf', $blobtype = 'application/binary') {
     $eurl = explode("/", $path);
@@ -49,7 +49,7 @@ function GetBlob($path = '/default-domain/workspaces/jkjkj/test2.rtf', $blobtype
 
     $session = $client->GetSession('Administrator', 'Administrator');
 
-    $answer = $session->NewRequest("Blob.Get")->Set('input', 'doc: ' . $path)->SendRequest();
+    $answer = $session->NewRequest("Blob.Get")->Set('input', 'doc:' . $path)->SendRequest();
 
     if (!isset($answer) OR $answer == false)
         echo '$answer is not set';

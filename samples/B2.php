@@ -31,7 +31,7 @@ Execute a SELECT * FROM Document WHERE ecm:fulltext = '". $research ."' query to
 </form>
 <br/>
 <?php
-include ('../vendor/autoload.php');
+require_once '../vendor/autoload.php';
 
 function fullTextSearch($research) {
 
