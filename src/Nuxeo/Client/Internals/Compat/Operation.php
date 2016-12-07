@@ -43,8 +43,8 @@ class Operation extends BaseOperation  {
     }
   }
 
-  public function computeResponse($response, $clazz) {
-    return parent::computeResponse($response, $clazz);
+  public function computeResponse($response, $type) {
+    return parent::computeResponse($response, $type);
   }
 
 }

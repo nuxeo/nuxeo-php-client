@@ -24,28 +24,39 @@ namespace Nuxeo\Client\Api\Marshaller;
 use JMS\Serializer\DeserializationContext;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\VisitorInterface;
-use Nuxeo\Client\Api\Objects\DocRef;
+use Nuxeo\Client\Api\Objects\DirectoryEntries;
+use Nuxeo\Client\Api\Objects\DirectoryEntry;
 
-class DocRefMarshaller implements NuxeoMarshaller {
-
-  /**
-   * @param $object
-   * @param VisitorInterface $visitor
-   * @param SerializationContext $context
-   * @return string
-   */
-  public function write($object, VisitorInterface $visitor, SerializationContext $context) {
-    return 'doc:'.$object->getRef();
-  }
+class DirectoryEntriesMarshaller implements NuxeoMarshaller {
 
   /**
    * @param $in
    * @param VisitorInterface $visitor
    * @param DeserializationContext $context
-   * @return DocRef
+   * @return DirectoryEntries
    */
   public function read($in, VisitorInterface $visitor, DeserializationContext $context) {
-    return new DocRef($in);
+    $data = $context->accept($in, $this->getType());
+    $visitor->setNavigator($context->getNavigator());
+
+    return new DirectoryEntries($data);
+  }
+
+  /**
+   * @param DirectoryEntries $object
+   * @param VisitorInterface $visitor
+   * @param SerializationContext $context
+   * @return string
+   */
+  public function write($object, VisitorInterface $visitor, SerializationContext $context) {
+    return $context->accept($object, $this->getType());
+  }
+
+  /**
+   * @return array
+   */
+  protected function getType() {
+    return array('name' => 'array', 'params' => array(array('name' => DirectoryEntry::className)));
   }
 
 }

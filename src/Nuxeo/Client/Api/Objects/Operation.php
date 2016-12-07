@@ -102,16 +102,16 @@ class Operation extends NuxeoEntity {
   }
 
   /**
-   * @param string $clazz
+   * @param string $type
    * @param string $operationId
    * @return mixed
    * @throws NuxeoClientException
    * @throws NoSuchOperationException
    * @throws ClassCastException
    */
-  public function execute($clazz, $operationId = null) {
+  public function execute($type = 'array', $operationId = null) {
     $response = $this->_doExecute($operationId);
-    return $this->computeResponse($response, $clazz);
+    return $this->computeResponse($response, $type);
   }
 
   /**
@@ -150,12 +150,12 @@ class Operation extends NuxeoEntity {
 
       $response = $this->nuxeoClient->post(
         $this->computeRequestUrl($operationId),
-        $this->nuxeoClient->getConverter()->write($this->body),
+        $this->nuxeoClient->getConverter()->writeJSON($this->body),
         $blobs);
     } else {
       $response = $this->nuxeoClient->post(
         $this->computeRequestUrl($operationId),
-        $this->nuxeoClient->getConverter()->write($this->body));
+        $this->nuxeoClient->getConverter()->writeJSON($this->body));
     }
     return $response;
   }

@@ -21,6 +21,7 @@
 namespace Nuxeo\Client\Internals\Spi\Serializer;
 
 use JMS\Serializer\JsonSerializationVisitor as BaseSerializationVisitor;
+use JMS\Serializer\Naming\PropertyNamingStrategyInterface;
 
 /**
  * Class JsonSerializationVisitor
@@ -31,8 +32,21 @@ use JMS\Serializer\JsonSerializationVisitor as BaseSerializationVisitor;
  */
 class JsonSerializationVisitor extends BaseSerializationVisitor {
 
+  public function __construct(PropertyNamingStrategyInterface $namingStrategy) {
+    parent::__construct($namingStrategy);
+
+    if(defined('JSON_UNESCAPED_SLASHES')) {
+      $this->setOptions(JSON_UNESCAPED_SLASHES);
+    }
+
+  }
+
   public function getResult() {
-    return str_replace('\/', '/', parent::getResult());
+    if(!defined('JSON_UNESCAPED_SLASHES')) {
+      return str_replace('\/', '/', parent::getResult());
+    } else {
+      return parent::getResult();
+    }
   }
 
 }

@@ -26,6 +26,7 @@ class OperationBody {
 
   /**
    * @Serializer\SerializedName("params")
+   * @Serializer\Accessor(getter="serializeParams",setter="setParameters")
    * @var array
    */
   protected $parameters = array();
@@ -105,6 +106,18 @@ class OperationBody {
   public function setInput($input) {
     $this->input = $input;
     return $this;
+  }
+
+  /**
+   * Enforce empty as {} instead of []
+   * @return array|\stdClass
+   */
+  public function serializeParams() {
+    if(empty($this->parameters)) {
+      return new \stdClass();
+    } else {
+      return $this->parameters;
+    }
   }
 
 }

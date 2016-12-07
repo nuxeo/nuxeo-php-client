@@ -21,15 +21,17 @@
 namespace Nuxeo\Client\Api\Marshaller;
 
 
+use JMS\Serializer\DeserializationContext;
 use JMS\Serializer\GraphNavigator;
 use JMS\Serializer\Handler\HandlerRegistry;
 use JMS\Serializer\JsonDeserializationVisitor;
-use JMS\Serializer\JsonSerializationVisitor;
 use JMS\Serializer\Naming\IdenticalPropertyNamingStrategy;
 use JMS\Serializer\Naming\SerializedNameAnnotationStrategy;
+use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
 use JMS\Serializer\VisitorInterface;
+use Nuxeo\Client\Internals\Spi\Serializer\JsonSerializationVisitor;
 
 class NuxeoConverter {
 
@@ -72,17 +74,17 @@ class NuxeoConverter {
    * @param mixed $object
    * @return string
    */
-  public function write($object) {
+  public function writeJSON($object) {
     return $this->getSerializer()->serialize($object, 'json');
   }
 
   /**
    * @param string $data
-   * @param string $clazz
+   * @param string $type
    * @return mixed
    */
-  public function read($data, $clazz) {
-    return $this->getSerializer()->deserialize($data, $clazz, 'json');
+  public function readJSON($data, $type) {
+    return $this->getSerializer()->deserialize($data, $type, 'json');
   }
 
   /**
@@ -92,19 +94,10 @@ class NuxeoConverter {
     if(null === $this->serializer) {
       $strategy = new SerializedNameAnnotationStrategy(new IdenticalPropertyNamingStrategy());
 
-      if(defined('JSON_UNESCAPED_SLASHES')) {
-        $jsonSerializer = new JsonSerializationVisitor($strategy);
-        $jsonSerializer->setOptions(JSON_UNESCAPED_SLASHES);
-      } else {
-        $jsonSerializer = new \Nuxeo\Client\Internals\Spi\Serializer\JsonSerializationVisitor($strategy);
-      }
-
-      $jsonSerializer->setOptions($jsonSerializer->getOptions()|JSON_FORCE_OBJECT);
-
       $self = $this;
 
       $this->serializer = SerializerBuilder::create()
-        ->setSerializationVisitor('json', $jsonSerializer)
+        ->setSerializationVisitor('json', new JsonSerializationVisitor($strategy))
         ->setDeserializationVisitor('json', new JsonDeserializationVisitor($strategy))
         ->configureHandlers(function(HandlerRegistry $registry) use ($self) {
           foreach($self->getMarshallers() as $type => $marshaller) {
@@ -112,18 +105,18 @@ class NuxeoConverter {
               GraphNavigator::DIRECTION_SERIALIZATION,
               $type,
               'json',
-              function(VisitorInterface $visitor, $object, array $type) use ($self) {
+              function(VisitorInterface $visitor, $object, array $type, SerializationContext $context) use ($self) {
                 $marshaller = $self->getMarshaller($type['name']);
-                return $marshaller->write($object);
+                return $marshaller->write($object, $visitor, $context);
               }
             );
             $registry->registerHandler(
               GraphNavigator::DIRECTION_DESERIALIZATION,
               $type,
               'json',
-              function(VisitorInterface $visitor, $object, array $type) use ($self) {
+              function(VisitorInterface $visitor, $object, array $type, DeserializationContext $context) use ($self) {
                 $marshaller = $self->getMarshaller($type['name']);
-                return $marshaller->read($object);
+                return $marshaller->read($object, $visitor, $context);
               }
             );
           }

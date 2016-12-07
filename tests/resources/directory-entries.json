@@ -1,0 +1,44 @@
+[
+  {
+    "ordering": 10000000,
+    "obsolete": 0,
+    "id": "europe",
+    "label": "label.directories.continent.europe"
+  },
+  {
+    "ordering": 10000000,
+    "obsolete": 0,
+    "id": "africa",
+    "label": "label.directories.continent.africa"
+  },
+  {
+    "ordering": 10000000,
+    "obsolete": 0,
+    "id": "north-america",
+    "label": "label.directories.continent.north-america"
+  },
+  {
+    "ordering": 10000000,
+    "obsolete": 0,
+    "id": "south-america",
+    "label": "label.directories.continent.south-america"
+  },
+  {
+    "ordering": 10000000,
+    "obsolete": 0,
+    "id": "asia",
+    "label": "label.directories.continent.asia"
+  },
+  {
+    "ordering": 10000000,
+    "obsolete": 0,
+    "id": "oceania",
+    "label": "label.directories.continent.oceania"
+  },
+  {
+    "ordering": 10000000,
+    "obsolete": 0,
+    "id": "antarctica",
+    "label": "label.directories.continent.antarctica"
+  }
+]

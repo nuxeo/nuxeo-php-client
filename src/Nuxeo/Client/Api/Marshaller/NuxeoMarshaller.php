@@ -21,11 +21,15 @@
 namespace Nuxeo\Client\Api\Marshaller;
 
 
+use JMS\Serializer\DeserializationContext;
+use JMS\Serializer\SerializationContext;
+use JMS\Serializer\VisitorInterface;
+
 interface NuxeoMarshaller {
 
-  public function read($in);
+  public function read($in, VisitorInterface $visitor, DeserializationContext $context);
 
-  public function write($object);
+  public function write($object, VisitorInterface $visitor, SerializationContext $context);
 
   const className = __CLASS__;
 

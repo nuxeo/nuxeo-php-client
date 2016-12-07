@@ -22,9 +22,7 @@ namespace Nuxeo\Client\Api;
 
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Guzzle\Common\Exception\GuzzleException;
-use Guzzle\Common\Exception\InvalidArgumentException;
 use Guzzle\Http\Client;
-use Guzzle\Http\Exception\RequestException;
 use Guzzle\Http\Message\Request;
 use Guzzle\Http\Message\RequestInterface;
 use Guzzle\Http\Message\Response;
@@ -32,9 +30,11 @@ use Guzzle\Http\Url;
 use Guzzle\Plugin\Log\LogPlugin;
 use Nuxeo\Client\Api\Marshaller\BlobMarshaller;
 use Nuxeo\Client\Api\Marshaller\BlobsMarshaller;
+use Nuxeo\Client\Api\Marshaller\DirectoryEntriesMarshaller;
 use Nuxeo\Client\Api\Marshaller\NuxeoConverter;
 use Nuxeo\Client\Api\Objects\Blob;
 use Nuxeo\Client\Api\Objects\Blobs;
+use Nuxeo\Client\Api\Objects\DirectoryEntries;
 use Nuxeo\Client\Api\Objects\Operation;
 use Nuxeo\Client\Internals\Spi\Http\EntityEnclosingRequest;
 use Nuxeo\Client\Internals\Spi\Http\RequestFactory;
@@ -200,6 +200,7 @@ class NuxeoClient {
    * @return NuxeoClient
    */
   protected function setupDefaultMarshallers() {
+    $this->getConverter()->registerMarshaller(DirectoryEntries::className, new DirectoryEntriesMarshaller());
     $this->getConverter()->registerMarshaller(Blob::className, new BlobMarshaller());
     $this->getConverter()->registerMarshaller(Blobs::className, new BlobsMarshaller());
     return $this;

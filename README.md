@@ -80,15 +80,15 @@ To use the Automation API, `Nuxeo\Client\Api\NuxeoClient#automation()` is the en
 use Nuxeo\Client\Api\Objects\Document;
 
 // Fetch the root document
-$result = $client.automation('Repository.GetDocument').param("value", "/").execute(Document::className);
+$result = $client->automation('Repository.GetDocument')->param("value", "/")->execute(Document::className);
 ```
 
 ```php
 use Nuxeo\Client\Api\Objects\Documents;
 
 // Execute query
-$operation = $client.automation('Repository.Query').param('query', 'SELECT * FROM Document');
-$result = $operation.execute(Documents::className);
+$operation = $client->automation('Repository.Query')->param('query', 'SELECT * FROM Document');
+$result = $operation->execute(Documents::className);
 ```
 
 ```php
@@ -98,14 +98,14 @@ use Nuxeo\Client\Api\Objects\Blobs;
 // To upload|download blob(s)
 
 $fileBlob = Blob::fromFile('/local/file.txt', 'text/plain');
-$blob = $client.automation('Blob.AttachOnDocument').param('document', '/folder/file').input($fileBlob).execute(Blob::className);
+$blob = $client->automation('Blob.AttachOnDocument')->param('document', '/folder/file')->input($fileBlob)->execute(Blob::className);
 
 $inputBlobs = new Blobs();
-$inputBlobs.add('/local/file1.txt', 'text/plain');
-$inputBlobs.add('/local/file2.txt', 'text/plain');
-$blobs = $client.automation('Blob.AttachOnDocument').param('xpath', 'files:files').param('document', '/folder/file').input($inputBlobs).execute(Blobs::className);
+$inputBlobs->add('/local/file1.txt', 'text/plain');
+$inputBlobs->add('/local/file2.txt', 'text/plain');
+$blobs = $client->automation('Blob.AttachOnDocument')->param('xpath', 'files:files')->param('document', '/folder/file')->input($inputBlobs)->execute(Blobs::className);
 
-$resultBlob = $client.automation('Document.GetBlob').input('folder/file').execute(Blob::className);
+$resultBlob = $client->automation('Document.GetBlob')->input('folder/file')->execute(Blob::className);
 ```
 
 #### Errors/Exceptions

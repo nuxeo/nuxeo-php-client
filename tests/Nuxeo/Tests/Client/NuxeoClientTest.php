@@ -26,6 +26,7 @@ use Guzzle\Http\Message\Response;
 use Nuxeo\Client\Api\Constants;
 use Nuxeo\Client\Api\NuxeoClient;
 use Nuxeo\Client\Api\Objects\Blob;
+use Nuxeo\Client\Api\Objects\DirectoryEntries;
 use Nuxeo\Client\Api\Objects\Document;
 use Nuxeo\Client\Api\Objects\Documents;
 
@@ -142,13 +143,60 @@ class TestNuxeoClient extends NuxeoTestCase {
     $this->assertCount(1, $requests);
 
     /** @var EntityEnclosingRequest $request */
-    $request = $requests[0];
+    list($request) = $this->server->getReceivedRequests(true);
 
     $this->assertArrayHasKey('content-type', $request->getHeaders());
     $this->assertStringMatchesFormat(
       'multipart/related;boundary=%s',
       $request->getHeader('content-type')->__toString());
 
+  }
+
+  public function testDirectoryEntries() {
+    $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, self::PASSWORD);
+
+    $this->server->enqueue(array(
+      new Response(200, array('Content-Type' => Constants::CONTENT_TYPE_JSON), file_get_contents($this->getResource('directory-entries.json')))
+    ));
+
+    $continents = $client->automation('Directory.Entries')
+      ->param('directoryName', 'continent')
+      ->execute(DirectoryEntries::className);
+
+    $this->assertCount(1, $this->server->getReceivedRequests(true));
+
+    $this->assertInstanceOf(DirectoryEntries::className, $continents);
+    $this->assertCount(7, $continents);
+    $this->server->flush();
+
+    $ids = array('id001', 'id002', 'id003', 'id004');
+    $this->server->enqueue(array(
+      new Response(200, array('Content-Type' => Constants::CONTENT_TYPE_JSON), json_encode($ids))
+    ));
+
+    $continents = $client->automation('Directory.CreateEntries')
+      ->param('directoryName', 'continent')
+      ->param('entries', $client->getConverter()->writeJSON(DirectoryEntries::fromArray(array(
+        array('id' => 'id001', 'label' => 'label.continent.one'),
+        array('id' => 'id002', 'label' => 'label.continent.two', 'ordering' => 42),
+        array('id' => 'id003', 'label' => 'label.continent.three', 'obsolete' => 1),
+        array('id' => 'id004', 'label' => 'label.continent.four', 'ordering' => 666, 'obsolete' => 5),
+      ))))
+      ->execute();
+
+    $this->assertCount(1, $requests = $this->server->getReceivedRequests(true));
+
+    /** @var EntityEnclosingRequestInterface $request */
+    list($request) = $this->server->getReceivedRequests(true);
+
+    $this->assertNotNull($decoded = json_decode((string) $request->getBody(), true));
+    $this->assertTrue(!empty($decoded['params']['entries']) && is_string($decoded['params']['entries']));
+    $this->assertTrue(null !== ($entries = json_decode($decoded['params']['entries'], true)) && !empty($entries[0]['id']));
+    $this->assertEquals('id001', $entries[0]['id']);
+    $this->assertEquals('label.continent.one', $entries[0]['label']);
+    $this->assertEquals(42, $entries[1]['ordering']);
+    $this->assertEquals(5, $entries[3]['obsolete']);
+    $this->assertEquals($ids, $continents);
   }
 
 }

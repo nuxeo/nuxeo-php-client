@@ -21,13 +21,29 @@
 namespace Nuxeo\Client\Api\Marshaller;
 
 
+use JMS\Serializer\DeserializationContext;
+use JMS\Serializer\SerializationContext;
+use JMS\Serializer\VisitorInterface;
+
 class BlobMarshaller implements NuxeoMarshaller {
 
-  public function read($in) {
+  /**
+   * @param $in
+   * @param VisitorInterface $visitor
+   * @param DeserializationContext $context
+   * @return null
+   */
+  public function read($in, VisitorInterface $visitor, DeserializationContext $context) {
     return null;
   }
 
-  public function write($object) {
+  /**
+   * @param $object
+   * @param VisitorInterface $visitor
+   * @param SerializationContext $context
+   * @return null
+   */
+  public function write($object, VisitorInterface $visitor, SerializationContext $context) {
     return null;
   }
 
