@@ -68,16 +68,39 @@ class NuxeoClient {
    * @param string $password
    * @throws NuxeoClientException
    */
-  public function __construct($url = 'http://localhost:8080/nuxeo', $username = 'Administrator', $password = 'Administrator') {
+  public function __construct($url = 'http://localhost:8080/nuxeo', $username = 'Administrator', $password = 'Administrator', $authType = 'BASIC', $portalKey = "") {
     try {
       $this->baseUrl = Url::factory($url);
-      $this->httpClient = new Client($url, array(
-        Client::REQUEST_OPTIONS => array(
-          'headers' => array(
-            'Content-Type' => 'application/json+nxrequest'
-          )
-        )
-      ));
+      switch($authType) {
+         default:
+         case 'BASIC':
+            $this->httpClient = new Client($url, array(
+              Client::REQUEST_OPTIONS => array(
+                'headers' => array(
+                  'Content-Type' => 'application/json+nxrequest'
+                )
+              )
+            ));
+           break;
+         case 'PORTAL':
+           $timestamp = time() * 1000;
+           $random = rand(0, $timestamp);
+           $token = $timestamp . Constants::TOKEN_SEP . $random . Constants::TOKEN_SEP . $portalKey . Constants::TOKEN_SEP . $username;
+           $token = hash('MD5', $token, true);
+           $token = base64_encode($token);
+           $this->httpClient = new Client($url, array(
+              Client::REQUEST_OPTIONS => array(
+                'headers' => array(
+                  'Content-Type' => 'application/json+nxrequest',
+                  Constants::TS_HEADER => $timestamp,
+                  Constants::RANDOM_HEADER => $random,
+                  Constants::TOKEN_HEADER => $token,
+                  Constants::USER_HEADER => $username
+                )
+              )
+            ));
+           break;
+      }
     } catch(GuzzleException $ex) {
       throw NuxeoClientException::fromPrevious($ex);
     }
@@ -86,17 +109,18 @@ class NuxeoClient {
 
     $self = $this;
 
-    /**
-     * @param RequestInterface $request
-     */
-    $this->interceptors[] = function($request) use ($self, $username, $password) {
-      try {
-        $request->setAuth($username, $password);
-      } catch(GuzzleException $ex) {
-        throw NuxeoClientException::fromPrevious($ex);
-      }
-    };
-
+    if ($authType == 'BASIC') {
+       /**
+        * @param RequestInterface $request
+        */
+       $this->interceptors[] = function($request) use ($self, $username, $password) {
+         try {
+           $request->setAuth($username, $password);
+         } catch(GuzzleException $ex) {
+           throw NuxeoClientException::fromPrevious($ex);
+         }
+       };
+    }
   }
 
   /**
