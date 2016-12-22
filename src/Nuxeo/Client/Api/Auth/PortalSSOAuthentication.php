@@ -21,32 +21,46 @@
 namespace Nuxeo\Client\Api\Auth;
 
 
-use Guzzle\Common\Exception\GuzzleException;
 use Guzzle\Http\Message\RequestInterface;
 use Nuxeo\Client\Internals\Spi\Auth\AuthenticationInterceptor;
 
-class BasicAuthentication implements AuthenticationInterceptor {
+class PortalSSOAuthentication implements AuthenticationInterceptor {
 
+  const NX_USER = 'NX_USER';
+  const NX_TOKEN = 'NX_TOKEN';
+  const NX_RD = 'NX_RD';
+  const NX_TS = 'NX_TS';
+
+  protected $secret;
   protected $username;
 
-  protected $password;
-
   /**
-   * BasicAuthentication constructor.
+   * PortalSSOAuthentication constructor.
+   * @param $secret
    * @param $username
-   * @param $password
    */
-  public function __construct($username, $password) {
+  public function __construct($secret, $username) {
+    $this->secret = $secret;
     $this->username = $username;
-    $this->password = $password;
   }
 
   /**
    * @param RequestInterface $request
-   * @throws GuzzleException
    */
   public function proceed($request) {
-    $request->setAuth($this->username, $this->password);
+    $timestamp = time() * 1000;
+    $random = random_int(0, $timestamp);
+
+    $clearToken = implode(':', array($timestamp, $random, $this->secret, $this->username));
+    $hashedToken = hash('md5', $clearToken, true);
+    $base64HashedToken = base64_encode($hashedToken);
+
+    $request->addHeaders(array(
+      self::NX_TS => $timestamp,
+      self::NX_RD => $random,
+      self::NX_TOKEN => $base64HashedToken,
+      self::NX_USER => $this->username
+    ));
   }
 
 }

@@ -23,6 +23,7 @@ namespace Nuxeo\Tests\Client;
 use Guzzle\Http\Message\EntityEnclosingRequest;
 use Guzzle\Http\Message\EntityEnclosingRequestInterface;
 use Guzzle\Http\Message\Response;
+use Nuxeo\Client\Api\Auth\PortalSSOAuthentication;
 use Nuxeo\Client\Api\Constants;
 use Nuxeo\Client\Api\NuxeoClient;
 use Nuxeo\Client\Api\Objects\Blob;
@@ -59,6 +60,30 @@ class TestNuxeoClient extends NuxeoTestCase {
 
     $this->assertInstanceOf(Document::className, $userDoc);
     $this->assertEquals(self::LOGIN, $userDoc->getUid());
+  }
+
+  public function testPortalSSOAuth() {
+    $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, self::PASSWORD);
+
+    $this->server->enqueue(array(
+      new Response(200, array('Content-Type' => Constants::CONTENT_TYPE_JSON), file_get_contents($this->getResource('user.json')))
+    ));
+
+    $client
+      ->setAuthenticationMethod(new PortalSSOAuthentication('secret', self::LOGIN))
+      ->automation()
+      ->execute(Document::className, 'User.Get');
+
+    $requests = $this->server->getReceivedRequests(true);
+
+    /** @var EntityEnclosingRequest $request */
+    list($request) = $requests;
+
+    $this->assertFalse($request->hasHeader('Authentication'));
+    $this->assertTrue($request->hasHeader(PortalSSOAuthentication::NX_TS));
+    $this->assertTrue($request->hasHeader(PortalSSOAuthentication::NX_RD));
+    $this->assertTrue($request->hasHeader(PortalSSOAuthentication::NX_TOKEN));
+    $this->assertTrue($request->hasHeader(PortalSSOAuthentication::NX_USER));
   }
 
   /**

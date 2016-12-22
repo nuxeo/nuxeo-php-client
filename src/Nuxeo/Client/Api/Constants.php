@@ -41,14 +41,4 @@ class Constants {
 
   const ENTITY_TYPE_OPERATION = 'operation';
   
-  const RANDOM_HEADER = 'NX_RD';
-
-  const TOKEN_SEP = ':';
-
-  const TS_HEADER = 'NX_TS';
-
-  const TOKEN_HEADER = 'NX_TOKEN';
-
-  const USER_HEADER = 'NX_USER';  
-
 }

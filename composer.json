@@ -20,7 +20,8 @@
     "roave/security-advisories": "dev-master",
     "guzzlehttp/guzzle": "3.8.*",
     "jms/serializer": "0.16.*",
-    "zendframework/zend-http": "2.4.*"
+    "zendframework/zend-http": "2.4.*",
+    "paragonie/random_compat": "2.0.*"
   },
   "require-dev": {
     "phpunit/phpunit": "4.8.*",
