@@ -65,9 +65,24 @@ use Nuxeo\Client\Api\NuxeoClient;
 $client = new NuxeoClient($url, 'Administrator', 'Administrator');
 ```
 
+Options:
+
 ```php
 // For defining all schemas
-$client = $client.schemas("*");
+$client = $client->schemas("*");
+```
+
+```php
+// For changing authentication method
+
+use Nuxeo\Client\Api\Auth\PortalSSOAuthentication;
+use Nuxeo\Client\Api\Auth\TokenAuthentication;
+
+// PortalSSOAuthentication with nuxeo-platform-login-portal-sso
+$client = $client->setAuthenticationMethod(new PortalSSOAuthentication($secret, $username));
+
+// TokenAuthentication
+$client = $client->setAuthenticationMethod(new TokenAuthentication($token));
 ```
 
 #### APIs
