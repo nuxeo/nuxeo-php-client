@@ -3,8 +3,8 @@ nuxeo:
   ports:
     - "9081:8080"
   environment:
-    NUXEO_PACKAGES: nuxeo-jsf-ui nuxeo-api-playground
-    NUXEO_TEMPLATES: /opt/nuxeo/config/custom
+      NUXEO_PACKAGES: nuxeo-jsf-ui nuxeo-api-playground
+      NUXEO_TEMPLATES: "\\/opt\\/nuxeo\\/config\\/custom"
   volumes:
     - ./docker/nuxeo/nuxeo.defaults:/opt/nuxeo/config/custom/nuxeo.defaults
     - ./docker/nuxeo/custom-config.xml:/opt/nuxeo/config/custom/nxserver/config/custom-config.xml

@@ -24,23 +24,35 @@ namespace Nuxeo\Client\Api\Marshaller;
 use JMS\Serializer\DeserializationContext;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\VisitorInterface;
-use Nuxeo\Client\Api\Objects\DirectoryEntries;
-use Nuxeo\Client\Api\Objects\DirectoryEntry;
 
-class DirectoryEntriesMarshaller extends AbstractJsonObjectMarshaller {
+abstract class AbstractJsonObjectMarshaller implements NuxeoMarshaller {
+
+  abstract protected function getType();
+
+  abstract protected function getClassName();
 
   /**
-   * @return string
+   * @param $in
+   * @param VisitorInterface $visitor
+   * @param DeserializationContext $context
+   * @return mixed
    */
-  protected function getClassname() {
-    return DirectoryEntries::className;
+  public function read($in, VisitorInterface $visitor, DeserializationContext $context) {
+    $data = $context->accept($in, $this->getType());
+    $visitor->setNavigator($context->getNavigator());
+
+    $className = $this->getClassName();
+    return new $className($data);
   }
 
   /**
-   * @return array
+   * @param mixed $object
+   * @param VisitorInterface $visitor
+   * @param SerializationContext $context
+   * @return string
    */
-  protected function getType() {
-    return array('name' => 'array', 'params' => array(array('name' => DirectoryEntry::className)));
+  public function write($object, VisitorInterface $visitor, SerializationContext $context) {
+    return $context->accept($object, $this->getType());
   }
 
 }
