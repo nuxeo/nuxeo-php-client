@@ -28,6 +28,7 @@ use Guzzle\Http\Message\RequestInterface;
 use Guzzle\Http\Message\Response;
 use Guzzle\Http\Url;
 use Guzzle\Plugin\Log\LogPlugin;
+use Nuxeo\Client\Api\Auth\BasicAuthentication;
 use Nuxeo\Client\Api\Marshaller\BlobMarshaller;
 use Nuxeo\Client\Api\Marshaller\BlobsMarshaller;
 use Nuxeo\Client\Api\Marshaller\DirectoryEntriesMarshaller;
@@ -36,9 +37,12 @@ use Nuxeo\Client\Api\Objects\Blob;
 use Nuxeo\Client\Api\Objects\Blobs;
 use Nuxeo\Client\Api\Objects\DirectoryEntries;
 use Nuxeo\Client\Api\Objects\Operation;
+use Nuxeo\Client\Internals\Spi\Auth\AuthenticationInterceptor;
 use Nuxeo\Client\Internals\Spi\Http\EntityEnclosingRequest;
 use Nuxeo\Client\Internals\Spi\Http\RequestFactory;
+use Nuxeo\Client\Internals\Spi\Interceptor;
 use Nuxeo\Client\Internals\Spi\NuxeoClientException;
+use Nuxeo\Client\Internals\Spi\SimpleInterceptor;
 
 AnnotationRegistry::registerLoader('class_exists');
 
@@ -48,8 +52,14 @@ AnnotationRegistry::registerLoader('class_exists');
  */
 class NuxeoClient {
 
+  /**
+   * @var string
+   */
   private $baseUrl;
 
+  /**
+   * @var Interceptor[]
+   */
   private $interceptors = array();
 
   /**
@@ -68,59 +78,24 @@ class NuxeoClient {
    * @param string $password
    * @throws NuxeoClientException
    */
-  public function __construct($url = 'http://localhost:8080/nuxeo', $username = 'Administrator', $password = 'Administrator', $authType = 'BASIC', $portalKey = "") {
+  public function __construct($url = 'http://localhost:8080/nuxeo', $username = 'Administrator', $password = 'Administrator') {
     try {
       $this->baseUrl = Url::factory($url);
-      switch($authType) {
-         default:
-         case 'BASIC':
-            $this->httpClient = new Client($url, array(
-              Client::REQUEST_OPTIONS => array(
-                'headers' => array(
-                  'Content-Type' => 'application/json+nxrequest'
-                )
-              )
-            ));
-           break;
-         case 'PORTAL':
-           $timestamp = time() * 1000;
-           $random = rand(0, $timestamp);
-           $token = $timestamp . Constants::TOKEN_SEP . $random . Constants::TOKEN_SEP . $portalKey . Constants::TOKEN_SEP . $username;
-           $token = hash('MD5', $token, true);
-           $token = base64_encode($token);
-           $this->httpClient = new Client($url, array(
-              Client::REQUEST_OPTIONS => array(
-                'headers' => array(
-                  'Content-Type' => 'application/json+nxrequest',
-                  Constants::TS_HEADER => $timestamp,
-                  Constants::RANDOM_HEADER => $random,
-                  Constants::TOKEN_HEADER => $token,
-                  Constants::USER_HEADER => $username
-                )
-              )
-            ));
-           break;
-      }
+      $this->httpClient = new Client($url, array(
+        Client::REQUEST_OPTIONS => array(
+          'headers' => array(
+            'Content-Type' => 'application/json+nxrequest'
+          )
+        )
+      ));
     } catch(GuzzleException $ex) {
       throw NuxeoClientException::fromPrevious($ex);
     }
 
     $this->httpClient->setRequestFactory(new RequestFactory());
 
-    $self = $this;
+    $this->setAuthenticationMethod(new BasicAuthentication($username, $password));
 
-    if ($authType == 'BASIC') {
-       /**
-        * @param RequestInterface $request
-        */
-       $this->interceptors[] = function($request) use ($self, $username, $password) {
-         try {
-           $request->setAuth($username, $password);
-         } catch(GuzzleException $ex) {
-           throw NuxeoClientException::fromPrevious($ex);
-         }
-       };
-    }
   }
 
   /**
@@ -169,6 +144,20 @@ class NuxeoClient {
   }
 
   /**
+   * @param AuthenticationInterceptor $authenticationInterceptor
+   * @return NuxeoClient
+   */
+  public function setAuthenticationMethod(AuthenticationInterceptor $authenticationInterceptor) {
+    foreach($this->interceptors as $i => $interceptor) {
+      if($interceptor instanceof AuthenticationInterceptor) {
+        unset($this->interceptors[$i]);
+      }
+    }
+    $this->interceptors[] = $authenticationInterceptor;
+    return $this;
+  }
+
+  /**
    * @param string $name
    * @param string $value
    * @return NuxeoClient
@@ -176,12 +165,11 @@ class NuxeoClient {
   public function header($name, $value) {
     $self = $this;
 
-    /**
-     * @param RequestInterface $request
-     */
-    $this->interceptors[] = function($request) use ($self, $name, $value) {
-      $request->addHeader($name, $value);
-    };
+    $this->interceptors[] = new SimpleInterceptor(
+      function(RequestInterface $request) use ($self, $name, $value) {
+        $request->addHeader($name, $value);
+      }
+    );
 
     return $this;
   }
@@ -243,7 +231,7 @@ class NuxeoClient {
    */
   protected function interceptors($request) {
     foreach($this->interceptors as $interceptor) {
-      $interceptor($request);
+      $interceptor->proceed($request);
     }
     return $this;
   }

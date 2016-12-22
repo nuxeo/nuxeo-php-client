@@ -29,6 +29,7 @@ use Nuxeo\Client\Api\Objects\Blob;
 use Nuxeo\Client\Api\Objects\DirectoryEntries;
 use Nuxeo\Client\Api\Objects\Document;
 use Nuxeo\Client\Api\Objects\Documents;
+use Nuxeo\Client\Api\Utils\ArrayIterator;
 
 class TestNuxeoClient extends NuxeoTestCase {
 
@@ -40,6 +41,22 @@ class TestNuxeoClient extends NuxeoTestCase {
     ));
 
     $userDoc = $client->automation()->execute(Document::className, 'User.Get');
+
+    $requests = $this->server->getReceivedRequests(true);
+
+    $this->assertCount(1, $requests);
+
+    /** @var EntityEnclosingRequest $request */
+    list($request) = $requests;
+
+    $this->assertTrue($request->hasHeader('Authorization'));
+
+    list($username, $password) = explode(':', base64_decode(ArrayIterator::fromArray(explode(
+      ' ', $request->getHeader('Authorization')->getIterator()->current()))->offsetGet(1)));
+
+    $this->assertEquals(self::LOGIN, $username);
+    $this->assertEquals(self::PASSWORD, $password);
+
     $this->assertInstanceOf(Document::className, $userDoc);
     $this->assertEquals(self::LOGIN, $userDoc->getUid());
   }
@@ -143,7 +160,7 @@ class TestNuxeoClient extends NuxeoTestCase {
     $this->assertCount(1, $requests);
 
     /** @var EntityEnclosingRequest $request */
-    list($request) = $this->server->getReceivedRequests(true);
+    list($request) = $requests;
 
     $this->assertArrayHasKey('content-type', $request->getHeaders());
     $this->assertStringMatchesFormat(
@@ -187,7 +204,7 @@ class TestNuxeoClient extends NuxeoTestCase {
     $this->assertCount(1, $requests = $this->server->getReceivedRequests(true));
 
     /** @var EntityEnclosingRequestInterface $request */
-    list($request) = $this->server->getReceivedRequests(true);
+    list($request) = $requests;
 
     $this->assertNotNull($decoded = json_decode((string) $request->getBody(), true));
     $this->assertTrue(!empty($decoded['params']['entries']) && is_string($decoded['params']['entries']));
