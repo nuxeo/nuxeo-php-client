@@ -16,7 +16,7 @@
  *
  */
 
-namespace Nuxeo\Client\Api\Objects;
+namespace Nuxeo\Client\Api\Objects\Operation;
 
 
 use JMS\Serializer\Annotation as Serializer;
@@ -27,19 +27,19 @@ class Counter {
 
   /**
    * @var CounterTimestampedValue[]
-   * @Serializer\Type("array<Nuxeo\Client\Api\Objects\CounterTimestampedValue>")
+   * @Serializer\Type("array<Nuxeo\Client\Api\Objects\Operation\CounterTimestampedValue>")
    */
   protected $values;
 
   /**
    * @var CounterTimestampedValue[]
-   * @Serializer\Type("array<Nuxeo\Client\Api\Objects\CounterTimestampedValue>")
+   * @Serializer\Type("array<Nuxeo\Client\Api\Objects\Operation\CounterTimestampedValue>")
    */
   protected $deltas;
 
   /**
    * @var CounterTimestampedValue[]
-   * @Serializer\Type("array<Nuxeo\Client\Api\Objects\CounterTimestampedValue>")
+   * @Serializer\Type("array<Nuxeo\Client\Api\Objects\Operation\CounterTimestampedValue>")
    */
   protected $speed;
 

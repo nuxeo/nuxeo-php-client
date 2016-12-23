@@ -21,8 +21,8 @@
 namespace Nuxeo\Client\Api\Marshaller;
 
 
-use Nuxeo\Client\Api\Objects\DirectoryEntries;
-use Nuxeo\Client\Api\Objects\DirectoryEntry;
+use Nuxeo\Client\Api\Objects\Directory\DirectoryEntry;
+use Nuxeo\Client\Api\Objects\Operation\DirectoryEntries;
 
 class DirectoryEntriesMarshaller extends AbstractJsonObjectMarshaller {
 

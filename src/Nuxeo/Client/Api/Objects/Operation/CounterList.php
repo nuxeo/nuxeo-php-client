@@ -14,38 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Contributors:
- *     Pierre-Gildas MILLON <pgmillon@nuxeo.com>
  */
 
-namespace Nuxeo\Client\Api\Objects;
+namespace Nuxeo\Client\Api\Objects\Operation;
 
 
 use JMS\Serializer\Annotation as Serializer;
 
-class DocRef {
+class CounterList extends \ArrayObject {
 
   const className = __CLASS__;
-
-  /**
-   * @var string
-   * @Serializer\Type("string")
-   */
-  private $ref;
-
-  /**
-   * DocRef constructor.
-   * @param $ref
-   */
-  public function __construct($ref) {
-    $this->ref = $ref;
-  }
-
-  /**
-   * @return string
-   */
-  public function getRef() {
-    return $this->ref;
-  }
 
 }

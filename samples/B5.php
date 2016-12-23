@@ -26,11 +26,11 @@ if(!empty($_POST['path'])) {
     $path = $_POST['path'];
 
     try {
-        /** @var \Nuxeo\Client\Api\Objects\Blob $blob */
+        /** @var \Nuxeo\Client\Api\Objects\Blob\Blob $blob */
         $blob = $client
           ->automation('Blob.Get')
           ->input('doc:' . $path)
-          ->execute(\Nuxeo\Client\Api\Objects\Blob::className);
+          ->execute(\Nuxeo\Client\Api\Objects\Blob\Blob::className);
 
         $response = new \Symfony\Component\HttpFoundation\BinaryFileResponse($blob->getFile());
         $response->setContentDisposition(

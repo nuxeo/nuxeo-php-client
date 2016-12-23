@@ -19,8 +19,8 @@
 namespace Nuxeo\Client\Api\Marshaller;
 
 
-use Nuxeo\Client\Api\Objects\Counter;
-use Nuxeo\Client\Api\Objects\CounterList;
+use Nuxeo\Client\Api\Objects\Operation\Counter;
+use Nuxeo\Client\Api\Objects\Operation\CounterList;
 
 class CounterListMarshaller extends AbstractJsonObjectMarshaller {
 

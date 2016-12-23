@@ -14,12 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Contributors:
- *     Pierre-Gildas MILLON <pgmillon@nuxeo.com>
  */
 
-namespace Nuxeo\Client\Api\Objects;
+namespace Nuxeo\Client\Api\Objects\Operation;
 
+
+use Nuxeo\Client\Api\Objects\Directory\DirectoryEntry;
 
 class DirectoryEntries extends \ArrayObject {
 

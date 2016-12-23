@@ -19,7 +19,7 @@
 namespace Nuxeo\Client\Api\Marshaller;
 
 
-use Nuxeo\Client\Api\Objects\CounterTimestampedValue;
+use Nuxeo\Client\Api\Objects\Operation\CounterTimestampedValue;
 
 class CounterTimestampedValueMarshaller extends AbstractJsonObjectMarshaller {
 

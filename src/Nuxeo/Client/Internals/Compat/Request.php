@@ -26,8 +26,8 @@ use Nuxeo\Automation\Client\NuxeoDocuments;
 use Nuxeo\Automation\Client\Utilities\NuxeoRequest;
 use Nuxeo\Client\Api\Constants;
 use Nuxeo\Client\Api\NuxeoClient;
-use Nuxeo\Client\Api\Objects\Blob;
-use Nuxeo\Client\Api\Objects\Blobs;
+use Nuxeo\Client\Api\Objects\Blob\Blob;
+use Nuxeo\Client\Api\Objects\Blob\Blobs;
 
 class Request extends NuxeoRequest {
 
@@ -42,7 +42,7 @@ class Request extends NuxeoRequest {
   protected $operation;
 
   /**
-   * @var Blobs
+   * @var \Nuxeo\Client\Api\Objects\Blob\Blobs
    */
   protected $blobs;
 
@@ -60,7 +60,7 @@ class Request extends NuxeoRequest {
   }
 
   /**
-   * @return Blobs
+   * @return \Nuxeo\Client\Api\Objects\Blob\Blobs
    */
   public function getBlobs() {
     return $this->blobs;
@@ -103,7 +103,7 @@ class Request extends NuxeoRequest {
     $response = $this->operation->doExecute();
     $json = json_decode($response->getBody(true), true);
     if(null === $json) {
-      /** @var Blob $blob */
+      /** @var \Nuxeo\Client\Api\Objects\Blob\Blob $blob */
       $blob = $this->operation->computeResponse($response, Blob::className);
       return file_get_contents($blob->getFile()->getPathname());
     } else {

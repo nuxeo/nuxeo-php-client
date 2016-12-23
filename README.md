@@ -107,8 +107,8 @@ $result = $operation->execute(Documents::className);
 ```
 
 ```php
-use Nuxeo\Client\Api\Objects\Blob;
-use Nuxeo\Client\Api\Objects\Blobs;
+use Nuxeo\Client\Api\Objects\Blob\Blob;
+use Nuxeo\Client\Api\Objects\Blob\Blobs;
 
 // To upload|download blob(s)
 

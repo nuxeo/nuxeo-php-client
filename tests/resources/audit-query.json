@@ -1,0 +1,19 @@
+[
+  {
+    "eventId": "documentCreated",
+    "category": "eventDocumentCategory",
+    "eventDate": 1424792290472,
+    "principal": "Administrator",
+    "docUUID": "941f5101-4242-40e3-b212-5e8255483ec3",
+    "docType": "UserWorkspacesRoot",
+    "docPath": "/default-domain/UserWorkspaces",
+    "docLifeCycle": "project",
+    "repoId": "default"
+  },
+  {
+    "eventId": "loginSuccess",
+    "category": "NuxeoAuthentication",
+    "eventDate": 1424818455877,
+    "comment": "Administrator successfully logged in using FORM_AUTHAuthentication"
+  }
+]

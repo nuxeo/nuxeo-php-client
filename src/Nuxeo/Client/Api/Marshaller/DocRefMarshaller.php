@@ -24,7 +24,7 @@ namespace Nuxeo\Client\Api\Marshaller;
 use JMS\Serializer\DeserializationContext;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\VisitorInterface;
-use Nuxeo\Client\Api\Objects\DocRef;
+use Nuxeo\Client\Api\Objects\Operation\DocRef;
 
 class DocRefMarshaller implements NuxeoMarshaller {
 

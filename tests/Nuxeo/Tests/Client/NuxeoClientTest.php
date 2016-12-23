@@ -27,12 +27,11 @@ use Nuxeo\Client\Api\Auth\PortalSSOAuthentication;
 use Nuxeo\Client\Api\Auth\TokenAuthentication;
 use Nuxeo\Client\Api\Constants;
 use Nuxeo\Client\Api\NuxeoClient;
-use Nuxeo\Client\Api\Objects\Blob;
-use Nuxeo\Client\Api\Objects\Counter;
-use Nuxeo\Client\Api\Objects\CounterList;
-use Nuxeo\Client\Api\Objects\DirectoryEntries;
+use Nuxeo\Client\Api\Objects\Blob\Blob;
 use Nuxeo\Client\Api\Objects\Document;
 use Nuxeo\Client\Api\Objects\Documents;
+use Nuxeo\Client\Api\Objects\Operation\CounterList;
+use Nuxeo\Client\Api\Objects\Operation\DirectoryEntries;
 use Nuxeo\Client\Api\Utils\ArrayIterator;
 
 class TestNuxeoClient extends NuxeoTestCase {
@@ -167,7 +166,7 @@ class TestNuxeoClient extends NuxeoTestCase {
       new Response(200, null, self::MYFILE_CONTENT)
     ));
 
-    /** @var Blob $blob */
+    /** @var \Nuxeo\Client\Api\Objects\Blob\Blob $blob */
     $blob = $client->automation('Blob.Get')
       ->input(self::MYFILE_DOCPATH)
       ->execute(Blob::className);

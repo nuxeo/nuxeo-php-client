@@ -14,50 +14,47 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Contributors:
- *     Pierre-Gildas MILLON <pgmillon@nuxeo.com>
  */
 
-namespace Nuxeo\Client\Api\Objects;
+namespace Nuxeo\Client\Api\Objects\Operation;
+
 
 use JMS\Serializer\Annotation as Serializer;
 
-
-class Blobs extends NuxeoEntity implements \Countable {
+class CounterTimestampedValue {
 
   const className = __CLASS__;
 
   /**
-   * @var Blob[]
-   * @Serializer\Exclude()
+   * @var integer
    */
-  protected $blobs = array();
+  protected $timestamp;
 
   /**
-   * Blobs constructor.
-   * @param Blob[] $blobs
+   * @var integer
    */
-  public function __construct($blobs = array()) {
-    parent::__construct(null);
-
-    $this->blobs = $blobs;
-  }
+  protected $value;
 
   /**
-   * @return Blob[]
+   * CounterTimestampedValue constructor.
+   * @param integer[] $data
    */
-  public function getBlobs() {
-    return $this->blobs;
+  public function __construct(array $data = array()) {
+    list($this->timestamp, $this->value) = $data;
   }
 
   /**
-   * @param Blob $blob
+   * @return int
    */
-  public function add($blob) {
-    $this->blobs[] = $blob;
+  public function getTimestamp() {
+    return $this->timestamp;
   }
 
-  public function count() {
-    return count($this->blobs);
+  /**
+   * @return int
+   */
+  public function getValue() {
+    return $this->value;
   }
+
 }

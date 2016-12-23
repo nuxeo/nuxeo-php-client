@@ -62,9 +62,9 @@ if($httpRequest->files->has('blob') && $httpRequest->request->has('path')) {
     try {
         if(null !== $document) {
             $client->automation('Blob.Attach')
-              ->input(\Nuxeo\Client\Api\Objects\Blob::fromFile($blob->getPathname(), $blob->getMimeType()))
+              ->input(\Nuxeo\Client\Api\Objects\Blob\Blob::fromFile($blob->getPathname(), $blob->getMimeType()))
               ->param('document', $document->getPath())
-              ->execute(\Nuxeo\Client\Api\Objects\Blob::className);
+              ->execute(\Nuxeo\Client\Api\Objects\Blob\Blob::className);
         }
     } catch(\Nuxeo\Client\Internals\Spi\NuxeoClientException $ex) {
         throw new RuntimeException('Could not attach blob to document: ' . $ex->getMessage());

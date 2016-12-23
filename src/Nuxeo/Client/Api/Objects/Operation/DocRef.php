@@ -16,45 +16,34 @@
  *
  */
 
-namespace Nuxeo\Client\Api\Objects;
+namespace Nuxeo\Client\Api\Objects\Operation;
 
 
 use JMS\Serializer\Annotation as Serializer;
 
-class CounterTimestampedValue {
+class DocRef {
 
   const className = __CLASS__;
 
   /**
-   * @var integer
+   * @var string
+   * @Serializer\Type("string")
    */
-  protected $timestamp;
+  private $ref;
 
   /**
-   * @var integer
+   * DocRef constructor.
+   * @param $ref
    */
-  protected $value;
-
-  /**
-   * CounterTimestampedValue constructor.
-   * @param integer[] $data
-   */
-  public function __construct(array $data = array()) {
-    list($this->timestamp, $this->value) = $data;
+  public function __construct($ref) {
+    $this->ref = $ref;
   }
 
   /**
-   * @return int
+   * @return string
    */
-  public function getTimestamp() {
-    return $this->timestamp;
-  }
-
-  /**
-   * @return int
-   */
-  public function getValue() {
-    return $this->value;
+  public function getRef() {
+    return $this->ref;
   }
 
 }

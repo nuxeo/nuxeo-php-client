@@ -16,13 +16,47 @@
  *
  */
 
-namespace Nuxeo\Client\Api\Objects;
-
+namespace Nuxeo\Client\Api\Objects\Blob;
 
 use JMS\Serializer\Annotation as Serializer;
+use Nuxeo\Client\Api\Objects\NuxeoEntity;
 
-class CounterList extends \ArrayObject {
+
+class Blobs extends NuxeoEntity implements \Countable {
 
   const className = __CLASS__;
 
+  /**
+   * @var Blob[]
+   * @Serializer\Exclude()
+   */
+  protected $blobs = array();
+
+  /**
+   * Blobs constructor.
+   * @param Blob[] $blobs
+   */
+  public function __construct($blobs = array()) {
+    parent::__construct(null);
+
+    $this->blobs = $blobs;
+  }
+
+  /**
+   * @return Blob[]
+   */
+  public function getBlobs() {
+    return $this->blobs;
+  }
+
+  /**
+   * @param Blob $blob
+   */
+  public function add($blob) {
+    $this->blobs[] = $blob;
+  }
+
+  public function count() {
+    return count($this->blobs);
+  }
 }
