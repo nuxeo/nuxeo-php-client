@@ -14,33 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Contributors:
- *     Pierre-Gildas MILLON <pgmillon@nuxeo.com>
  */
 
-namespace Nuxeo\Client\Api;
+namespace Nuxeo\Client\Api\Objects\Operation;
 
 
-class Constants {
+use Nuxeo\Client\Api\Objects\Audit\LogEntry;
 
-  const API_PATH = 'api/v1/';
+class LogEntries extends \ArrayObject {
 
-  const AUTOMATION_PATH = 'api/v1/automation/';
+  const className = __CLASS__;
 
-  const HEADER_PROPERTIES = 'X-NXProperties';
-
-  const HEADER_VOID_OPERATION = 'X-NXVoidOperation';
-
-  const CONTENT_TYPE_JSON = 'application/json';
-
-  const CONTENT_TYPE_JSON_NXENTITY = 'application/json+nxentity';
-
-  const ENTITY_TYPE_LOG_ENTRY = 'logEntry';
-
-  const ENTITY_TYPE_DOCUMENT = 'document';
-
-  const ENTITY_TYPE_DOCUMENTS = 'documents';
-
-  const ENTITY_TYPE_OPERATION = 'operation';
+  /**
+   * LogEntries constructor.
+   * @param LogEntry[] $entries
+   */
+  public function __construct(array $entries = array()) {
+    parent::__construct($entries);
+  }
 
 }

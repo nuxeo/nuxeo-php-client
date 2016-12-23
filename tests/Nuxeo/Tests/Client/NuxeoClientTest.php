@@ -27,12 +27,14 @@ use Nuxeo\Client\Api\Auth\PortalSSOAuthentication;
 use Nuxeo\Client\Api\Auth\TokenAuthentication;
 use Nuxeo\Client\Api\Constants;
 use Nuxeo\Client\Api\NuxeoClient;
+use Nuxeo\Client\Api\Objects\Audit\LogEntry;
 use Nuxeo\Client\Api\Objects\Blob\Blob;
 use Nuxeo\Client\Api\Objects\Document;
 use Nuxeo\Client\Api\Objects\Documents;
 use Nuxeo\Client\Api\Objects\Operation\CounterList;
 use Nuxeo\Client\Api\Objects\Operation\DirectoryEntries;
 use Nuxeo\Client\Api\Utils\ArrayIterator;
+use Nuxeo\Client\Api\Objects\Operation\LogEntries;
 
 class TestNuxeoClient extends NuxeoTestCase {
 
@@ -207,8 +209,6 @@ class TestNuxeoClient extends NuxeoTestCase {
 
     $requests = $this->server->getReceivedRequests(true);
 
-    $this->assertCount(1, $requests);
-
     /** @var EntityEnclosingRequest $request */
     list($request) = $requests;
 
@@ -229,8 +229,6 @@ class TestNuxeoClient extends NuxeoTestCase {
     $continents = $client->automation('Directory.Entries')
       ->param('directoryName', 'continent')
       ->execute(DirectoryEntries::className);
-
-    $this->assertCount(1, $this->server->getReceivedRequests(true));
 
     $this->assertInstanceOf(DirectoryEntries::className, $continents);
     $this->assertCount(7, $continents);
@@ -278,8 +276,6 @@ class TestNuxeoClient extends NuxeoTestCase {
       ->param('counterNames', $counterName)
       ->execute(CounterList::className);
 
-    $this->assertCount(1, $this->server->getReceivedRequests(true));
-
     $this->assertInstanceOf(CounterList::className, $counters);
     $this->assertCount(1, $counters);
 
@@ -289,6 +285,36 @@ class TestNuxeoClient extends NuxeoTestCase {
 
     $this->assertNotNull($counterValues[0]->getTimestamp());
     $this->assertNotNull($counterValues[0]->getValue());
+  }
+
+  public function testAuditQuery() {
+    $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, self::PASSWORD);
+
+    $this->server->enqueue(array(
+      new Response(200, array('Content-Type' => Constants::CONTENT_TYPE_JSON), file_get_contents($this->getResource('audit-query.json')))
+    ));
+
+    $entries = $client->automation('Audit.Query')
+      ->param('query', 'from LogEntry')
+      ->execute(LogEntries::className);
+
+    $this->assertInstanceOf(LogEntries::className, $entries);
+    $this->assertCount(2, $entries);
+
+    /** @var LogEntry $entry */
+    $this->assertInstanceOf(LogEntry::className, $entry = $entries[0]);
+    $this->assertNotNull($entry->getCategory());
+    $this->assertNotNull($entry->getDocLifeCycle());
+    $this->assertNotNull($entry->getDocPath());
+    $this->assertNotNull($entry->getDocType());
+    $this->assertNotNull($entry->getDocUUID());
+    $this->assertNotNull($entry->getEventDate());
+    $this->assertNotNull($entry->getEventId());
+    $this->assertNotNull($entry->getPrincipalName());
+    $this->assertNotNull($entry->getRepositoryId());
+
+    $this->assertInstanceOf(LogEntry::className, $entry = $entries[1]);
+    $this->assertNotNull($entry->getComment());
   }
 
 }

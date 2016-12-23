@@ -14,33 +14,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Contributors:
- *     Pierre-Gildas MILLON <pgmillon@nuxeo.com>
  */
 
-namespace Nuxeo\Client\Api;
+namespace Nuxeo\Client\Api\Marshaller;
 
 
-class Constants {
+use Nuxeo\Client\Api\Objects\Audit\LogEntry;
+use Nuxeo\Client\Api\Objects\Operation\LogEntries;
 
-  const API_PATH = 'api/v1/';
+class LogEntriesMarshaller extends AbstractJsonObjectMarshaller {
 
-  const AUTOMATION_PATH = 'api/v1/automation/';
+  /**
+   * @return array
+   */
+  protected function getType() {
+    return array('name' => 'array', 'params' => array(array('name' => LogEntry::className)));
+  }
 
-  const HEADER_PROPERTIES = 'X-NXProperties';
-
-  const HEADER_VOID_OPERATION = 'X-NXVoidOperation';
-
-  const CONTENT_TYPE_JSON = 'application/json';
-
-  const CONTENT_TYPE_JSON_NXENTITY = 'application/json+nxentity';
-
-  const ENTITY_TYPE_LOG_ENTRY = 'logEntry';
-
-  const ENTITY_TYPE_DOCUMENT = 'document';
-
-  const ENTITY_TYPE_DOCUMENTS = 'documents';
-
-  const ENTITY_TYPE_OPERATION = 'operation';
+  /**
+   * @return string
+   */
+  protected function getClassname() {
+    return LogEntries::className;
+  }
 
 }

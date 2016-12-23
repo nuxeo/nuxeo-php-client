@@ -34,6 +34,7 @@ use Nuxeo\Client\Api\Marshaller\BlobsMarshaller;
 use Nuxeo\Client\Api\Marshaller\CounterListMarshaller;
 use Nuxeo\Client\Api\Marshaller\CounterTimestampedValueMarshaller;
 use Nuxeo\Client\Api\Marshaller\DirectoryEntriesMarshaller;
+use Nuxeo\Client\Api\Marshaller\LogEntriesMarshaller;
 use Nuxeo\Client\Api\Marshaller\NuxeoConverter;
 use Nuxeo\Client\Api\Objects\Blob\Blob;
 use Nuxeo\Client\Api\Objects\Blob\Blobs;
@@ -218,6 +219,7 @@ class NuxeoClient {
     $this->getConverter()->registerMarshaller(Operation\CounterList::className, new CounterListMarshaller());
     $this->getConverter()->registerMarshaller(Operation\CounterTimestampedValue::className, new CounterTimestampedValueMarshaller());
     $this->getConverter()->registerMarshaller(Operation\DirectoryEntries::className, new DirectoryEntriesMarshaller());
+    $this->getConverter()->registerMarshaller(Operation\LogEntries::className, new LogEntriesMarshaller());
     return $this;
   }
 
