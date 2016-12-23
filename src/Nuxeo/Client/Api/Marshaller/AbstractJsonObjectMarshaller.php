@@ -39,7 +39,9 @@ abstract class AbstractJsonObjectMarshaller implements NuxeoMarshaller {
    */
   public function read($in, VisitorInterface $visitor, DeserializationContext $context) {
     $data = $context->accept($in, $this->getType());
-    $visitor->setNavigator($context->getNavigator());
+    if($context->getDepth() === 1) {
+      $visitor->setNavigator($context->getNavigator());
+    }
 
     $className = $this->getClassName();
     return new $className($data);

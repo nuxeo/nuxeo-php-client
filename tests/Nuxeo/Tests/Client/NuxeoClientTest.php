@@ -28,6 +28,8 @@ use Nuxeo\Client\Api\Auth\TokenAuthentication;
 use Nuxeo\Client\Api\Constants;
 use Nuxeo\Client\Api\NuxeoClient;
 use Nuxeo\Client\Api\Objects\Blob;
+use Nuxeo\Client\Api\Objects\Counter;
+use Nuxeo\Client\Api\Objects\CounterList;
 use Nuxeo\Client\Api\Objects\DirectoryEntries;
 use Nuxeo\Client\Api\Objects\Document;
 use Nuxeo\Client\Api\Objects\Documents;
@@ -263,6 +265,31 @@ class TestNuxeoClient extends NuxeoTestCase {
     $this->assertEquals(42, $entries[1]['ordering']);
     $this->assertEquals(5, $entries[3]['obsolete']);
     $this->assertEquals($ids, $continents);
+  }
+
+  public function testCounters() {
+    $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, self::PASSWORD);
+    $counterName = 'org.nuxeo.web.sessions';
+
+    $this->server->enqueue(array(
+      new Response(200, array('Content-Type' => Constants::CONTENT_TYPE_JSON), file_get_contents($this->getResource('counters.json')))
+    ));
+
+    $counters = $client->automation('Counters.GET')
+      ->param('counterNames', $counterName)
+      ->execute(CounterList::className);
+
+    $this->assertCount(1, $this->server->getReceivedRequests(true));
+
+    $this->assertInstanceOf(CounterList::className, $counters);
+    $this->assertCount(1, $counters);
+
+    $this->assertCount(0, $counters[$counterName]->getSpeed());
+    $this->assertCount(1, $counters[$counterName]->getDeltas());
+    $this->assertCount(1, $counterValues = $counters[$counterName]->getValues());
+
+    $this->assertNotNull($counterValues[0]->getTimestamp());
+    $this->assertNotNull($counterValues[0]->getValue());
   }
 
 }

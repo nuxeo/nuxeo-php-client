@@ -14,30 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Contributors:
- *     Pierre-Gildas MILLON <pgmillon@nuxeo.com>
  */
 
 namespace Nuxeo\Client\Api\Marshaller;
 
 
-use Nuxeo\Client\Api\Objects\DirectoryEntries;
-use Nuxeo\Client\Api\Objects\DirectoryEntry;
+use Nuxeo\Client\Api\Objects\CounterTimestampedValue;
 
-class DirectoryEntriesMarshaller extends AbstractJsonObjectMarshaller {
+class CounterTimestampedValueMarshaller extends AbstractJsonObjectMarshaller {
 
-  /**
-   * @return array
-   */
   protected function getType() {
-    return array('name' => 'array', 'params' => array(array('name' => DirectoryEntry::className)));
+    return array('name' => 'array', 'params' => array(array('name' => 'integer')));
   }
 
-  /**
-   * @return string
-   */
-  protected function getClassname() {
-    return DirectoryEntries::className;
+  protected function getClassName() {
+    return CounterTimestampedValue::className;
   }
 
 }

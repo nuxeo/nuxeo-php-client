@@ -14,30 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Contributors:
- *     Pierre-Gildas MILLON <pgmillon@nuxeo.com>
  */
 
 namespace Nuxeo\Client\Api\Marshaller;
 
 
-use Nuxeo\Client\Api\Objects\DirectoryEntries;
-use Nuxeo\Client\Api\Objects\DirectoryEntry;
+use Nuxeo\Client\Api\Objects\Counter;
+use Nuxeo\Client\Api\Objects\CounterList;
 
-class DirectoryEntriesMarshaller extends AbstractJsonObjectMarshaller {
+class CounterListMarshaller extends AbstractJsonObjectMarshaller {
 
-  /**
-   * @return array
-   */
   protected function getType() {
-    return array('name' => 'array', 'params' => array(array('name' => DirectoryEntry::className)));
+    return array('name' => 'array', 'params' => array(array('name' => 'string'), array('name' => Counter::className)));
   }
 
-  /**
-   * @return string
-   */
-  protected function getClassname() {
-    return DirectoryEntries::className;
+  protected function getClassName() {
+    return CounterList::className;
   }
 
 }

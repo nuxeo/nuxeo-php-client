@@ -14,30 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Contributors:
- *     Pierre-Gildas MILLON <pgmillon@nuxeo.com>
  */
 
-namespace Nuxeo\Client\Api\Marshaller;
+namespace Nuxeo\Client\Api\Objects;
 
 
-use Nuxeo\Client\Api\Objects\DirectoryEntries;
-use Nuxeo\Client\Api\Objects\DirectoryEntry;
+use JMS\Serializer\Annotation as Serializer;
 
-class DirectoryEntriesMarshaller extends AbstractJsonObjectMarshaller {
+class CounterList extends \ArrayObject {
 
-  /**
-   * @return array
-   */
-  protected function getType() {
-    return array('name' => 'array', 'params' => array(array('name' => DirectoryEntry::className)));
-  }
-
-  /**
-   * @return string
-   */
-  protected function getClassname() {
-    return DirectoryEntries::className;
-  }
+  const className = __CLASS__;
 
 }

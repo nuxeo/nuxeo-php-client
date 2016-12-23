@@ -31,10 +31,14 @@ use Guzzle\Plugin\Log\LogPlugin;
 use Nuxeo\Client\Api\Auth\BasicAuthentication;
 use Nuxeo\Client\Api\Marshaller\BlobMarshaller;
 use Nuxeo\Client\Api\Marshaller\BlobsMarshaller;
+use Nuxeo\Client\Api\Marshaller\CounterListMarshaller;
+use Nuxeo\Client\Api\Marshaller\CounterTimestampedValueMarshaller;
 use Nuxeo\Client\Api\Marshaller\DirectoryEntriesMarshaller;
 use Nuxeo\Client\Api\Marshaller\NuxeoConverter;
 use Nuxeo\Client\Api\Objects\Blob;
 use Nuxeo\Client\Api\Objects\Blobs;
+use Nuxeo\Client\Api\Objects\CounterList;
+use Nuxeo\Client\Api\Objects\CounterTimestampedValue;
 use Nuxeo\Client\Api\Objects\DirectoryEntries;
 use Nuxeo\Client\Api\Objects\Operation;
 use Nuxeo\Client\Internals\Spi\Auth\AuthenticationInterceptor;
@@ -212,9 +216,11 @@ class NuxeoClient {
    * @return NuxeoClient
    */
   protected function setupDefaultMarshallers() {
-    $this->getConverter()->registerMarshaller(DirectoryEntries::className, new DirectoryEntriesMarshaller());
     $this->getConverter()->registerMarshaller(Blob::className, new BlobMarshaller());
     $this->getConverter()->registerMarshaller(Blobs::className, new BlobsMarshaller());
+    $this->getConverter()->registerMarshaller(CounterList::className, new CounterListMarshaller());
+    $this->getConverter()->registerMarshaller(CounterTimestampedValue::className, new CounterTimestampedValueMarshaller());
+    $this->getConverter()->registerMarshaller(DirectoryEntries::className, new DirectoryEntriesMarshaller());
     return $this;
   }
 
