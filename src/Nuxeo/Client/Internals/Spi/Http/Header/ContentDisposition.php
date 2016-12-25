@@ -38,8 +38,6 @@ class ContentDisposition extends \Zend\Http\Header\ContentDisposition {
   public function __construct($value) {
     $value = urldecode($value);
 
-    parent::__construct($value);
-
     foreach(explode(';', $value) as $part) {
       $part = trim($part);
 

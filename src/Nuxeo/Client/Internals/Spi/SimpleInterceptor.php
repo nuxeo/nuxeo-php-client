@@ -39,7 +39,8 @@ class SimpleInterceptor implements Interceptor {
    * @param RequestInterface $request
    */
   public function proceed($request) {
-    ($this->callable)($request);
+    $callable = $this->callable;
+    $callable($request);
   }
 
 

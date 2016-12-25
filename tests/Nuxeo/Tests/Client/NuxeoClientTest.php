@@ -64,7 +64,7 @@ class TestNuxeoClient extends NuxeoTestCase {
   }
 
   public function testPortalSSOAuth() {
-    $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, self::PASSWORD);
+    $client = new NuxeoClient($this->server->getUrl());
 
     $this->server->enqueue(array(
       new Response(200, array('Content-Type' => Constants::CONTENT_TYPE_JSON), file_get_contents($this->getResource('user.json')))
