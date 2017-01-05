@@ -144,12 +144,12 @@ class TestNuxeoClient extends NuxeoTestCase {
     $this->assertEquals(5, $documents->size());
 
     foreach ($documents->getDocuments() as $document) {
-      $this->assertNotNull($document->getUid());
-      $this->assertNotNull($document->getPath());
-      $this->assertNotNull($document->getType());
-      $this->assertNotNull($document->getState());
-      $this->assertNotNull($document->getTitle());
-      $this->assertNotNull($document->getProperty('dc:created'));
+      $this->assertNotEmpty($document->getUid());
+      $this->assertNotEmpty($document->getPath());
+      $this->assertNotEmpty($document->getType());
+      $this->assertNotEmpty($document->getState());
+      $this->assertNotEmpty($document->getTitle());
+      $this->assertNotEmpty($document->getProperty('dc:created'));
     }
 
     $domain = $documents->getDocument(0);
@@ -281,8 +281,8 @@ class TestNuxeoClient extends NuxeoTestCase {
     $this->assertCount(1, $counters[$counterName]->getDeltas());
     $this->assertCount(1, $counterValues = $counters[$counterName]->getValues());
 
-    $this->assertNotNull($counterValues[0]->getTimestamp());
-    $this->assertNotNull($counterValues[0]->getValue());
+    $this->assertNotEmpty($counterValues[0]->getTimestamp());
+    $this->assertNotEmpty($counterValues[0]->getValue());
   }
 
   public function testAuditQuery() {
@@ -301,18 +301,18 @@ class TestNuxeoClient extends NuxeoTestCase {
 
     /** @var LogEntry $entry */
     $this->assertInstanceOf(LogEntry::className, $entry = $entries[0]);
-    $this->assertNotNull($entry->getCategory());
-    $this->assertNotNull($entry->getDocLifeCycle());
-    $this->assertNotNull($entry->getDocPath());
-    $this->assertNotNull($entry->getDocType());
-    $this->assertNotNull($entry->getDocUUID());
-    $this->assertNotNull($entry->getEventDate());
-    $this->assertNotNull($entry->getEventId());
-    $this->assertNotNull($entry->getPrincipalName());
-    $this->assertNotNull($entry->getRepositoryId());
+    $this->assertNotEmpty($entry->getCategory());
+    $this->assertNotEmpty($entry->getDocLifeCycle());
+    $this->assertNotEmpty($entry->getDocPath());
+    $this->assertNotEmpty($entry->getDocType());
+    $this->assertNotEmpty($entry->getDocUUID());
+    $this->assertNotEmpty($entry->getEventDate());
+    $this->assertNotEmpty($entry->getEventId());
+    $this->assertNotEmpty($entry->getPrincipalName());
+    $this->assertNotEmpty($entry->getRepositoryId());
 
     $this->assertInstanceOf(LogEntry::className, $entry = $entries[1]);
-    $this->assertNotNull($entry->getComment());
+    $this->assertNotEmpty($entry->getComment());
   }
 
   public function testActionsGet() {
