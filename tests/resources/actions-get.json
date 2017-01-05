@@ -1,0 +1,55 @@
+[
+  {
+    "id": "TAB_VIEW",
+    "link": "/incl/tabs/document_view.xhtml",
+    "icon": "/icons/file.gif",
+    "label": "Summary",
+    "help": ""
+  },
+  {
+    "id": "TAB_EDIT",
+    "link": "/incl/tabs/document_edit.xhtml",
+    "icon": "/icons/file.gif",
+    "label": "Edit",
+    "help": ""
+  },
+  {
+    "id": "TAB_FILES_EDIT",
+    "link": "/incl/tabs/document_files_edit.xhtml",
+    "label": "Files",
+    "help": ""
+  },
+  {
+    "id": "TAB_PUBLISH",
+    "link": "/incl/tabs/document_publish.xhtml",
+    "icon": "/icons/file.gif",
+    "label": "Publish",
+    "help": ""
+  },
+  {
+    "id": "TAB_RELATIONS",
+    "link": "/incl/tabs/document_relations.xhtml",
+    "label": "Relations",
+    "help": ""
+  },
+  {
+    "id": "view_comments",
+    "link": "/incl/tabs/document_comments.xhtml",
+    "label": "Comments",
+    "help": ""
+  },
+  {
+    "id": "TAB_CONTENT_HISTORY",
+    "link": "/incl/tabs/document_history.xhtml",
+    "icon": "/icons/file.gif",
+    "label": "History",
+    "help": ""
+  },
+  {
+    "id": "TAB_MANAGE",
+    "link": "/incl/tabs/document_manage.xhtml",
+    "icon": "/icons/file.gif",
+    "label": "Manage",
+    "help": ""
+  }
+]

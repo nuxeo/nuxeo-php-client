@@ -31,10 +31,8 @@ use Nuxeo\Client\Api\Objects\Audit\LogEntry;
 use Nuxeo\Client\Api\Objects\Blob\Blob;
 use Nuxeo\Client\Api\Objects\Document;
 use Nuxeo\Client\Api\Objects\Documents;
-use Nuxeo\Client\Api\Objects\Operation\CounterList;
-use Nuxeo\Client\Api\Objects\Operation\DirectoryEntries;
+use Nuxeo\Client\Api\Objects\Operation;
 use Nuxeo\Client\Api\Utils\ArrayIterator;
-use Nuxeo\Client\Api\Objects\Operation\LogEntries;
 
 class TestNuxeoClient extends NuxeoTestCase {
 
@@ -228,9 +226,9 @@ class TestNuxeoClient extends NuxeoTestCase {
 
     $continents = $client->automation('Directory.Entries')
       ->param('directoryName', 'continent')
-      ->execute(DirectoryEntries::className);
+      ->execute(Operation\DirectoryEntries::className);
 
-    $this->assertInstanceOf(DirectoryEntries::className, $continents);
+    $this->assertInstanceOf(Operation\DirectoryEntries::className, $continents);
     $this->assertCount(7, $continents);
     $this->server->flush();
 
@@ -241,7 +239,7 @@ class TestNuxeoClient extends NuxeoTestCase {
 
     $continents = $client->automation('Directory.CreateEntries')
       ->param('directoryName', 'continent')
-      ->param('entries', $client->getConverter()->writeJSON(DirectoryEntries::fromArray(array(
+      ->param('entries', $client->getConverter()->writeJSON(Operation\DirectoryEntries::fromArray(array(
         array('id' => 'id001', 'label' => 'label.continent.one'),
         array('id' => 'id002', 'label' => 'label.continent.two', 'ordering' => 42),
         array('id' => 'id003', 'label' => 'label.continent.three', 'obsolete' => 1),
@@ -274,9 +272,9 @@ class TestNuxeoClient extends NuxeoTestCase {
 
     $counters = $client->automation('Counters.GET')
       ->param('counterNames', $counterName)
-      ->execute(CounterList::className);
+      ->execute(Operation\CounterList::className);
 
-    $this->assertInstanceOf(CounterList::className, $counters);
+    $this->assertInstanceOf(Operation\CounterList::className, $counters);
     $this->assertCount(1, $counters);
 
     $this->assertCount(0, $counters[$counterName]->getSpeed());
@@ -296,9 +294,9 @@ class TestNuxeoClient extends NuxeoTestCase {
 
     $entries = $client->automation('Audit.Query')
       ->param('query', 'from LogEntry')
-      ->execute(LogEntries::className);
+      ->execute(Operation\LogEntries::className);
 
-    $this->assertInstanceOf(LogEntries::className, $entries);
+    $this->assertInstanceOf(Operation\LogEntries::className, $entries);
     $this->assertCount(2, $entries);
 
     /** @var LogEntry $entry */
@@ -315,6 +313,35 @@ class TestNuxeoClient extends NuxeoTestCase {
 
     $this->assertInstanceOf(LogEntry::className, $entry = $entries[1]);
     $this->assertNotNull($entry->getComment());
+  }
+
+  public function testActionsGet() {
+    $client = new NuxeoClient($this->server->getUrl());
+
+    $this->server->enqueue(array(
+      new Response(200, array('Content-Type' => Constants::CONTENT_TYPE_JSON), file_get_contents($this->getResource('actions-get.json')))
+    ));
+
+    $actions = $client->automation('Actions.GET')
+      ->param('category', 'VIEW_ACTION_LIST')
+      ->input(new Operation\DocRef(self::MYFILE_DOCPATH))
+      ->execute(Operation\ActionList::className);
+
+    /** @var EntityEnclosingRequestInterface $request */
+    list($request) = $this->server->getReceivedRequests(true);
+
+    $this->assertRegExp(sprintf(',doc:%s,', self::MYFILE_DOCPATH), (string) $request->getBody());
+
+    $this->assertInstanceOf(Operation\ActionList::className, $actions);
+    $this->assertCount(8, $actions);
+
+    /** @var Operation\Action $action */
+    $this->assertInstanceOf(Operation\Action::className, $action = $actions[0]);
+    $this->assertNotEmpty($action->getId());
+    $this->assertNotEmpty($action->getLink());
+    $this->assertNotEmpty($action->getIcon());
+    $this->assertNotEmpty($action->getLabel());
+    $this->assertNotNull($action->getHelp());
   }
 
 }
