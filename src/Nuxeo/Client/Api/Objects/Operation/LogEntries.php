@@ -25,12 +25,4 @@ class LogEntries extends \ArrayObject {
 
   const className = __CLASS__;
 
-  /**
-   * LogEntries constructor.
-   * @param LogEntry[] $entries
-   */
-  public function __construct(array $entries = array()) {
-    parent::__construct($entries);
-  }
-
 }

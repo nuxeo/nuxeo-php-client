@@ -38,6 +38,7 @@ use Nuxeo\Client\Api\Marshaller\DirectoryEntriesMarshaller;
 use Nuxeo\Client\Api\Marshaller\DocRefMarshaller;
 use Nuxeo\Client\Api\Marshaller\LogEntriesMarshaller;
 use Nuxeo\Client\Api\Marshaller\NuxeoConverter;
+use Nuxeo\Client\Api\Marshaller\UserGroupListMarshaller;
 use Nuxeo\Client\Api\Objects\Blob\Blob;
 use Nuxeo\Client\Api\Objects\Blob\Blobs;
 use Nuxeo\Client\Api\Objects\Operation;
@@ -224,6 +225,7 @@ class NuxeoClient {
     $this->getConverter()->registerMarshaller(Operation\DirectoryEntries::className, new DirectoryEntriesMarshaller());
     $this->getConverter()->registerMarshaller(Operation\DocRef::className, new DocRefMarshaller());
     $this->getConverter()->registerMarshaller(Operation\LogEntries::className, new LogEntriesMarshaller());
+    $this->getConverter()->registerMarshaller(Operation\UserGroupList::className, new UserGroupListMarshaller());
     return $this;
   }
 

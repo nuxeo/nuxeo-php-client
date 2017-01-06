@@ -1,0 +1,54 @@
+[
+  {
+    "firstName": "",
+    "lastName": "",
+    "groups": [],
+    "company": "",
+    "email": "devnull@nuxeo.com",
+    "username": "Administrator",
+    "id": "Administrator",
+    "type": "USER_TYPE",
+    "prefixed_id": "user:Administrator",
+    "displayLabel": "Administrator",
+    "displayIcon": true
+  },
+  {
+    "parentGroups": [],
+    "members": [],
+    "subGroups": [],
+    "description": "Group of users with adminstrative rights",
+    "grouplabel": "Administrators group",
+    "groupname": "administrators",
+    "id": "administrators",
+    "displayLabel": "Administrators group",
+    "type": "GROUP_TYPE",
+    "prefixed_id": "group:administrators",
+    "displayIcon": true
+  },
+  {
+    "parentGroups": [],
+    "members": [],
+    "subGroups": [],
+    "description": "Group of users with read access rights",
+    "grouplabel": "Members group",
+    "groupname": "members",
+    "id": "members",
+    "displayLabel": "Members group",
+    "type": "GROUP_TYPE",
+    "prefixed_id": "group:members",
+    "displayIcon": true
+  },
+  {
+    "parentGroups": [],
+    "members": [],
+    "subGroups": [],
+    "description": "Group of users with limited administrative rights",
+    "grouplabel": "Power users group",
+    "groupname": "powerusers",
+    "id": "powerusers",
+    "displayLabel": "Power users group",
+    "type": "GROUP_TYPE",
+    "prefixed_id": "group:powerusers",
+    "displayIcon": true
+  }
+]

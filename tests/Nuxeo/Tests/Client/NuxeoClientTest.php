@@ -344,4 +344,33 @@ class TestNuxeoClient extends NuxeoTestCase {
     $this->assertNotNull($action->getHelp());
   }
 
+  public function testGroupSuggest() {
+    $client = new NuxeoClient($this->server->getUrl());
+
+    $this->server->enqueue(array(
+      new Response(200, array('Content-Type' => Constants::CONTENT_TYPE_JSON), file_get_contents($this->getResource('usergroup-suggest.json')))
+    ));
+
+    $groups = $client->automation('UserGroup.Suggestion')
+      ->execute(Operation\UserGroupList::className);
+
+    $this->assertInstanceOf(Operation\UserGroupList::className, $groups);
+    $this->assertCount(4, $groups);
+
+    /** @var Operation\UserGroup $group */
+    $this->assertInstanceOf(Operation\UserGroup::className, $group = $groups[0]);
+    $this->assertNotEmpty($group->getEmail());
+    $this->assertNotEmpty($group->getUsername());
+    $this->assertNotEmpty($group->getId());
+    $this->assertNotEmpty($group->getPrefixedId());
+    $this->assertNotEmpty($group->getDisplayLabel());
+    $this->assertEquals(Operation\UserGroup::USER_TYPE, $group->getType());
+
+    $this->assertInstanceOf(Operation\UserGroup::className, $group = $groups[1]);
+    $this->assertNotEmpty($group->getDescription());
+    $this->assertNotEmpty($group->getGroupLabel());
+    $this->assertNotEmpty($group->getGroupName());
+    $this->assertEquals(Operation\UserGroup::GROUP_TYPE, $group->getType());
+  }
+
 }

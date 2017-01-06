@@ -16,13 +16,26 @@
  *
  */
 
-namespace Nuxeo\Client\Api\Objects\Operation;
+namespace Nuxeo\Client\Api\Marshaller;
 
 
-use JMS\Serializer\Annotation as Serializer;
+use Nuxeo\Client\Api\Objects\Operation\UserGroup;
+use Nuxeo\Client\Api\Objects\Operation\UserGroupList;
 
-class ActionList extends \ArrayObject {
+class UserGroupListMarshaller extends AbstractJsonObjectMarshaller {
 
-  const className = __CLASS__;
+  /**
+   * @return array
+   */
+  protected function getType() {
+    return array('name' => 'array', 'params' => array(array('name' => UserGroup::className)));
+  }
+
+  /**
+   * @return string
+   */
+  protected function getClassname() {
+    return UserGroupList::className;
+  }
 
 }

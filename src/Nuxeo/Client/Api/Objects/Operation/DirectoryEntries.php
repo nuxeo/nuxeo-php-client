@@ -26,14 +26,6 @@ class DirectoryEntries extends \ArrayObject {
   const className = __CLASS__;
 
   /**
-   * DirectoryEntries constructor.
-   * @param DirectoryEntry[] $entries
-   */
-  public function __construct(array $entries = array()) {
-    parent::__construct($entries);
-  }
-
-  /**
    * @param array $entries
    * @return DirectoryEntries
    * @throws \InvalidArgumentException
