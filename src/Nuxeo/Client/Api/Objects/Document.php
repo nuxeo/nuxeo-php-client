@@ -101,7 +101,7 @@ class Document extends NuxeoEntity {
   private $title;
 
   /**
-   * @var object[]
+   * @var mixed[]
    * @Serializer\Type("array")
    */
   private $properties;
@@ -121,11 +121,16 @@ class Document extends NuxeoEntity {
 
   /**
    * @param $name
-   * @return object
+   * @param $type
+   * @return string|mixed
    */
-  public function getProperty($name) {
+  public function getProperty($name, $type = 'string') {
     if(array_key_exists($name, $this->properties)) {
-      return $this->properties[$name];
+      if($this->getNuxeoClient()) {
+        return $this->getNuxeoClient()->getConverter()->readData($this->properties[$name], $type);
+      } else {
+        return $this->properties[$name];
+      }
     } else {
       return null;
     }
@@ -340,14 +345,14 @@ class Document extends NuxeoEntity {
   }
 
   /**
-   * @return object[]
+   * @return mixed[]
    */
   public function getProperties() {
     return $this->properties;
   }
 
   /**
-   * @param object[] $properties
+   * @param mixed[] $properties
    */
   public function setProperties($properties) {
     $this->properties = $properties;

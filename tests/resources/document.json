@@ -1,0 +1,51 @@
+{
+  "entity-type": "document",
+  "repository": "default",
+  "uid": "0fa9d2a0-e69f-452d-87ff-0c5bd3b30d7d",
+  "path": "/default-domain",
+  "type": "Domain",
+  "state": "project",
+  "parentRef": "512c5555-6dce-4b88-81f1-12ddc8ac5de8",
+  "isCheckedOut": true,
+  "changeToken": "1444731706120",
+  "title": "Domain",
+  "lastModified": "2015-10-13T10:21:46.12Z",
+  "properties": {
+    "common:size": null,
+    "common:icon-expanded": null,
+    "common:icon": "/icons/domain.gif",
+    "domain:display_type": false,
+    "domain:content_roots": [],
+    "dc:description": null,
+    "dc:language": null,
+    "dc:coverage": null,
+    "dc:valid": null,
+    "dc:creator": "system",
+    "dc:modified": "2015-10-13T10:21:46.12Z",
+    "dc:lastContributor": "system",
+    "dc:rights": null,
+    "dc:expired": null,
+    "dc:format": null,
+    "dc:created": "2015-10-13T10:21:46.12Z",
+    "dc:title": "Domain",
+    "dc:issued": null,
+    "dc:nature": null,
+    "dc:subjects": [],
+    "dc:contributors": [
+      "system"
+    ],
+    "dc:source": null,
+    "dc:publisher": null,
+    "custom:complex": {
+      "birthday": "1979-01-01T00:00:00.00Z",
+      "name": "Guin",
+      "height": 1.456
+    },
+    "custom:related": "69d953ad-1975-453a-8328-ab9ee1830fe4"
+  },
+  "facets": [
+    "Folderish",
+    "SuperSpace",
+    "NotCollectionMember"
+  ]
+}

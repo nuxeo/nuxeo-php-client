@@ -23,6 +23,7 @@ namespace Nuxeo\Tests\Client;
 use Guzzle\Http\Message\EntityEnclosingRequest;
 use Guzzle\Http\Message\EntityEnclosingRequestInterface;
 use Guzzle\Http\Message\Response;
+use JMS\Serializer\Annotation as Serializer;
 use Nuxeo\Client\Api\Auth\PortalSSOAuthentication;
 use Nuxeo\Client\Api\Auth\TokenAuthentication;
 use Nuxeo\Client\Api\Constants;
@@ -33,6 +34,8 @@ use Nuxeo\Client\Api\Objects\Document;
 use Nuxeo\Client\Api\Objects\Documents;
 use Nuxeo\Client\Api\Objects\Operation;
 use Nuxeo\Client\Api\Utils\ArrayIterator;
+use Nuxeo\Tests\Client\Objects\Character;
+use Nuxeo\Tests\Client\Objects\MyDocType;
 
 class TestNuxeoClient extends NuxeoTestCase {
 
@@ -159,6 +162,65 @@ class TestNuxeoClient extends NuxeoTestCase {
     $this->assertNull($domain->getProperty('dc:nonexistent'));
   }
 
+  public function testMyDocTypeDeserialize() {
+    $client = new NuxeoClient($this->server->getUrl());
+
+    $this->server->enqueue(array(
+      new Response(200, array('Content-Type' => Constants::CONTENT_TYPE_JSON), file_get_contents($this->getResource('document.json')))
+    ));
+
+    /** @var MyDocType $document */
+    $document = $client
+      ->schemas('*')
+      ->automation('Document.Fetch')
+      ->param('value', '0fa9d2a0-e69f-452d-87ff-0c5bd3b30d7d')
+      ->execute(MyDocType::className);
+
+    $this->assertInstanceOf(MyDocType::className, $document);
+    $this->assertEquals($document->getCreatedAt(), $document->getProperty('dc:created'));
+  }
+
+  public function testComplexProperty() {
+    $client = new NuxeoClient($this->server->getUrl());
+
+    $this->server->enqueue(array(
+      new Response(200, array('Content-Type' => Constants::CONTENT_TYPE_JSON), file_get_contents($this->getResource('document.json')))
+    ));
+
+    /** @var Document $document */
+    $document = $client
+      ->schemas('*')
+      ->automation('Document.Fetch')
+      ->param('value', '0fa9d2a0-e69f-452d-87ff-0c5bd3b30d7d')
+      ->execute(Document::className);
+
+    /** @var Character $doc */
+    $doc = $document->getProperty('custom:complex', Character::className);
+    $this->assertNotEmpty($doc->name);
+  }
+
+  public function testRelatedProperty() {
+    $client = new NuxeoClient($this->server->getUrl());
+
+    $this->server->enqueue(array(
+      new Response(200, array('Content-Type' => Constants::CONTENT_TYPE_JSON), file_get_contents($this->getResource('document.json'))),
+      new Response(200, array('Content-Type' => Constants::CONTENT_TYPE_JSON), file_get_contents($this->getResource('document.json')))
+    ));
+
+    /** @var Document $document */
+    $document = $client
+      ->schemas('*')
+      ->automation('Document.Fetch')
+      ->param('value', '0fa9d2a0-e69f-452d-87ff-0c5bd3b30d7d')
+      ->execute(Document::className);
+
+    /** @var Operation\DocRef $docRef */
+    $docRef = $document->getProperty('custom:related', Operation\DocRef::className);
+    $this->assertInstanceOf(Operation\DocRef::className, $docRef);
+    $this->assertInstanceOf(Document::className, $doc = $docRef->getDocument());
+    $this->assertNotEmpty($doc->getPath());
+  }
+
   public function testGetBlob() {
     $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, self::PASSWORD);
 
@@ -175,7 +237,7 @@ class TestNuxeoClient extends NuxeoTestCase {
     list($request) = $this->server->getReceivedRequests(true);
 
     $this->assertEquals(sprintf('{"params":{},"input":"%s"}', self::MYFILE_DOCPATH), (string) $request->getBody());
-    $this->assertEquals(self::MYFILE_CONTENT, file_get_contents($blob->getFile()->getPathname()));
+    $this->assertStringEqualsFile($blob->getFile()->getPathname(), self::MYFILE_CONTENT);
   }
 
   /**

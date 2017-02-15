@@ -20,6 +20,11 @@ namespace Nuxeo\Client\Api\Objects\Operation;
 
 
 use JMS\Serializer\Annotation as Serializer;
+use Nuxeo\Client\Api\NuxeoClient;
+use Nuxeo\Client\Api\Objects\Document;
+use Nuxeo\Client\Internals\Spi\ClassCastException;
+use Nuxeo\Client\Internals\Spi\NoSuchOperationException;
+use Nuxeo\Client\Internals\Spi\NuxeoClientException;
 
 class DocRef {
 
@@ -32,11 +37,18 @@ class DocRef {
   private $ref;
 
   /**
-   * DocRef constructor.
-   * @param $ref
+   * @var NuxeoClient
    */
-  public function __construct($ref) {
+  protected $nuxeoClient;
+
+  /**
+   * DocRef constructor.
+   * @param string $ref
+   * @param NuxeoClient $nuxeoClient
+   */
+  public function __construct($ref, $nuxeoClient = null) {
     $this->ref = $ref;
+    $this->nuxeoClient = $nuxeoClient;
   }
 
   /**
@@ -44,6 +56,26 @@ class DocRef {
    */
   public function getRef() {
     return $this->ref;
+  }
+
+  /**
+   * @param string $type
+   * @throws ClassCastException
+   * @throws NuxeoClientException
+   * @return Document
+   */
+  public function getDocument($type = Document::className) {
+    if(null !== $this->nuxeoClient) {
+      try {
+        return $this->nuxeoClient
+          ->automation('Document.Fetch')
+          ->param('value', $this->getRef())
+          ->execute($type);
+      } catch(NoSuchOperationException $e) {
+        throw NuxeoClientException::fromPrevious($e, 'Could not fetch linked document');
+      }
+    }
+    return null;
   }
 
 }

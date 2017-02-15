@@ -126,6 +126,29 @@ $blobs = $client->automation('Blob.AttachOnDocument')->param('xpath', 'files:fil
 $resultBlob = $client->automation('Document.GetBlob')->input('folder/file')->execute(Blob::className);
 ```
 
+```php
+use Nuxeo\Client\Api\Objects\Document;
+
+class MyBusinessClass extends Nuxeo\Client\Api\Objects\Document {
+    const className = __CLASS__;
+
+    ...
+}
+
+// Unserialize document in a custom class
+$operation = $client->automation('Document.Fetch')->param('value', '0fa9d2a0-e69f-452d-87ff-0c5bd3b30d7d');
+$result = $operation->execute(MyBusinessClass::className);
+```
+
+```php
+use Nuxeo\Client\Api\Objects\Document;
+use Nuxeo\Client\Api\Objects\Operation\DocRef;
+
+// Enforce type of a property
+$doc = $client->automation('Document.Fetch')->param('value', '0fa9d2a0-e69f-452d-87ff-0c5bd3b30d7d')->execute(Document::className);
+$property = $doc->getProperty('custom:related', DocRef::className);
+```
+
 #### Errors/Exceptions
 
 The main exception type is `Nuxeo\Client\Internals\Spi\NuxeoClientException` and contains:

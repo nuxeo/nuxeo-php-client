@@ -24,12 +24,26 @@ namespace Nuxeo\Client\Api\Marshaller;
 use JMS\Serializer\DeserializationContext;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\VisitorInterface;
+use Nuxeo\Client\Api\NuxeoClient;
 use Nuxeo\Client\Api\Objects\Operation\DocRef;
 
 class DocRefMarshaller implements NuxeoMarshaller {
 
   /**
-   * @param $object
+   * @var NuxeoClient
+   */
+  protected $nuxeoClient;
+
+  /**
+   * DocRefMarshaller constructor.
+   * @param NuxeoClient $nuxeoClient
+   */
+  public function __construct(NuxeoClient $nuxeoClient) {
+    $this->nuxeoClient = $nuxeoClient;
+  }
+
+  /**
+   * @param DocRef $object
    * @param VisitorInterface $visitor
    * @param SerializationContext $context
    * @return string
@@ -45,7 +59,7 @@ class DocRefMarshaller implements NuxeoMarshaller {
    * @return DocRef
    */
   public function read($in, VisitorInterface $visitor, DeserializationContext $context) {
-    return new DocRef($in);
+    return new DocRef($in, $this->nuxeoClient);
   }
 
 }

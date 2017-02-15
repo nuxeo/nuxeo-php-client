@@ -265,7 +265,7 @@ class NuxeoClient {
     $this->getConverter()->registerMarshaller(Operation\CounterList::className, new CounterListMarshaller());
     $this->getConverter()->registerMarshaller(Operation\CounterTimestampedValue::className, new CounterTimestampedValueMarshaller());
     $this->getConverter()->registerMarshaller(Operation\DirectoryEntries::className, new DirectoryEntriesMarshaller());
-    $this->getConverter()->registerMarshaller(Operation\DocRef::className, new DocRefMarshaller());
+    $this->getConverter()->registerMarshaller(Operation\DocRef::className, new DocRefMarshaller($this));
     $this->getConverter()->registerMarshaller(Operation\LogEntries::className, new LogEntriesMarshaller());
     $this->getConverter()->registerMarshaller(Operation\UserGroupList::className, new UserGroupListMarshaller());
     return $this;

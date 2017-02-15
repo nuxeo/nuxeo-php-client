@@ -109,7 +109,6 @@ class Operation extends NuxeoEntity {
    * @param string $operationId
    * @return mixed
    * @throws NuxeoClientException
-   * @throws NoSuchOperationException
    * @throws ClassCastException
    */
   public function execute($type = 'array', $operationId = null) {
@@ -129,12 +128,12 @@ class Operation extends NuxeoEntity {
    * @param $operationId
    * @return \Guzzle\Http\Message\Response
    * @throws NuxeoClientException
-   * @throws NoSuchOperationException
    * @throws ClassCastException
    */
   protected function _doExecute($operationId) {
     $operationId = null === $operationId ? $this->operationId : $operationId;
     $input = $this->body->getInput();
+    $client = $this->getNuxeoClient();
 
     if(null === $operationId) {
       throw new NoSuchOperationException($operationId);
@@ -149,16 +148,16 @@ class Operation extends NuxeoEntity {
       foreach($input->getBlobs() as $blob) {
         $blobs[] = $blob->getFile()->getPathname();
       }
-      $this->nuxeoClient->voidOperation(true);
+      $client->voidOperation(true);
 
-      $response = $this->nuxeoClient->post(
+      $response = $client->post(
         $this->computeRequestUrl($operationId),
-        $this->nuxeoClient->getConverter()->writeJSON($this->body),
+        $client->getConverter()->writeJSON($this->body),
         $blobs);
     } else {
-      $response = $this->nuxeoClient->post(
+      $response = $client->post(
         $this->computeRequestUrl($operationId),
-        $this->nuxeoClient->getConverter()->writeJSON($this->body));
+        $client->getConverter()->writeJSON($this->body));
     }
     return $response;
   }

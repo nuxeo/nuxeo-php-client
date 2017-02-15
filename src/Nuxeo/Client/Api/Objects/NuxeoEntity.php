@@ -42,7 +42,7 @@ abstract class NuxeoEntity {
    * @var NuxeoClient
    * @Serializer\Exclude()
    */
-  protected $nuxeoClient;
+  private $nuxeoClient;
 
   /**
    * @Serializer\SerializedName("repository")
@@ -55,7 +55,7 @@ abstract class NuxeoEntity {
    * @param $entityType
    * @param NuxeoClient $nuxeoClient
    */
-  public function __construct($entityType, $nuxeoClient=null) {
+  public function __construct($entityType, $nuxeoClient = null) {
     $this->entityType = $entityType;
     $this->nuxeoClient = $nuxeoClient;
   }
@@ -77,9 +77,28 @@ abstract class NuxeoEntity {
 
       return Blob::fromHttpResponse($response);
     }
-    $body = $response->getBody(true);
+    $body = $this->nuxeoClient->getConverter()->readJSON($response->getBody(true), $type);
 
-    return $this->nuxeoClient->getConverter()->readJSON($body, $type);
+    return $this->reconnectObject($body, $this->getNuxeoClient());
+  }
+
+  /**
+   * @param $object
+   * @param $nuxeoClient
+   * @return mixed
+   */
+  protected function reconnectObject($object, $nuxeoClient) {
+    if($object instanceof NuxeoEntity) {
+      $object->nuxeoClient = $nuxeoClient;
+    }
+    return $object;
+  }
+
+  /**
+   * @return NuxeoClient
+   */
+  protected function getNuxeoClient() {
+    return $this->nuxeoClient;
   }
 
 }
