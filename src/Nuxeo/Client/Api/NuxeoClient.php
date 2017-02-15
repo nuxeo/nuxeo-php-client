@@ -179,6 +179,25 @@ class NuxeoClient {
     return $this;
   }
 
+
+  /**
+   * @param string $url
+   * @param array $query
+   * @return Response
+   * @throws NuxeoClientException
+   */
+  public function get($url, $query = array()) {
+    /** @var Request $request */
+    $request = $this->getHttpClient()->createRequest(Request::GET, $url, null, null, ["query" => $query]);
+
+    $this->interceptors($request);
+    try {
+      return $request->send();
+    } catch(GuzzleException $ex) {
+      throw NuxeoClientException::fromPrevious($ex);
+    }
+  }
+
   /**
    * @param string $url
    * @param string $body
