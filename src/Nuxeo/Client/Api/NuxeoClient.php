@@ -233,6 +233,19 @@ class NuxeoClient {
   }
 
   /**
+   * @param string $applicationName
+   * @param string $deviceId
+   * @param string $deviceDescription
+   * @param string $permission
+   * @param boolean $revoke
+   * @return string
+   * @throws NuxeoClientException
+   */
+  public function requestAuthenticationToken($applicationName, $deviceId, $deviceDescription = '', $permission = 'ReadWrite', $revoke = false) {
+    return $this->get('authentication/token', ['applicationName'=>$applicationName, 'deviceId'=>$deviceId, 'deviceDescription'=>$deviceDescription, 'permission'=>$permission, 'revoke'=>$revoke])->getBody();
+  }
+
+  /**
    * @return NuxeoClient
    */
   protected function setupDefaultMarshallers() {
