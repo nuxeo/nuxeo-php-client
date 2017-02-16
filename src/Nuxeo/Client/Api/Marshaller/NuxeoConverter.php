@@ -21,16 +21,22 @@
 namespace Nuxeo\Client\Api\Marshaller;
 
 
+use Doctrine\Common\Annotations\AnnotationReader;
+use JMS\Serializer\Construction\UnserializeObjectConstructor;
 use JMS\Serializer\DeserializationContext;
+use JMS\Serializer\EventDispatcher\EventDispatcher;
 use JMS\Serializer\GraphNavigator;
 use JMS\Serializer\Handler\HandlerRegistry;
 use JMS\Serializer\JsonDeserializationVisitor;
+use JMS\Serializer\Metadata\Driver\AnnotationDriver;
 use JMS\Serializer\Naming\IdenticalPropertyNamingStrategy;
+use JMS\Serializer\Naming\PropertyNamingStrategyInterface;
 use JMS\Serializer\Naming\SerializedNameAnnotationStrategy;
 use JMS\Serializer\SerializationContext;
-use JMS\Serializer\Serializer;
-use JMS\Serializer\SerializerBuilder;
+use JMS\Serializer\TypeParser;
 use JMS\Serializer\VisitorInterface;
+use Metadata\MetadataFactory;
+use Metadata\MetadataFactoryInterface;
 use Nuxeo\Client\Internals\Spi\Serializer\JsonSerializationVisitor;
 
 class NuxeoConverter {
@@ -41,9 +47,29 @@ class NuxeoConverter {
   protected $marshallers = array();
 
   /**
-   * @var Serializer
+   * @var PropertyNamingStrategyInterface
    */
-  private $serializer = null;
+  private $strategy;
+
+  /**
+   * @var VisitorInterface
+   */
+  private $serializationVisitor;
+
+  /**
+   * @var VisitorInterface
+   */
+  private $deserializationVisitor;
+
+  /**
+   * @var MetadataFactoryInterface
+   */
+  private $metadataFactory;
+
+  /**
+   * @var GraphNavigator
+   */
+  private $graphNavigator;
 
   /**
    * @param string $type
@@ -75,7 +101,19 @@ class NuxeoConverter {
    * @return string
    */
   public function writeJSON($object) {
-    return $this->getSerializer()->serialize($object, 'json');
+    $context = new SerializationContext();
+
+    $context->initialize(
+      'json',
+      $visitor = $this->getSerializationVisitor(),
+      $navigator =$this->getGraphNavigator(),
+      $this->getMetadataFactory()
+    );
+
+    $visitor->setNavigator($navigator);
+    $navigator->accept($visitor->prepare($object), null, $context);
+
+    return $visitor->getResult();
   }
 
   /**
@@ -84,46 +122,107 @@ class NuxeoConverter {
    * @return mixed
    */
   public function readJSON($data, $type) {
-    return $this->getSerializer()->deserialize($data, $type, 'json');
+    $visitor = $this->getDeserializationVisitor();
+    $navigator = $this->getGraphNavigator();
+
+    $visitor->setNavigator($navigator);
+    return $this->readData($visitor->prepare($data), $type);
   }
 
   /**
-   * @return Serializer
+   * @param string|array $data
+   * @param string $type
+   * @return mixed
    */
-  protected function getSerializer() {
-    if(null === $this->serializer) {
-      $strategy = new SerializedNameAnnotationStrategy(new IdenticalPropertyNamingStrategy());
+  public function readData($data, $type) {
+    $context = new DeserializationContext();
+    $typeParser = new TypeParser();
+
+    $context->initialize(
+      'json',
+      $visitor = $this->getDeserializationVisitor(),
+      $navigator = $this->getGraphNavigator(),
+      $this->getMetadataFactory()
+    );
+
+    $visitor->setNavigator($navigator);
+
+    return $navigator->accept($data, $typeParser->parse($type), $context);
+  }
+
+  protected function getPropertyNamingStrategy() {
+    if(null === $this->strategy) {
+      $this->strategy = new SerializedNameAnnotationStrategy(new IdenticalPropertyNamingStrategy());
+    }
+    return $this->strategy;
+  }
+
+  /**
+   * @return VisitorInterface
+   */
+  protected function getSerializationVisitor() {
+    if(null === $this->serializationVisitor) {
+      $this->serializationVisitor = new JsonSerializationVisitor($this->getPropertyNamingStrategy());
+    }
+    return $this->serializationVisitor;
+  }
+
+  /**
+   * @return VisitorInterface
+   */
+  protected function getDeserializationVisitor() {
+    if(null === $this->deserializationVisitor) {
+      $this->deserializationVisitor = new JsonDeserializationVisitor($this->getPropertyNamingStrategy());
+    }
+    return $this->deserializationVisitor;
+  }
+
+  /**
+   * @return MetadataFactoryInterface
+   */
+  protected function getMetadataFactory() {
+    if(null === $this->metadataFactory) {
+      $this->metadataFactory = new MetadataFactory(new AnnotationDriver(new AnnotationReader()), null, false);
+    }
+    return $this->metadataFactory;
+  }
+
+  /**
+   * @return GraphNavigator
+   */
+  protected function getGraphNavigator() {
+    if(null === $this->graphNavigator) {
+      $this->graphNavigator = new GraphNavigator(
+        $this->getMetadataFactory(),
+        $registry = new HandlerRegistry(),
+        new UnserializeObjectConstructor(),
+        new EventDispatcher()
+      );
 
       $self = $this;
 
-      $this->serializer = SerializerBuilder::create()
-        ->setSerializationVisitor('json', new JsonSerializationVisitor($strategy))
-        ->setDeserializationVisitor('json', new JsonDeserializationVisitor($strategy))
-        ->configureHandlers(function(HandlerRegistry $registry) use ($self) {
-          foreach($self->getMarshallers() as $type => $marshaller) {
-            $registry->registerHandler(
-              GraphNavigator::DIRECTION_SERIALIZATION,
-              $type,
-              'json',
-              function(VisitorInterface $visitor, $object, array $type, SerializationContext $context) use ($self) {
-                $marshaller = $self->getMarshaller($type['name']);
-                return $marshaller->write($object, $visitor, $context);
-              }
-            );
-            $registry->registerHandler(
-              GraphNavigator::DIRECTION_DESERIALIZATION,
-              $type,
-              'json',
-              function(VisitorInterface $visitor, $object, array $type, DeserializationContext $context) use ($self) {
-                $marshaller = $self->getMarshaller($type['name']);
-                return $marshaller->read($object, $visitor, $context);
-              }
-            );
+      foreach($this->getMarshallers() as $type => $marshaller) {
+        $registry->registerHandler(
+          GraphNavigator::DIRECTION_SERIALIZATION,
+          $type,
+          'json',
+          function(VisitorInterface $visitor, $object, array $type, SerializationContext $context) use ($self) {
+            $marshaller = $self->getMarshaller($type['name']);
+            return $marshaller->write($object, $visitor, $context);
           }
-        })
-        ->build();
+        );
+        $registry->registerHandler(
+          GraphNavigator::DIRECTION_DESERIALIZATION,
+          $type,
+          'json',
+          function(VisitorInterface $visitor, $object, array $type, DeserializationContext $context) use ($self) {
+            $marshaller = $self->getMarshaller($type['name']);
+            return $marshaller->read($object, $visitor, $context);
+          }
+        );
+      }
     }
-    return $this->serializer;
+    return $this->graphNavigator;
   }
 
 }
