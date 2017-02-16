@@ -247,10 +247,15 @@ class NuxeoClient {
    * @return string
    * @throws NuxeoClientException
    */
-  public function requestAuthenticationToken($applicationName, $deviceId, $deviceDescription = '', $permission = 'ReadWrite', $revoke = false) {
-    $res = $this->get('authentication/token', array('applicationName'=>$applicationName, 'deviceId'=>$deviceId, 'deviceDescription'=>$deviceDescription, 'permission'=>$permission, 'revoke'=>$revoke), array('allow_redirects'=>false));
+  public function requestAuthenticationToken($applicationName, $deviceId, $deviceDescription = '', $permission = Constants::SECURITY_READ_WRITE, $revoke = false) {
+    $res = $this->get('authentication/token', array(
+      'applicationName' => $applicationName,
+      'deviceId' => $deviceId,
+      'deviceDescription' => $deviceDescription,
+      'permission' => $permission, 'revoke' => $revoke
+    ), array('allow_redirects' => false));
     if ($res->getStatusCode() > 205) {
-       throw new NuxeoClientException($res->getStatusCode());
+      throw new NuxeoClientException($res->getStatusCode());
     }
     return $res->getBody();
   }

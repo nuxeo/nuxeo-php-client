@@ -43,4 +43,48 @@ class Constants {
 
   const ENTITY_TYPE_OPERATION = 'operation';
 
+  const SECURITY_EVERYTHING = 'Everything';
+
+  const SECURITY_RESTRICTED_READ = 'RestrictedRead';
+
+  const SECURITY_READ = 'Read';
+
+  const SECURITY_WRITE = 'Write';
+
+  const SECURITY_READ_WRITE = 'ReadWrite';
+
+  const SECURITY_REMOVE = 'Remove';
+
+  const SECURITY_VERSION = 'Version';
+
+  const SECURITY_READ_VERSION = 'ReadVersion';
+
+  const SECURITY_WRITE_VERSION = 'WriteVersion';
+
+  const SECURITY_BROWSE = 'Browse';
+
+  const SECURITY_WRITE_SECURITY = 'WriteSecurity';
+
+  const SECURITY_READ_SECURITY = 'ReadSecurity';
+
+  const SECURITY_READ_PROPERTIES = 'ReadProperties';
+
+  const SECURITY_WRITE_PROPERTIES = 'WriteProperties';
+
+  const SECURITY_READ_CHILDREN = 'ReadChildren';
+
+  const SECURITY_ADD_CHILDREN = 'AddChildren';
+
+  const SECURITY_REMOVE_CHILDREN = 'RemoveChildren';
+
+  const SECURITY_READ_LIFE_CYCLE = 'ReadLifeCycle';
+
+  const SECURITY_WRITE_LIFE_CYCLE = 'WriteLifeCycle';
+
+  const SECURITY_MANAGE_WORKFLOWS = 'ManageWorkflows';
+
+  const SECURITY_VIEW_WORKLFOW = 'ReviewParticipant';
+
+  const SECURITY_UNLOCK = 'Unlock';
+
 }
