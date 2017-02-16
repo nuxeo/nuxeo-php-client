@@ -111,7 +111,7 @@ class Operation extends NuxeoEntity {
    * @throws NuxeoClientException
    * @throws ClassCastException
    */
-  public function execute($type = 'array', $operationId = null) {
+  public function execute($type = null, $operationId = null) {
     $response = $this->_doExecute($operationId);
     return $this->computeResponse($response, $type);
   }

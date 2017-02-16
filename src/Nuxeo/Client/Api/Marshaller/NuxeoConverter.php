@@ -37,6 +37,8 @@ use JMS\Serializer\TypeParser;
 use JMS\Serializer\VisitorInterface;
 use Metadata\MetadataFactory;
 use Metadata\MetadataFactoryInterface;
+use Nuxeo\Client\Api\Objects\Document;
+use Nuxeo\Client\Api\Objects\Documents;
 use Nuxeo\Client\Internals\Spi\Serializer\JsonSerializationVisitor;
 
 class NuxeoConverter {
@@ -121,12 +123,30 @@ class NuxeoConverter {
    * @param string $type
    * @return mixed
    */
-  public function readJSON($data, $type) {
+  public function readJSON($data, $type = null) {
     $visitor = $this->getDeserializationVisitor();
     $navigator = $this->getGraphNavigator();
 
     $visitor->setNavigator($navigator);
-    return $this->readData($visitor->prepare($data), $type);
+    $array_data = $visitor->prepare($data);
+
+    if(null === $type) {
+      $type = 'array';
+
+      if(array_key_exists('entity-type', $array_data)) {
+        $entityType = $array_data['entity-type'];
+        $typeMap = array(
+          'document' => Document::className,
+          'documents' => Documents::className,
+        );
+
+        if(array_key_exists($entityType, $typeMap)) {
+          $type = $typeMap[$entityType];
+        }
+      }
+    }
+
+    return $this->readData($array_data, $type);
   }
 
   /**

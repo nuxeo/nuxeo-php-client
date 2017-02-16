@@ -66,7 +66,7 @@ abstract class NuxeoEntity {
    * @return mixed
    * @throws ClassCastException
    */
-  protected function computeResponse($response, $type) {
+  protected function computeResponse($response, $type = null) {
     if(false === (
         $response->isContentType(Constants::CONTENT_TYPE_JSON) ||
         $response->isContentType(Constants::CONTENT_TYPE_JSON_NXENTITY))) {

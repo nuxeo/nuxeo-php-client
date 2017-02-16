@@ -95,18 +95,16 @@ $client = $client->setAuthenticationMethod(new TokenAuthentication($token));
 To use the Automation API, `Nuxeo\Client\Api\NuxeoClient#automation()` is the entry point for all calls:
 
 ```php
-use Nuxeo\Client\Api\Objects\Document;
-
 // Fetch the root document
-$result = $client->automation('Repository.GetDocument')->param("value", "/")->execute(Document::className);
+$result = $client->automation('Repository.GetDocument')->param("value", "/")->execute();
+// Type auto-detected and cast as Nuxeo\Client\Api\Objects\Document
 ```
 
 ```php
-use Nuxeo\Client\Api\Objects\Documents;
-
 // Execute query
 $operation = $client->automation('Repository.Query')->param('query', 'SELECT * FROM Document');
-$result = $operation->execute(Documents::className);
+$result = $operation->execute();
+// Type auto-detected and cast as Nuxeo\Client\Api\Objects\Documents
 ```
 
 ```php

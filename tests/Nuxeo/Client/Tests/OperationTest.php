@@ -46,7 +46,7 @@ class OperationTest extends NuxeoTestCase {
       ->schemas('*')
       ->automation()
       ->param('query', 'SELECT * FROM Document')
-      ->execute(Documents::className, 'Document.Query');
+      ->execute(null, 'Document.Query');
 
     $this->assertInstanceOf(Documents::className, $documents);
     $this->assertEquals(5, $documents->size());
@@ -97,7 +97,7 @@ class OperationTest extends NuxeoTestCase {
       ->schemas('*')
       ->automation('Document.Fetch')
       ->param('value', '0fa9d2a0-e69f-452d-87ff-0c5bd3b30d7d')
-      ->execute(Document::className);
+      ->execute();
 
     /** @var Character $doc */
     $doc = $document->getProperty('custom:complex', Character::className);
@@ -117,7 +117,7 @@ class OperationTest extends NuxeoTestCase {
       ->schemas('*')
       ->automation('Document.Fetch')
       ->param('value', '0fa9d2a0-e69f-452d-87ff-0c5bd3b30d7d')
-      ->execute(Document::className);
+      ->execute();
 
     /** @var Operation\DocRef $docRef */
     $docRef = $document->getProperty('custom:related', Operation\DocRef::className);
