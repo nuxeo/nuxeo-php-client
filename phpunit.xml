@@ -21,7 +21,7 @@
          verbose="true">
   <testsuites>
     <testsuite name="nuxeo-automation-php-client-suite">
-      <directory suffix="Test.php">tests/Nuxeo/Tests/Client</directory>
+      <directory suffix="Test.php">tests/Nuxeo/Client/Tests</directory>
     </testsuite>
   </testsuites>
 

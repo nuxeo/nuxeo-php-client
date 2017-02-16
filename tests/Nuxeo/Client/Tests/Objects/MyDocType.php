@@ -16,24 +16,17 @@
  *
  */
 
-namespace Nuxeo\Tests\Client\Objects;
+namespace Nuxeo\Client\Tests\Objects;
 
-use JMS\Serializer\Annotation as Serializer;
 
-class Character {
+use Nuxeo\Client\Api\Objects\Document;
+
+class MyDocType extends Document {
 
   const className = __CLASS__;
 
-  /**
-   * @var string
-   * @Serializer\Type("string")
-   */
-  public $name;
-
-  /**
-   * @var string
-   * @Serializer\Type("double")
-   */
-  public $height;
+  public function getCreatedAt() {
+    return $this->getProperty('dc:created');
+  }
 
 }

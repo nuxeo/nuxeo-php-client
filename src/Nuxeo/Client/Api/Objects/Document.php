@@ -124,9 +124,9 @@ class Document extends NuxeoEntity {
    * @param $type
    * @return string|mixed
    */
-  public function getProperty($name, $type = 'string') {
+  public function getProperty($name, $type = null) {
     if(array_key_exists($name, $this->properties)) {
-      if($this->getNuxeoClient()) {
+      if(null !== $type && $this->getNuxeoClient()) {
         return $this->getNuxeoClient()->getConverter()->readData($this->properties[$name], $type);
       } else {
         return $this->properties[$name];
