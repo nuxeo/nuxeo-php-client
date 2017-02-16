@@ -14,15 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Contributors:
- *     Pierre-Gildas MILLON <pgmillon@nuxeo.com>
  */
 
-namespace Nuxeo\Tests\Client;
+namespace Nuxeo\Client\Tests;
 
 use Guzzle\Http\Message\EntityEnclosingRequest;
 use Guzzle\Http\Message\EntityEnclosingRequestInterface;
 use Guzzle\Http\Message\Response;
+use JMS\Serializer\Annotation as Serializer;
 use Nuxeo\Client\Api\Auth\PortalSSOAuthentication;
 use Nuxeo\Client\Api\Auth\TokenAuthentication;
 use Nuxeo\Client\Api\Constants;
@@ -33,6 +32,8 @@ use Nuxeo\Client\Api\Objects\Document;
 use Nuxeo\Client\Api\Objects\Documents;
 use Nuxeo\Client\Api\Objects\Operation;
 use Nuxeo\Client\Api\Utils\ArrayIterator;
+use Nuxeo\Client\Tests\Objects\Character;
+use Nuxeo\Client\Tests\Objects\MyDocType;
 
 class TestNuxeoClient extends NuxeoTestCase {
 
