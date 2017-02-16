@@ -1,5 +1,5 @@
 
-[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=Client/nuxeo-automation-php-client-master)](https://qa.nuxeo.org/jenkins/job/Client/job/nuxeo-automation-php-client-master)
+[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=Client/nuxeo-automation-php-client/master)](https://qa.nuxeo.org/jenkins/job/Client/job/nuxeo-automation-php-client/job/master/)
 
 # Nuxeo Automation PHP Client
 
@@ -11,7 +11,7 @@ This is supported by Nuxeo and compatible with Nuxeo LTS 2015 and latest Fast Tr
 
 ## Requirements
 
- * PHP >= 5.3.23
+ * PHP >= 5.3.3
  * [Composer](https://getcomposer.org/)
 
 ## Getting Started
@@ -37,19 +37,21 @@ This is supported by Nuxeo and compatible with Nuxeo LTS 2015 and latest Fast Tr
 
 ### Library import
 
-Download [Nuxeo Automation PHP Client 1.1.0](https://github.com/nuxeo/nuxeo-automation-php-client/archive/1.1.0.tar.gz).
+Download the latest stable release [Nuxeo Automation PHP Client 1.5.0](https://github.com/nuxeo/nuxeo-automation-php-client/archive/1.5.0.tar.gz).
 
 Composer:
 
 ```
   "require": {
-    "nuxeo/nuxeo-automation-php-client": "~1.1.0"
+    "nuxeo/nuxeo-automation-php-client": "~1.5.0"
   }
 ```
 
 ### Usage
 
 #### Creating a Client
+
+The following documentation and samples applies for the 1.5 and newer versions. Calls to the Automation API for previous versions of the client will require adjustments.
 
 For a given `url`:
 
