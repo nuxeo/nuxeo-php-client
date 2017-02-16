@@ -22,8 +22,6 @@ use Guzzle\Http\Message\EntityEnclosingRequest;
 use Guzzle\Http\Message\EntityEnclosingRequestInterface;
 use Guzzle\Http\Message\Response;
 use JMS\Serializer\Annotation as Serializer;
-use Nuxeo\Client\Api\Auth\PortalSSOAuthentication;
-use Nuxeo\Client\Api\Auth\TokenAuthentication;
 use Nuxeo\Client\Api\Constants;
 use Nuxeo\Client\Api\NuxeoClient;
 use Nuxeo\Client\Api\Objects\Audit\LogEntry;
@@ -31,101 +29,10 @@ use Nuxeo\Client\Api\Objects\Blob\Blob;
 use Nuxeo\Client\Api\Objects\Document;
 use Nuxeo\Client\Api\Objects\Documents;
 use Nuxeo\Client\Api\Objects\Operation;
-use Nuxeo\Client\Api\Utils\ArrayIterator;
 use Nuxeo\Client\Tests\Objects\Character;
 use Nuxeo\Client\Tests\Objects\MyDocType;
 
-class TestNuxeoClient extends NuxeoTestCase {
-
-  public function testGetRequest() {
-    $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, self::PASSWORD);
-
-    $this->server->enqueue(array(
-      new Response(200, array('Content-Type' => Constants::CONTENT_TYPE_JSON), file_get_contents($this->getResource('user.json')))
-    ));
-
-    $userDoc = $client->automation()->execute(Document::className, 'User.Get');
-
-    $requests = $this->server->getReceivedRequests(true);
-
-    $this->assertCount(1, $requests);
-
-    /** @var EntityEnclosingRequest $request */
-    list($request) = $requests;
-
-    $this->assertTrue($request->hasHeader('Authorization'));
-
-    list($username, $password) = explode(':', base64_decode(ArrayIterator::fromArray(explode(
-      ' ', $request->getHeader('Authorization')->getIterator()->current()))->offsetGet(1)));
-
-    $this->assertEquals(self::LOGIN, $username);
-    $this->assertEquals(self::PASSWORD, $password);
-
-    $this->assertInstanceOf(Document::className, $userDoc);
-    $this->assertEquals(self::LOGIN, $userDoc->getUid());
-  }
-
-  public function testPortalSSOAuth() {
-    $client = new NuxeoClient($this->server->getUrl());
-
-    $this->server->enqueue(array(
-      new Response(200, array('Content-Type' => Constants::CONTENT_TYPE_JSON), file_get_contents($this->getResource('user.json')))
-    ));
-
-    $client
-      ->setAuthenticationMethod(new PortalSSOAuthentication('secret', self::LOGIN))
-      ->automation()
-      ->execute(Document::className, 'User.Get');
-
-    $requests = $this->server->getReceivedRequests(true);
-
-    /** @var EntityEnclosingRequest $request */
-    list($request) = $requests;
-
-    $this->assertFalse($request->hasHeader('Authentication'));
-    $this->assertTrue($request->hasHeader(PortalSSOAuthentication::NX_TS));
-    $this->assertTrue($request->hasHeader(PortalSSOAuthentication::NX_RD));
-    $this->assertTrue($request->hasHeader(PortalSSOAuthentication::NX_TOKEN));
-    $this->assertTrue($request->hasHeader(PortalSSOAuthentication::NX_USER));
-  }
-
-  public function testTokenAuthentication() {
-    $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, self::PASSWORD);
-    $auth_token = 'some_token';
-
-    $this->server->enqueue(array(
-      new Response(200, array('Content-Type' => Constants::CONTENT_TYPE_JSON), file_get_contents($this->getResource('user.json')))
-    ));
-
-    $client
-      ->setAuthenticationMethod(new TokenAuthentication($auth_token))
-      ->automation()
-      ->execute(Document::className, 'User.Get');
-
-    $requests = $this->server->getReceivedRequests(true);
-
-    /** @var EntityEnclosingRequest $request */
-    list($request) = $requests;
-
-    $this->assertFalse($request->hasHeader('Authentication'));
-    $this->assertTrue($request->hasHeader(TokenAuthentication::HEADER_TOKEN));
-    $this->assertEquals($auth_token, $request->getHeader(TokenAuthentication::HEADER_TOKEN));
-  }
-
-  /**
-   * @expectedException \Nuxeo\Client\Internals\Spi\NuxeoClientException
-   */
-  public function testUnauthorized() {
-    $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, null);
-
-    $this->server->enqueue(array(
-      new Response(401, array('Content-Type' => Constants::CONTENT_TYPE_JSON), 'Unauthorized')
-    ));
-
-    $client->automation()->execute(Document::className, 'Document.Query');
-
-    $this->assertCount(1, $this->server->getReceivedRequests());
-  }
+class OperationTest extends NuxeoTestCase {
 
   public function testListDocuments() {
     $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, self::PASSWORD);
