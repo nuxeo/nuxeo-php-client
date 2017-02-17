@@ -186,9 +186,17 @@ class NuxeoClient {
    * @return Response
    * @throws NuxeoClientException
    */
-  public function get($url, $query = array()) {
+  public function get($url, $query = array(), $options = null) {
     /** @var Request $request */
-    $request = $this->getHttpClient()->createRequest(Request::GET, $url, null, null, ["query" => $query]);
+    if ($options == null) {
+      $options = array();
+      $options["query"] = $query;
+    } else if (!array_key_exists("query", $options)) {
+      $options["query"] = $query;
+    } else {
+      $options["query"] = array_merge($options["query"], $query);
+    }
+    $request = $this->getHttpClient()->createRequest(Request::GET, $url, null, null, $options);
 
     $this->interceptors($request);
     try {
@@ -242,7 +250,11 @@ class NuxeoClient {
    * @throws NuxeoClientException
    */
   public function requestAuthenticationToken($applicationName, $deviceId, $deviceDescription = '', $permission = 'ReadWrite', $revoke = false) {
-    return $this->get('authentication/token', ['applicationName'=>$applicationName, 'deviceId'=>$deviceId, 'deviceDescription'=>$deviceDescription, 'permission'=>$permission, 'revoke'=>$revoke])->getBody();
+    $res = $this->get('authentication/token', ['applicationName'=>$applicationName, 'deviceId'=>$deviceId, 'deviceDescription'=>$deviceDescription, 'permission'=>$permission, 'revoke'=>$revoke], ['allow_redirects'=>false]);
+    if ($res->getStatusCode() > 205) {
+       throw new NuxeoClientException($res->getStatusCode());
+    }
+    return $res->getBody();
   }
 
   /**
