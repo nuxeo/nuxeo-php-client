@@ -42,6 +42,7 @@ use Nuxeo\Client\Api\Marshaller\UserGroupListMarshaller;
 use Nuxeo\Client\Api\Objects\Blob\Blob;
 use Nuxeo\Client\Api\Objects\Blob\Blobs;
 use Nuxeo\Client\Api\Objects\Operation;
+use Nuxeo\Client\Api\Objects\Repository;
 use Nuxeo\Client\Internals\Spi\Auth\AuthenticationInterceptor;
 use Nuxeo\Client\Internals\Spi\Http\EntityEnclosingRequest;
 use Nuxeo\Client\Internals\Spi\Http\RequestFactory;
@@ -157,6 +158,11 @@ class NuxeoClient {
    */
   public function automation($operationId = null) {
     return new Operation($this, $this->getApiUrl()->addPath(Constants::AUTOMATION_PATH), $operationId);
+  }
+
+  public function repository() {
+    $url = clone $this->baseUrl;
+    return new Repository($this, $url->addPath(Constants::API_PATH));
   }
 
   /**

@@ -20,6 +20,7 @@ namespace Nuxeo\Client\Tests;
 
 use Guzzle\Http\Message\EntityEnclosingRequest;
 use Guzzle\Http\Message\EntityEnclosingRequestInterface;
+use Guzzle\Http\Message\RequestInterface;
 use Guzzle\Http\Message\Response;
 use JMS\Serializer\Annotation as Serializer;
 use Nuxeo\Client\Api\Constants;
@@ -33,6 +34,21 @@ use Nuxeo\Client\Tests\Objects\Character;
 use Nuxeo\Client\Tests\Objects\MyDocType;
 
 class OperationTest extends NuxeoTestCase {
+
+  public function testFetchDocumentRoot() {
+    $client = new NuxeoClient($this->server->getUrl());
+
+    $this->server->enqueue(array(
+      new Response(200, array('Content-Type' => Constants::CONTENT_TYPE_JSON), '{}')
+    ));
+
+    $client->repository()->fetchDocumentRoot();
+    $this->assertCount(1, $requests = $this->server->getReceivedRequests(true));
+
+    /** @var RequestInterface $request */
+    list($request) = $requests;
+    $this->assertEquals(sprintf('/%spath', Constants::API_PATH), $request->getPath());
+  }
 
   public function testListDocuments() {
     $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, self::PASSWORD);
