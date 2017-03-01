@@ -18,7 +18,9 @@
 
 namespace Nuxeo\Client\Api;
 
+use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
+use Doctrine\Common\Annotations\Reader;
 use Guzzle\Common\Exception\GuzzleException;
 use Guzzle\Http\Client;
 use Guzzle\Http\Message\Request;
@@ -74,6 +76,11 @@ class NuxeoClient {
    * @var NuxeoConverter
    */
   private $converter;
+
+  /**
+   * @var Reader
+   */
+  private $annotationReader;
 
   /**
    * @param string $url
@@ -238,7 +245,7 @@ class NuxeoClient {
    */
   public function getConverter() {
     if(null === $this->converter) {
-      $this->converter = new NuxeoConverter();
+      $this->converter = new NuxeoConverter($this->getAnnotationReader());
       $this->setupDefaultMarshallers();
     }
     return $this->converter;
@@ -298,6 +305,16 @@ class NuxeoClient {
       $interceptor->proceed($request);
     }
     return $this;
+  }
+
+  /**
+   * @return Reader
+   */
+  public function getAnnotationReader() {
+    if(null === $this->annotationReader) {
+      $this->annotationReader = new AnnotationReader();
+    }
+    return $this->annotationReader;
   }
 
 }

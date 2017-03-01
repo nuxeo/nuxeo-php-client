@@ -22,6 +22,7 @@ namespace Nuxeo\Client\Api\Marshaller;
 
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\Reader;
 use JMS\Serializer\Construction\UnserializeObjectConstructor;
 use JMS\Serializer\DeserializationContext;
 use JMS\Serializer\EventDispatcher\EventDispatcher;
@@ -72,6 +73,19 @@ class NuxeoConverter {
    * @var GraphNavigator
    */
   private $graphNavigator;
+
+  /**
+   * @var Reader
+   */
+  private $annotationReader;
+
+  /**
+   * NuxeoConverter constructor.
+   * @param Reader $annotationReader
+   */
+  public function __construct(Reader $annotationReader) {
+    $this->annotationReader = $annotationReader;
+  }
 
   /**
    * @param string $type
@@ -198,11 +212,18 @@ class NuxeoConverter {
   }
 
   /**
+   * @return Reader
+   */
+  protected function getAnnotationReader() {
+    return $this->annotationReader;
+  }
+
+  /**
    * @return MetadataFactoryInterface
    */
   protected function getMetadataFactory() {
     if(null === $this->metadataFactory) {
-      $this->metadataFactory = new MetadataFactory(new AnnotationDriver(new AnnotationReader()), null, false);
+      $this->metadataFactory = new MetadataFactory(new AnnotationDriver($this->getAnnotationReader()), null, false);
     }
     return $this->metadataFactory;
   }
