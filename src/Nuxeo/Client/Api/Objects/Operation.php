@@ -112,25 +112,6 @@ class Operation extends NuxeoEntity {
    * @throws ClassCastException
    */
   public function execute($type = null, $operationId = null) {
-    $response = $this->_doExecute($operationId);
-    return $this->computeResponse($response, $type);
-  }
-
-  /**
-   * @param string $operationId
-   * @return Url
-   */
-  protected function computeRequestUrl($operationId) {
-    return $this->apiUrl->addPath($operationId);
-  }
-
-  /**
-   * @param $operationId
-   * @return \Guzzle\Http\Message\Response
-   * @throws NuxeoClientException
-   * @throws ClassCastException
-   */
-  protected function _doExecute($operationId) {
     $operationId = null === $operationId ? $this->operationId : $operationId;
     $input = $this->body->getInput();
     $client = $this->getNuxeoClient();
@@ -151,15 +132,16 @@ class Operation extends NuxeoEntity {
       $client->voidOperation(true);
 
       $response = $client->post(
-        $this->computeRequestUrl($operationId),
+        $this->computeRequestUrl(Constants::AUTOMATION_PATH.$operationId),
         $client->getConverter()->writeJSON($this->body),
         $blobs);
     } else {
       $response = $client->post(
-        $this->computeRequestUrl($operationId),
+        $this->computeRequestUrl(Constants::AUTOMATION_PATH.$operationId),
         $client->getConverter()->writeJSON($this->body));
     }
-    return $response;
+
+    return $this->computeResponse($response, $type);
   }
 
 }

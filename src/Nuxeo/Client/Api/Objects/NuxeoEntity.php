@@ -61,6 +61,14 @@ abstract class NuxeoEntity {
   }
 
   /**
+   * @param string $path
+   * @return Url
+   */
+  protected function computeRequestUrl($path) {
+    return $this->getNuxeoClient()->getApiUrl()->addPath($path);
+  }
+
+  /**
    * @param Response $response
    * @param string $type
    * @return mixed

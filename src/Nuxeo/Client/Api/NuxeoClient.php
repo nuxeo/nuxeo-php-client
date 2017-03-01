@@ -105,7 +105,14 @@ class NuxeoClient {
    * @return Url
    */
   public function getBaseUrl() {
-    return $this->baseUrl;
+    return clone $this->baseUrl;
+  }
+
+  /**
+   * @return Url
+   */
+  public function getApiUrl() {
+    return $this->getBaseUrl()->addPath(Constants::API_PATH);
   }
 
   /**
@@ -142,8 +149,7 @@ class NuxeoClient {
    * @return Operation
    */
   public function automation($operationId = null) {
-    $url = clone $this->baseUrl;
-    return new Operation($this, $url->addPath(Constants::AUTOMATION_PATH), $operationId);
+    return new Operation($this, $this->getApiUrl()->addPath(Constants::AUTOMATION_PATH), $operationId);
   }
 
   /**

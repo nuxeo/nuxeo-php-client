@@ -25,7 +25,7 @@ class Constants {
 
   const API_PATH = 'api/v1/';
 
-  const AUTOMATION_PATH = 'api/v1/automation/';
+  const AUTOMATION_PATH = 'automation/';
 
   const HEADER_PROPERTIES = 'X-NXProperties';
 
