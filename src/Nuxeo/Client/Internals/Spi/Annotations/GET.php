@@ -16,32 +16,19 @@
  *
  */
 
-namespace Nuxeo\Client\Api\Objects;
+namespace Nuxeo\Client\Internals\Spi\Annotations;
 
-
-use JMS\Serializer\Annotation as Serializer;
-use Nuxeo\Client\Api\Constants;
-use Nuxeo\Client\Internals\Spi\Annotations\GET;
-
-
-class Repository extends NuxeoEntity {
+/**
+ * @Annotation
+ * @Target("METHOD")
+ */
+class GET extends HttpMethod {
 
   /**
-   * Repository constructor.
-   * @param $nuxeoClient
-   * @param \Guzzle\Http\Url $apiUrl
+   * GET constructor.
    */
-  public function __construct($nuxeoClient, $apiUrl) {
-    parent::__construct(Constants::ENTITY_TYPE_DOCUMENT, $nuxeoClient);
-  }
-
-  /**
-   * @GET("path")
-   * @param string $type
-   * @return mixed
-   */
-  public function fetchDocumentRoot($type = null) {
-    return $this->getResponse($type);
+  public function __construct(array $values) {
+    parent::__construct('get', $values['value']);
   }
 
 }

@@ -28,6 +28,7 @@ use Nuxeo\Client\Api\NuxeoClient;
 use Nuxeo\Client\Api\Objects\Blob\Blob;
 use Nuxeo\Client\Api\Objects\Blob\Blobs;
 use Nuxeo\Client\Api\Objects\Operation\OperationBody;
+use Nuxeo\Client\Internals\Spi\Annotations\POST;
 use Nuxeo\Client\Internals\Spi\ClassCastException;
 use Nuxeo\Client\Internals\Spi\NoSuchOperationException;
 use Nuxeo\Client\Internals\Spi\NuxeoClientException;
@@ -105,6 +106,7 @@ class Operation extends NuxeoEntity {
   }
 
   /**
+   * @POST("/automation/{operationId}")
    * @param string $type
    * @param string $operationId
    * @return mixed

@@ -22,11 +22,14 @@ namespace Nuxeo\Client\Api\Objects;
 
 
 use Guzzle\Http\Message\Response;
+use Guzzle\Http\Url;
 use JMS\Serializer\Annotation as Serializer;
 use Nuxeo\Client\Api\Constants;
 use Nuxeo\Client\Api\NuxeoClient;
 use Nuxeo\Client\Api\Objects\Blob\Blob;
+use Nuxeo\Client\Internals\Spi\Annotations\HttpMethod;
 use Nuxeo\Client\Internals\Spi\ClassCastException;
+use Nuxeo\Client\Internals\Spi\NuxeoClientException;
 
 abstract class NuxeoEntity {
 
@@ -88,6 +91,57 @@ abstract class NuxeoEntity {
     $body = $this->nuxeoClient->getConverter()->readJSON($response->getBody(true), $type);
 
     return $this->reconnectObject($body, $this->getNuxeoClient());
+  }
+
+  /**
+   * @param string $type
+   * @return mixed
+   * @throws ClassCastException
+   */
+  public function getResponse($type = null, $body = null, $files = null) {
+    //TODO: Use Zend\Http\Query
+    $method = $this->getMethod();
+    $args = array();
+
+    $response = $this->getNuxeoClient()->{$method->getName()}(
+      $this->computeRequestUrl($method->getPath()),
+      $body,
+      $files
+    );
+    if(false === (
+        $response->isContentType(Constants::CONTENT_TYPE_JSON) ||
+        $response->isContentType(Constants::CONTENT_TYPE_JSON_NXENTITY))) {
+
+      if(Blob::className !== $type) {
+        throw new ClassCastException(sprintf('Cannot cast %s as %s', Blob::className, $type));
+      }
+
+      return Blob::fromHttpResponse($response);
+    }
+    $body = $this->nuxeoClient->getConverter()->readJSON($response->getBody(true), $type);
+
+    return $this->reconnectObject($body, $this->getNuxeoClient());
+  }
+
+  /**
+   * @throws NuxeoClientException
+   * @return HttpMethod
+   */
+  protected function getMethod() {
+    $backtrace = debug_backtrace();
+    $reflectionClass = new \ReflectionClass($backtrace[2]['class']);
+    $reflectionMethod = $reflectionClass->getMethod($backtrace[2]['function']);
+
+    foreach($this->getNuxeoClient()->getAnnotationReader()->getMethodAnnotations($reflectionMethod) as $annotation) {
+      if($annotation instanceof HttpMethod) {
+        return $annotation;
+      }
+    }
+    throw new NuxeoClientException(
+      sprintf('No method found for API %s and method name "%s". Check method name and parameters.',
+        $reflectionClass->getName(),
+        $reflectionMethod->getName())
+    );
   }
 
   /**
