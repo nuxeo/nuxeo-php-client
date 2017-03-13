@@ -25,6 +25,8 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 class ContentDisposition extends \Zend\Http\Header\ContentDisposition {
 
+  const className = __CLASS__;
+
   /**
    * @var string
    */
@@ -44,10 +46,10 @@ class ContentDisposition extends \Zend\Http\Header\ContentDisposition {
       if(in_array($part, array(ResponseHeaderBag::DISPOSITION_ATTACHMENT, ResponseHeaderBag::DISPOSITION_INLINE), true)) {
         $this->disposition = $part;
       } elseif(preg_match('/^filename\*?=/', $part)) {
-        list($field, $filename) = explode('=', $part);
+        list(, $filename) = explode('=', $part);
 
         if(preg_match('/^[^\']+\'\'/', $filename)) {
-          list($encoding, $filename) = explode('\'\'', $filename);
+          list(, $filename) = explode('\'\'', $filename);
         }
         $this->filename = $filename;
       }

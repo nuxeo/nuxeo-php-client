@@ -21,7 +21,7 @@ namespace Nuxeo\Client\Api\Objects\Audit;
 
 use JMS\Serializer\Annotation as Serializer;
 use Nuxeo\Client\Api\Constants;
-use Nuxeo\Client\Api\Objects\NuxeoEntity;
+use Nuxeo\Client\Internals\Spi\Objects\NuxeoEntity;
 
 class LogEntry extends NuxeoEntity {
 

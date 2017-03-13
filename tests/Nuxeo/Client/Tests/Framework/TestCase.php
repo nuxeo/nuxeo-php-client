@@ -16,12 +16,14 @@
  *
  */
 
-namespace Nuxeo\Client\Tests;
+namespace Nuxeo\Client\Tests\Framework;
 
 
-use Guzzle\Tests\Http\Server;
+use Nuxeo\Client\Api\Constants;
+use Nuxeo\Client\Api\Response;
+use Nuxeo\Client\Tests\Client;
 
-abstract class NuxeoTestCase extends \PHPUnit_Framework_TestCase {
+abstract class TestCase extends \PHPUnit_Framework_TestCase {
   const NEWFILE_NAME = 'myfile.txt';
   const PASSWORD = 'Administrator';
   const NEWFILE_PATH = 'myfile.txt';
@@ -29,24 +31,55 @@ abstract class NuxeoTestCase extends \PHPUnit_Framework_TestCase {
   const MYFILE_CONTENT = 'Hello World';
   const NEWFILE_TYPE = 'text/plain';
   const MYFILE_DOCPATH = '/default-domain/workspaces/MyWorkspace/MyFile';
+  const URL = 'http://localhost:8080/nuxeo';
 
   /**
-   * @var Server
+   * @var Client
    */
-  protected $server;
+  private $client;
 
   public function readPartFromFile($path) {
     $part = file_get_contents($this->getResource($path));
     return str_replace(PHP_EOL, "\r\n", $part);
   }
 
-  protected function setUp() {
-    $this->server = new Server();
-    $this->server->start();
+  protected function tearDown() {
+    unset($this->client);
   }
 
-  protected function tearDown() {
-    $this->server->stop();
+  /**
+   * @param string $url
+   * @param string $username
+   * @param string $password
+   * @return Client
+   */
+  protected function getClient($url = self::URL, $username = self::LOGIN, $password = self::PASSWORD) {
+    if(null === $this->client) {
+      $this->client = new Client($url, $username, $password);
+    }
+    return $this->client;
+  }
+
+  /**
+   * @param int $code
+   * @param array $headers
+   * @param string $body
+   * @return Response
+   */
+  protected function createResponse($code = 200, $headers = array(), $body = '') {
+    $response = new Response($code);
+    $response->addHeaders($headers);
+    $response->setBody($body);
+
+    return $response;
+  }
+
+  /**
+   * @param string $jsonContent
+   * @return Response
+   */
+  protected function createJsonResponse($jsonContent) {
+    return $this->createResponse(200, array('Content-Type' => Constants::CONTENT_TYPE_JSON), $jsonContent);
   }
 
   /**

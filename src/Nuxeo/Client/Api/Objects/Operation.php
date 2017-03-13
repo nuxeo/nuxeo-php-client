@@ -21,17 +21,17 @@
 namespace Nuxeo\Client\Api\Objects;
 
 
-use Guzzle\Http\Url;
 use JMS\Serializer\Annotation as Serializer;
 use Nuxeo\Client\Api\Constants;
 use Nuxeo\Client\Api\NuxeoClient;
 use Nuxeo\Client\Api\Objects\Blob\Blob;
 use Nuxeo\Client\Api\Objects\Blob\Blobs;
-use Nuxeo\Client\Api\Objects\Operation\OperationBody;
 use Nuxeo\Client\Internals\Spi\Annotations\POST;
 use Nuxeo\Client\Internals\Spi\ClassCastException;
 use Nuxeo\Client\Internals\Spi\NoSuchOperationException;
 use Nuxeo\Client\Internals\Spi\NuxeoClientException;
+use Nuxeo\Client\Internals\Spi\Objects\NuxeoEntity;
+use Nuxeo\Client\Internals\Spi\Objects\Operation\OperationBody;
 
 class Operation extends NuxeoEntity {
 
@@ -41,27 +41,19 @@ class Operation extends NuxeoEntity {
   protected $operationId;
 
   /**
-   * @var Url
-   * @Serializer\Exclude()
+   * @var \Nuxeo\Client\Internals\Spi\Objects\Operation\OperationBody
    */
-  protected $apiUrl;
-
-  /**
-   * @var OperationBody
-   */
-  private $body;
+  protected $body;
 
   /**
    * Operation constructor.
    * @param NuxeoClient $nuxeoClient
-   * @param Url $apiUrl
    * @param string $operationId
    */
-  public function __construct($nuxeoClient, $apiUrl, $operationId = null) {
+  public function __construct($nuxeoClient, $operationId = null) {
     parent::__construct(Constants::ENTITY_TYPE_OPERATION, $nuxeoClient);
 
     $this->operationId = $operationId;
-    $this->apiUrl = $apiUrl;
     $this->body = new OperationBody();
   }
 

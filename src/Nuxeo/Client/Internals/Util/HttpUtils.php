@@ -16,19 +16,23 @@
  *
  */
 
-namespace Nuxeo\Client\Internals\Spi;
+namespace Nuxeo\Client\Internals\Util;
 
-use Nuxeo\Client\Api\Request;
-use Nuxeo\Client\Internals\Spi\Http\Client;
 
-interface Interceptor {
+use Guzzle\Http\Message\AbstractMessage;
+
+class HttpUtils {
 
   /**
-   * @param Client $httpClient
-   * @param Request $request
-   * @throws NuxeoClientException
-   * @return void
+   * @param AbstractMessage $message
+   * @param string $type
+   * @return bool
    */
-  public function proceed($httpClient, $request);
+  public static function isContentType($message, $type) {
+    if($message->hasHeader('Content-Type')) {
+      return stripos($message->getHeader('Content-Type'), $type) !== false;
+    }
+    return false;
+  }
 
 }

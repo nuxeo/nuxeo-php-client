@@ -20,8 +20,7 @@
 
 namespace Nuxeo\Client\Internals\Spi;
 
-
-use Guzzle\Http\Message\RequestInterface;
+use Nuxeo\Client\Api\Request;
 
 class SimpleInterceptor implements Interceptor {
 
@@ -36,9 +35,10 @@ class SimpleInterceptor implements Interceptor {
   }
 
   /**
-   * @param RequestInterface $request
+   * @param \Zend\Http\Client $client
+   * @param \Nuxeo\Client\Api\Request $request
    */
-  public function proceed($request) {
+  public function proceed($client, $request) {
     $callable = $this->callable;
     $callable($request);
   }

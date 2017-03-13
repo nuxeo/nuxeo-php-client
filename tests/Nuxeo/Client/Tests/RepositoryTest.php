@@ -16,19 +16,28 @@
  *
  */
 
-namespace Nuxeo\Client\Internals\Spi;
+namespace Nuxeo\Client\Tests;
 
+
+use Nuxeo\Client\Api\Constants;
 use Nuxeo\Client\Api\Request;
-use Nuxeo\Client\Internals\Spi\Http\Client;
+use Nuxeo\Client\Tests\Framework\TestCase;
 
-interface Interceptor {
+class RepositoryTest extends TestCase {
 
-  /**
-   * @param Client $httpClient
-   * @param Request $request
-   * @throws NuxeoClientException
-   * @return void
-   */
-  public function proceed($httpClient, $request);
+  public function testFetchDocumentRoot() {
+    $client = $this->getClient()
+      ->addResponse($this->createJsonResponse('{}'));
+
+    $client
+      ->repository()
+      ->fetchDocumentRoot();
+
+    $this->assertCount(1, $requests = $client->getRequests());
+
+    /** @var \Nuxeo\Client\Internals\Api\Request $request */
+    list($request) = $requests;
+    $this->assertEquals(sprintf('/%spath', Constants::API_PATH), $request->getUrl(true)->getPath());
+  }
 
 }

@@ -23,6 +23,7 @@ namespace Nuxeo\Client\Api\Objects;
 
 use JMS\Serializer\Annotation as Serializer;
 use Nuxeo\Client\Api\Constants;
+use Nuxeo\Client\Internals\Spi\Objects\NuxeoEntity;
 
 class Document extends NuxeoEntity {
 

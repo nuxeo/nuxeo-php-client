@@ -18,11 +18,11 @@
 
 namespace Nuxeo\Client\Api\Objects\Blob;
 
-use Guzzle\Http\Message\Response;
-use Nuxeo\Client\Api\Objects\NuxeoEntity;
+use Nuxeo\Client\Api\Response;
 use Nuxeo\Client\Internals\Spi\Http\Header\ContentDisposition;
 use Nuxeo\Client\Internals\Spi\NoSuchFileException;
 use Nuxeo\Client\Internals\Spi\NuxeoClientException;
+use Nuxeo\Client\Internals\Spi\Objects\NuxeoEntity;
 use Nuxeo\Client\Internals\Util\IOUtils;
 
 

@@ -41,4 +41,18 @@ class IOUtils {
     return new \SplFileInfo($fileName);
   }
 
+  /**
+   * @param string $in
+   * @return \SplFileInfo
+   */
+  public static function copyStringToTempFile($in) {
+    $fileName = tempnam(sys_get_temp_dir(), 'nx-');
+    $out = fopen($fileName, 'w+');
+
+    fwrite($out, $in);
+    fclose($out);
+
+    return new \SplFileInfo($fileName);
+  }
+
 }

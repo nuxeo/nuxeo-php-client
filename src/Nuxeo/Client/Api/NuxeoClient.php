@@ -21,34 +21,19 @@ namespace Nuxeo\Client\Api;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\Reader;
-use Guzzle\Common\Exception\GuzzleException;
-use Guzzle\Http\Client;
-use Guzzle\Http\Message\Request;
-use Guzzle\Http\Message\RequestInterface;
-use Guzzle\Http\Message\Response;
-use Guzzle\Http\Url;
-use Guzzle\Plugin\Log\LogPlugin;
 use Nuxeo\Client\Api\Auth\BasicAuthentication;
-use Nuxeo\Client\Api\Marshaller\ActionListMarshaller;
-use Nuxeo\Client\Api\Marshaller\BlobMarshaller;
-use Nuxeo\Client\Api\Marshaller\BlobsMarshaller;
-use Nuxeo\Client\Api\Marshaller\CounterListMarshaller;
-use Nuxeo\Client\Api\Marshaller\CounterTimestampedValueMarshaller;
-use Nuxeo\Client\Api\Marshaller\DirectoryEntriesMarshaller;
-use Nuxeo\Client\Api\Marshaller\DocRefMarshaller;
-use Nuxeo\Client\Api\Marshaller\LogEntriesMarshaller;
-use Nuxeo\Client\Api\Marshaller\NuxeoConverter;
-use Nuxeo\Client\Api\Marshaller\UserGroupListMarshaller;
+use Nuxeo\Client\Api\Marshaller;
 use Nuxeo\Client\Api\Objects\Blob\Blob;
 use Nuxeo\Client\Api\Objects\Blob\Blobs;
 use Nuxeo\Client\Api\Objects\Operation;
 use Nuxeo\Client\Api\Objects\Repository;
 use Nuxeo\Client\Internals\Spi\Auth\AuthenticationInterceptor;
-use Nuxeo\Client\Internals\Spi\Http\EntityEnclosingRequest;
-use Nuxeo\Client\Internals\Spi\Http\RequestFactory;
+use Nuxeo\Client\Internals\Spi\Http\Client;
 use Nuxeo\Client\Internals\Spi\Interceptor;
 use Nuxeo\Client\Internals\Spi\NuxeoClientException;
 use Nuxeo\Client\Internals\Spi\SimpleInterceptor;
+use Zend\Uri\Exception\InvalidUriPartException;
+use Zend\Uri\Http as HttpUri;
 
 AnnotationRegistry::registerLoader('class_exists');
 
@@ -59,7 +44,7 @@ AnnotationRegistry::registerLoader('class_exists');
 class NuxeoClient {
 
   /**
-   * @var string
+   * @var HttpUri
    */
   private $baseUrl;
 
@@ -74,7 +59,7 @@ class NuxeoClient {
   private $httpClient;
 
   /**
-   * @var NuxeoConverter
+   * @var Marshaller\NuxeoConverter
    */
   private $converter;
 
@@ -91,36 +76,49 @@ class NuxeoClient {
    */
   public function __construct($url = 'http://localhost:8080/nuxeo', $username = 'Administrator', $password = 'Administrator') {
     try {
-      $this->baseUrl = Url::factory($url);
-      $this->httpClient = new Client($url, array(
-        Client::REQUEST_OPTIONS => array(
-          'headers' => array(
-            'Content-Type' => 'application/json+nxrequest'
-          )
-        )
-      ));
-    } catch(GuzzleException $ex) {
-      throw NuxeoClientException::fromPrevious($ex);
+      $this->setBaseUrl($url);
+    } catch(\InvalidArgumentException $e) {
+      NuxeoClientException::fromPrevious($e);
     }
 
-    $this->httpClient->setRequestFactory(new RequestFactory());
-
     $this->setAuthenticationMethod(new BasicAuthentication($username, $password));
-
   }
 
   /**
-   * @return Url
+   * @param string|\Zend\Uri\Uri $baseUrl
+   * @throws \InvalidArgumentException
+   */
+  public function setBaseUrl($baseUrl) {
+    if (is_string($baseUrl)) {
+      try {
+        $baseUrl = new HttpUri($baseUrl);
+      } catch (InvalidUriPartException $e) {
+        throw new \InvalidArgumentException(
+          sprintf('Invalid URI passed as string (%s)', (string) $baseUrl),
+          $e->getCode(),
+          $e
+        );
+      }
+    } elseif (!($baseUrl instanceof HttpUri)) {
+      throw new \InvalidArgumentException(
+        'URI must be an instance of Zend\Uri\Http or a string'
+      );
+    }
+    $this->baseUrl = $baseUrl;
+  }
+
+  /**
+   * @return \Zend\Uri\Uri
    */
   public function getBaseUrl() {
-    return clone $this->baseUrl;
+    return $this->baseUrl;
   }
 
   /**
-   * @return Url
+   * @return \Zend\Uri\Uri
    */
   public function getApiUrl() {
-    return $this->getBaseUrl()->addPath(Constants::API_PATH);
+    return HttpUri::merge($this->getBaseUrl(), Constants::API_PATH);
   }
 
   /**
@@ -146,8 +144,9 @@ class NuxeoClient {
    * @return NuxeoClient
    */
   public function debug($outputFile = null) {
-    $stream = $outputFile ? fopen($outputFile, 'w+b') : null;
-    $this->httpClient->addSubscriber(LogPlugin::getDebugPlugin(true, $stream));
+    //TODO: Fixme
+//    $stream = $outputFile ? fopen($outputFile, 'w+b') : null;
+//    $this->httpClient->addSubscriber(LogPlugin::getDebugPlugin(true, $stream));
     return $this;
   }
 
@@ -157,16 +156,16 @@ class NuxeoClient {
    * @return Operation
    */
   public function automation($operationId = null) {
-    return new Operation($this, $this->getApiUrl()->addPath(Constants::AUTOMATION_PATH), $operationId);
+    return new Operation($this, $operationId);
   }
 
   public function repository() {
     $url = clone $this->baseUrl;
-    return new Repository($this, $url->addPath(Constants::API_PATH));
+    return new Repository($this);
   }
 
   /**
-   * @param AuthenticationInterceptor $authenticationInterceptor
+   * @param \Nuxeo\Client\Api\Auth\\Nuxeo\Client\Internals\Spi\Auth\AuthenticationInterceptor $authenticationInterceptor
    * @return NuxeoClient
    */
   public function setAuthenticationMethod(AuthenticationInterceptor $authenticationInterceptor) {
@@ -188,7 +187,7 @@ class NuxeoClient {
     $self = $this;
 
     $this->interceptors[] = new SimpleInterceptor(
-      function(RequestInterface $request) use ($self, $name, $value) {
+      function(Request $request) use ($self, $name, $value) {
         $request->addHeader($name, $value);
       }
     );
@@ -199,28 +198,30 @@ class NuxeoClient {
   /**
    * @param string $url
    * @param array $query
-   * @param array $options
    * @return Response
    * @throws NuxeoClientException
    */
-  public function get($url, $query = array(), $options = null) {
-    /** @var Request $request */
-    if ($options === null) {
-      $options = array();
-      $options['query'] = $query;
-    } else if (!array_key_exists('query', $options)) {
-      $options['query'] = $query;
-    } else {
-      $options['query'] = array_merge($options['query'], $query);
-    }
-    $request = $this->getHttpClient()->createRequest(Request::GET, $url, null, null, $options);
+  public function get($url, $query = array()) {
+    $request = new Request(Request::GET, $url);
+    $response = null;
 
-    $this->interceptors($request);
     try {
-      return $request->send();
-    } catch(GuzzleException $ex) {
+      $request->getQuery()->replace($query);
+
+      $this->interceptors($request);
+
+      $response = $this->getHttpClient()->send($request);
+
+      if($response->getStatusCode() >= 400) {
+        throw new NuxeoClientException($response->getBody(true));
+      }
+    } catch(\RuntimeException $ex) {
       throw NuxeoClientException::fromPrevious($ex);
+    } catch(\InvalidArgumentException $e) {
+      throw NuxeoClientException::fromPrevious($e);
     }
+
+    return $response;
   }
 
   /**
@@ -231,27 +232,30 @@ class NuxeoClient {
    * @throws NuxeoClientException
    */
   public function post($url, $body = null, $files = array()) {
-    /** @var EntityEnclosingRequest $request */
-    $request = $this->getHttpClient()->createRequest(Request::POST, $url, null, $body);
+    $request = new Request(Request::POST, $url);
 
-    foreach($files as $file) {
-      $request->addRelatedFile($file);
-    }
-
-    $this->interceptors($request);
     try {
-      return $request->send();
-    } catch(GuzzleException $ex) {
+      $request->setBody($body);
+
+      foreach($files as $file) {
+        $request->addRelatedFile($file);
+      }
+
+      $this->interceptors($request);
+      return $this->getHttpClient()->send($request);
+    } catch(\RuntimeException $ex) {
       throw NuxeoClientException::fromPrevious($ex);
+    } catch(\InvalidArgumentException $e) {
+      throw NuxeoClientException::fromPrevious($e);
     }
   }
 
   /**
-   * @return NuxeoConverter
+   * @return Marshaller\NuxeoConverter
    */
   public function getConverter() {
     if(null === $this->converter) {
-      $this->converter = new NuxeoConverter($this->getAnnotationReader());
+      $this->converter = new Marshaller\NuxeoConverter($this->getAnnotationReader());
       $this->setupDefaultMarshallers();
     }
     return $this->converter;
@@ -283,32 +287,36 @@ class NuxeoClient {
    * @return NuxeoClient
    */
   protected function setupDefaultMarshallers() {
-    $this->getConverter()->registerMarshaller(Blob::className, new BlobMarshaller());
-    $this->getConverter()->registerMarshaller(Blobs::className, new BlobsMarshaller());
-    $this->getConverter()->registerMarshaller(Operation\ActionList::className, new ActionListMarshaller());
-    $this->getConverter()->registerMarshaller(Operation\CounterList::className, new CounterListMarshaller());
-    $this->getConverter()->registerMarshaller(Operation\CounterTimestampedValue::className, new CounterTimestampedValueMarshaller());
-    $this->getConverter()->registerMarshaller(Operation\DirectoryEntries::className, new DirectoryEntriesMarshaller());
-    $this->getConverter()->registerMarshaller(Operation\DocRef::className, new DocRefMarshaller($this));
-    $this->getConverter()->registerMarshaller(Operation\LogEntries::className, new LogEntriesMarshaller());
-    $this->getConverter()->registerMarshaller(Operation\UserGroupList::className, new UserGroupListMarshaller());
+    $this->getConverter()->registerMarshaller(Blob::className, new Marshaller\BlobMarshaller());
+    $this->getConverter()->registerMarshaller(Blobs::className, new Marshaller\BlobsMarshaller());
+    $this->getConverter()->registerMarshaller(Operation\ActionList::className, new Marshaller\ActionListMarshaller());
+    $this->getConverter()->registerMarshaller(Operation\CounterList::className, new Marshaller\CounterListMarshaller());
+    $this->getConverter()->registerMarshaller(Operation\CounterTimestampedValue::className, new Marshaller\CounterTimestampedValueMarshaller());
+    $this->getConverter()->registerMarshaller(Operation\DirectoryEntries::className, new Marshaller\DirectoryEntriesMarshaller());
+    $this->getConverter()->registerMarshaller(Operation\DocRef::className, new Marshaller\DocRefMarshaller($this));
+    $this->getConverter()->registerMarshaller(Operation\LogEntries::className, new Marshaller\LogEntriesMarshaller());
+    $this->getConverter()->registerMarshaller(Operation\UserGroupList::className, new Marshaller\UserGroupListMarshaller());
     return $this;
   }
 
   /**
    * @return Client
+   * @throws NuxeoClientException
    */
   protected function getHttpClient() {
+    if(null === $this->httpClient) {
+      $this->httpClient = new Client();
+    }
     return $this->httpClient;
   }
 
   /**
-   * @param RequestInterface $request
+   * @param \Nuxeo\Client\Internals\Api\Request $request
    * @return NuxeoClient
    */
   protected function interceptors($request) {
     foreach($this->interceptors as $interceptor) {
-      $interceptor->proceed($request);
+      $interceptor->proceed($this->getHttpClient(), $request);
     }
     return $this;
   }

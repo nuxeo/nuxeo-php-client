@@ -16,32 +16,37 @@
  *
  */
 
-namespace Nuxeo\Client\Api\Objects;
+namespace Nuxeo\Client\Tests;
 
+use Nuxeo\Client\Api\NuxeoClient as BaseClient;
+use Nuxeo\Client\Api\Response;
+use Nuxeo\Client\Tests\Http\Client as HttpClient;
 
-use JMS\Serializer\Annotation as Serializer;
-use Nuxeo\Client\Api\Constants;
-use Nuxeo\Client\Internals\Spi\Annotations\GET;
-use Nuxeo\Client\Internals\Spi\Objects\NuxeoEntity;
+class Client extends BaseClient {
 
+  protected $httpClient;
 
-class Repository extends NuxeoEntity {
-
-  /**
-   * Repository constructor.
-   * @param $nuxeoClient
-   */
-  public function __construct($nuxeoClient) {
-    parent::__construct(Constants::ENTITY_TYPE_DOCUMENT, $nuxeoClient);
+  protected function getHttpClient() {
+    if(null === $this->httpClient) {
+      $this->httpClient = new HttpClient();
+    }
+    return $this->httpClient;
   }
 
   /**
-   * @GET("path")
-   * @param string $type
-   * @return mixed
+   * @param Response $response
+   * @return Client $this
    */
-  public function fetchDocumentRoot($type = null) {
-    return $this->getResponse($type, array()); // Temporary tests fix
+  public function addResponse($response) {
+    $this->getHttpClient()->addResponse($response);
+    return $this;
+  }
+
+  /**
+   * @return array
+   */
+  public function getRequests() {
+    return $this->getHttpClient()->getRequests();
   }
 
 }

@@ -16,19 +16,18 @@
  *
  */
 
-namespace Nuxeo\Client\Internals\Spi;
+namespace Nuxeo\Client\Tests\Util;
 
-use Nuxeo\Client\Api\Request;
-use Nuxeo\Client\Internals\Spi\Http\Client;
 
-interface Interceptor {
+class ArrayIterator extends \ArrayIterator {
 
   /**
-   * @param Client $httpClient
-   * @param Request $request
-   * @throws NuxeoClientException
-   * @return void
+   * @param array $array
+   * @param int $flags
+   * @return ArrayIterator
    */
-  public function proceed($httpClient, $request);
+  public static function fromArray($array = array(), $flags = 0) {
+    return new self($array, $flags);
+  }
 
 }

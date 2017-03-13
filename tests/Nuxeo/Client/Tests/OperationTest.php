@@ -18,9 +18,9 @@
 
 namespace Nuxeo\Client\Tests;
 
+
 use Guzzle\Http\Message\EntityEnclosingRequest;
 use Guzzle\Http\Message\EntityEnclosingRequestInterface;
-use Guzzle\Http\Message\RequestInterface;
 use Guzzle\Http\Message\Response;
 use JMS\Serializer\Annotation as Serializer;
 use Nuxeo\Client\Api\Constants;
@@ -30,32 +30,15 @@ use Nuxeo\Client\Api\Objects\Blob\Blob;
 use Nuxeo\Client\Api\Objects\Document;
 use Nuxeo\Client\Api\Objects\Documents;
 use Nuxeo\Client\Api\Objects\Operation;
+use Nuxeo\Client\Tests\Framework\TestCase;
 use Nuxeo\Client\Tests\Objects\Character;
 use Nuxeo\Client\Tests\Objects\MyDocType;
 
-class OperationTest extends NuxeoTestCase {
-
-  public function testFetchDocumentRoot() {
-    $client = new NuxeoClient($this->server->getUrl());
-
-    $this->server->enqueue(array(
-      new Response(200, array('Content-Type' => Constants::CONTENT_TYPE_JSON), '{}')
-    ));
-
-    $client->repository()->fetchDocumentRoot();
-    $this->assertCount(1, $requests = $this->server->getReceivedRequests(true));
-
-    /** @var RequestInterface $request */
-    list($request) = $requests;
-    $this->assertEquals(sprintf('/%spath', Constants::API_PATH), $request->getPath());
-  }
+class OperationTest extends TestCase {
 
   public function testListDocuments() {
-    $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, self::PASSWORD);
-
-    $this->server->enqueue(array(
-      new Response(200, array('Content-Type' => Constants::CONTENT_TYPE_JSON), file_get_contents($this->getResource('document-list.json')))
-    ));
+    $client = $this->getClient()
+      ->addResponse($this->createJsonResponse(file_get_contents($this->getResource('document-list.json'))));
 
     /** @var Documents $documents */
     $documents = $client
@@ -84,11 +67,8 @@ class OperationTest extends NuxeoTestCase {
   }
 
   public function testMyDocTypeDeserialize() {
-    $client = new NuxeoClient($this->server->getUrl());
-
-    $this->server->enqueue(array(
-      new Response(200, array('Content-Type' => Constants::CONTENT_TYPE_JSON), file_get_contents($this->getResource('document.json')))
-    ));
+    $client = $this->getClient()
+      ->addResponse($this->createJsonResponse(file_get_contents($this->getResource('document.json'))));
 
     /** @var MyDocType $document */
     $document = $client
@@ -102,11 +82,8 @@ class OperationTest extends NuxeoTestCase {
   }
 
   public function testComplexProperty() {
-    $client = new NuxeoClient($this->server->getUrl());
-
-    $this->server->enqueue(array(
-      new Response(200, array('Content-Type' => Constants::CONTENT_TYPE_JSON), file_get_contents($this->getResource('document.json')))
-    ));
+    $client = $this->getClient()
+      ->addResponse($this->createJsonResponse(file_get_contents($this->getResource('document.json'))));
 
     /** @var Document $document */
     $document = $client
@@ -121,12 +98,9 @@ class OperationTest extends NuxeoTestCase {
   }
 
   public function testRelatedProperty() {
-    $client = new NuxeoClient($this->server->getUrl());
-
-    $this->server->enqueue(array(
-      new Response(200, array('Content-Type' => Constants::CONTENT_TYPE_JSON), file_get_contents($this->getResource('document.json'))),
-      new Response(200, array('Content-Type' => Constants::CONTENT_TYPE_JSON), file_get_contents($this->getResource('document.json')))
-    ));
+    $client = $this->getClient()
+      ->addResponse($this->createJsonResponse(file_get_contents($this->getResource('document.json'))))
+      ->addResponse($this->createJsonResponse(file_get_contents($this->getResource('document.json'))));
 
     /** @var Document $document */
     $document = $client
@@ -143,11 +117,8 @@ class OperationTest extends NuxeoTestCase {
   }
 
   public function testGetBlob() {
-    $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, self::PASSWORD);
-
-    $this->server->enqueue(array(
-      new Response(200, null, self::MYFILE_CONTENT)
-    ));
+    $client = $this->getClient()
+      ->addResponse($this->createResponse(200, array(), self::MYFILE_CONTENT));
 
     /** @var \Nuxeo\Client\Api\Objects\Blob\Blob $blob */
     $blob = $client->automation('Blob.Get')
@@ -155,7 +126,7 @@ class OperationTest extends NuxeoTestCase {
       ->execute(Blob::className);
 
     /** @var EntityEnclosingRequestInterface $request */
-    list($request) = $this->server->getReceivedRequests(true);
+    list($request) = $this->getClient()->getRequests();
 
     $this->assertEquals(sprintf('{"params":{},"input":"%s"}', self::MYFILE_DOCPATH), (string) $request->getBody());
     $this->assertStringEqualsFile($blob->getFile()->getPathname(), self::MYFILE_CONTENT);
@@ -165,33 +136,25 @@ class OperationTest extends NuxeoTestCase {
    * @expectedException \Nuxeo\Client\Internals\Spi\NuxeoClientException
    */
   public function testCannotLoadBlob() {
-    $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, self::PASSWORD);
-
-    $this->server->enqueue(array(
-      new Response(200, null, null)
-    ));
+    $client = $this->getClient()
+      ->addResponse($this->createResponse());
 
     $client->automation('Blob.Attach')->input(Blob::fromFile('/void', null))->execute(Blob::className);
 
-    $this->assertCount(0, $this->server->getReceivedRequests());
+    $this->assertCount(0, $this->getClient()->getRequests());
   }
 
   public function testLoadBlob() {
-    $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, self::PASSWORD);
-
-    $this->server->enqueue(array(
-      new Response(200)
-    ));
+    $client = $this->getClient()
+      ->addResponse($this->createResponse());
 
     $client->automation('Blob.AttachOnDocument')
       ->param('document', self::MYFILE_DOCPATH)
       ->input(Blob::fromFile($this->getResource('user.json'), null))
       ->execute(Blob::className);
 
-    $requests = $this->server->getReceivedRequests(true);
-
     /** @var EntityEnclosingRequest $request */
-    list($request) = $requests;
+    list($request) = $this->getClient()->getRequests();
 
     $this->assertArrayHasKey('content-type', $request->getHeaders());
     $this->assertStringMatchesFormat(
@@ -201,11 +164,8 @@ class OperationTest extends NuxeoTestCase {
   }
 
   public function testDirectoryEntries() {
-    $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, self::PASSWORD);
-
-    $this->server->enqueue(array(
-      new Response(200, array('Content-Type' => Constants::CONTENT_TYPE_JSON), file_get_contents($this->getResource('directory-entries.json')))
-    ));
+    $client = $this->getClient()
+      ->addResponse($this->createJsonResponse(file_get_contents($this->getResource('directory-entries.json'))));
 
     $continents = $client->automation('Directory.Entries')
       ->param('directoryName', 'continent')
@@ -213,12 +173,10 @@ class OperationTest extends NuxeoTestCase {
 
     $this->assertInstanceOf(Operation\DirectoryEntries::className, $continents);
     $this->assertCount(7, $continents);
-    $this->server->flush();
 
     $ids = array('id001', 'id002', 'id003', 'id004');
-    $this->server->enqueue(array(
-      new Response(200, array('Content-Type' => Constants::CONTENT_TYPE_JSON), json_encode($ids))
-    ));
+    $client = $this->getClient()
+      ->addResponse($this->createJsonResponse(json_encode($ids)));
 
     $continents = $client->automation('Directory.CreateEntries')
       ->param('directoryName', 'continent')
@@ -230,10 +188,10 @@ class OperationTest extends NuxeoTestCase {
       ))))
       ->execute();
 
-    $this->assertCount(1, $requests = $this->server->getReceivedRequests(true));
+    $this->assertCount(2, $requests = $this->getClient()->getRequests());
 
     /** @var EntityEnclosingRequestInterface $request */
-    list($request) = $requests;
+    list(, $request) = $requests;
 
     $this->assertNotNull($decoded = json_decode((string) $request->getBody(), true));
     $this->assertTrue(!empty($decoded['params']['entries']) && is_string($decoded['params']['entries']));
@@ -246,12 +204,9 @@ class OperationTest extends NuxeoTestCase {
   }
 
   public function testCounters() {
-    $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, self::PASSWORD);
+    $client = $this->getClient()
+      ->addResponse($this->createJsonResponse(file_get_contents($this->getResource('counters.json'))));
     $counterName = 'org.nuxeo.web.sessions';
-
-    $this->server->enqueue(array(
-      new Response(200, array('Content-Type' => Constants::CONTENT_TYPE_JSON), file_get_contents($this->getResource('counters.json')))
-    ));
 
     $counters = $client->automation('Counters.GET')
       ->param('counterNames', $counterName)
@@ -269,11 +224,8 @@ class OperationTest extends NuxeoTestCase {
   }
 
   public function testAuditQuery() {
-    $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, self::PASSWORD);
-
-    $this->server->enqueue(array(
-      new Response(200, array('Content-Type' => Constants::CONTENT_TYPE_JSON), file_get_contents($this->getResource('audit-query.json')))
-    ));
+    $client = $this->getClient()
+      ->addResponse($this->createJsonResponse(file_get_contents($this->getResource('audit-query.json'))));
 
     $entries = $client->automation('Audit.Query')
       ->param('query', 'from LogEntry')
@@ -299,11 +251,8 @@ class OperationTest extends NuxeoTestCase {
   }
 
   public function testActionsGet() {
-    $client = new NuxeoClient($this->server->getUrl());
-
-    $this->server->enqueue(array(
-      new Response(200, array('Content-Type' => Constants::CONTENT_TYPE_JSON), file_get_contents($this->getResource('actions-get.json')))
-    ));
+    $client = $this->getClient()
+      ->addResponse($this->createJsonResponse(file_get_contents($this->getResource('actions-get.json'))));
 
     $actions = $client->automation('Actions.GET')
       ->param('category', 'VIEW_ACTION_LIST')
@@ -311,7 +260,7 @@ class OperationTest extends NuxeoTestCase {
       ->execute(Operation\ActionList::className);
 
     /** @var EntityEnclosingRequestInterface $request */
-    list($request) = $this->server->getReceivedRequests(true);
+    list($request) = $this->getClient()->getRequests();
 
     $this->assertRegExp(sprintf(',doc:%s,', self::MYFILE_DOCPATH), (string) $request->getBody());
 
@@ -328,11 +277,8 @@ class OperationTest extends NuxeoTestCase {
   }
 
   public function testGroupSuggest() {
-    $client = new NuxeoClient($this->server->getUrl());
-
-    $this->server->enqueue(array(
-      new Response(200, array('Content-Type' => Constants::CONTENT_TYPE_JSON), file_get_contents($this->getResource('usergroup-suggest.json')))
-    ));
+    $client = $this->getClient()
+      ->addResponse($this->createJsonResponse(file_get_contents($this->getResource('usergroup-suggest.json'))));
 
     $groups = $client->automation('UserGroup.Suggestion')
       ->execute(Operation\UserGroupList::className);

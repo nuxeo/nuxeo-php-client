@@ -1,6 +1,6 @@
 <?php
 /**
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2017 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Contributors:
- *     Pierre-Gildas MILLON <pgmillon@nuxeo.com>
  */
 
-namespace Nuxeo\Client\Api\Objects;
+namespace Nuxeo\Client\Internals\Spi\Objects;
 
 
-use Guzzle\Http\Message\Response;
-use Guzzle\Http\Url;
 use JMS\Serializer\Annotation as Serializer;
 use Nuxeo\Client\Api\Constants;
 use Nuxeo\Client\Api\NuxeoClient;
 use Nuxeo\Client\Api\Objects\Blob\Blob;
+use Nuxeo\Client\Api\Response;
 use Nuxeo\Client\Internals\Spi\Annotations\HttpMethod;
 use Nuxeo\Client\Internals\Spi\ClassCastException;
 use Nuxeo\Client\Internals\Spi\NuxeoClientException;
+use Nuxeo\Client\Internals\Util\HttpUtils;
+use Zend\Uri\Http as HttpUri;
+use Zend\Uri\Uri;
 
 abstract class NuxeoEntity {
 
@@ -65,10 +65,10 @@ abstract class NuxeoEntity {
 
   /**
    * @param string $path
-   * @return Url
+   * @return Uri
    */
   protected function computeRequestUrl($path) {
-    return $this->getNuxeoClient()->getApiUrl()->addPath($path);
+    return HttpUri::merge($this->getNuxeoClient()->getApiUrl(), $path);
   }
 
   /**
@@ -79,8 +79,8 @@ abstract class NuxeoEntity {
    */
   protected function computeResponse($response, $type = null) {
     if(false === (
-        $response->isContentType(Constants::CONTENT_TYPE_JSON) ||
-        $response->isContentType(Constants::CONTENT_TYPE_JSON_NXENTITY))) {
+        HttpUtils::isContentType($response, Constants::CONTENT_TYPE_JSON) ||
+        HttpUtils::isContentType($response, Constants::CONTENT_TYPE_JSON_NXENTITY))) {
 
       if(Blob::className !== $type) {
         throw new ClassCastException(sprintf('Cannot cast %s as %s', Blob::className, $type));
@@ -101,16 +101,17 @@ abstract class NuxeoEntity {
   public function getResponse($type = null, $body = null, $files = null) {
     //TODO: Use Zend\Http\Query
     $method = $this->getMethod();
-    $args = array();
 
+    /** @var Response $response */
     $response = $this->getNuxeoClient()->{$method->getName()}(
       $this->computeRequestUrl($method->getPath()),
       $body,
       $files
     );
+
     if(false === (
-        $response->isContentType(Constants::CONTENT_TYPE_JSON) ||
-        $response->isContentType(Constants::CONTENT_TYPE_JSON_NXENTITY))) {
+        HttpUtils::isContentType($response, Constants::CONTENT_TYPE_JSON) ||
+        HttpUtils::isContentType($response, Constants::CONTENT_TYPE_JSON_NXENTITY))) {
 
       if(Blob::className !== $type) {
         throw new ClassCastException(sprintf('Cannot cast %s as %s', Blob::className, $type));

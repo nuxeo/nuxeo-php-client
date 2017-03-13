@@ -19,84 +19,73 @@
 namespace Nuxeo\Client\Tests;
 
 
-use Guzzle\Http\Message\Response;
 use Nuxeo\Client\Api\Auth\PortalSSOAuthentication;
 use Nuxeo\Client\Api\Auth\TokenAuthentication;
 use Nuxeo\Client\Api\Constants;
-use Nuxeo\Client\Api\NuxeoClient;
-use Nuxeo\Client\Api\Utils\ArrayIterator;
-use Nuxeo\Client\Internals\Spi\Http\EntityEnclosingRequest;
+use Nuxeo\Client\Api\Request;
+use Nuxeo\Client\Tests\Framework\TestCase;
+use Nuxeo\Client\Tests\Util\ArrayIterator;
 
-class BaseTest extends NuxeoTestCase {
+class BaseTest extends TestCase {
 
   const TOKEN_APP_NAME = 'myApplication';
   const TOKEN_DEVICE = 'myDevice';
 
   public function testGetRequest() {
-    $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, self::PASSWORD);
-
-    $this->server->enqueue(array(
-      new Response(200)
-    ));
+    $client = $this->getClient()
+      ->addResponse($this->createResponse());
 
     $client->get('/');
 
-    $this->assertCount(1, $requests = $this->server->getReceivedRequests(true));
+    $this->assertCount(1, $requests = $client->getRequests());
 
-    /** @var EntityEnclosingRequest $request */
+    /** @var Request $request */
     list($request) = $requests;
 
-    $this->assertTrue($request->hasHeader('Authorization'));
+    $this->assertNotFalse($authorization = $request->getHeader('Authorization'));
 
     list($username, $password) = explode(':', base64_decode(ArrayIterator::fromArray(explode(
-      ' ', $request->getHeader('Authorization')->getIterator()->current()))->offsetGet(1)));
+      ' ', $authorization))->offsetGet(1)));
 
     $this->assertEquals(self::LOGIN, $username);
     $this->assertEquals(self::PASSWORD, $password);
   }
 
   public function testPortalSSOAuth() {
-    $client = new NuxeoClient($this->server->getUrl());
-
-    $this->server->enqueue(array(
-      new Response(200)
-    ));
+    $client = $this->getClient()
+      ->addResponse($this->createResponse());
 
     $client
       ->setAuthenticationMethod(new PortalSSOAuthentication('secret', self::LOGIN))
       ->get('/');
 
-    $requests = $this->server->getReceivedRequests(true);
+    $this->assertCount(1, $requests = $client->getRequests());
 
-    /** @var EntityEnclosingRequest $request */
+    /** @var \Nuxeo\Client\Internals\Api\Request $request */
     list($request) = $requests;
 
-    $this->assertFalse($request->hasHeader('Authentication'));
-    $this->assertTrue($request->hasHeader(PortalSSOAuthentication::NX_TS));
-    $this->assertTrue($request->hasHeader(PortalSSOAuthentication::NX_RD));
-    $this->assertTrue($request->hasHeader(PortalSSOAuthentication::NX_TOKEN));
-    $this->assertTrue($request->hasHeader(PortalSSOAuthentication::NX_USER));
+    $this->assertFalse($request->hasHeader('Authorization'));
+    $this->assertNotFalse($request->getHeader(PortalSSOAuthentication::NX_TS));
+    $this->assertNotFalse($request->getHeader(PortalSSOAuthentication::NX_RD));
+    $this->assertNotFalse($request->getHeader(PortalSSOAuthentication::NX_TOKEN));
+    $this->assertNotFalse($request->getHeader(PortalSSOAuthentication::NX_USER));
   }
 
   public function testTokenAuthentication() {
-    $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, self::PASSWORD);
     $auth_token = 'some_token';
-
-    $this->server->enqueue(array(
-      new Response(200)
-    ));
+    $client = $this->getClient()
+      ->addResponse($this->createResponse());
 
     $client
       ->setAuthenticationMethod(new TokenAuthentication($auth_token))
       ->get('/');
 
-    $requests = $this->server->getReceivedRequests(true);
+    $this->assertCount(1, $requests = $client->getRequests());
 
-    /** @var EntityEnclosingRequest $request */
+    /** @var \Nuxeo\Client\Internals\Api\\Nuxeo\Client\Api\Request $request */
     list($request) = $requests;
 
-    $this->assertFalse($request->hasHeader('Authentication'));
-    $this->assertTrue($request->hasHeader(TokenAuthentication::HEADER_TOKEN));
+    $this->assertFalse($request->hasHeader('Authorization'));
     $this->assertEquals($auth_token, $request->getHeader(TokenAuthentication::HEADER_TOKEN));
   }
 
@@ -104,39 +93,33 @@ class BaseTest extends NuxeoTestCase {
    * @expectedException \Nuxeo\Client\Internals\Spi\NuxeoClientException
    */
   public function testUnauthorized() {
-    $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, null);
-
-    $this->server->enqueue(array(
-      new Response(401, null, 'Unauthorized')
-    ));
+    $client = $this->getClient(self::URL, self::LOGIN, null)
+      ->addResponse($this->createResponse(401, array(), 'Unauthorized'));
 
     $client->get('/');
 
-    $this->assertCount(1, $this->server->getReceivedRequests());
+    $this->assertCount(1, $client->getRequests());
   }
 
   public function testRequestAuthenticationToken() {
-    $client = new NuxeoClient($this->server->getUrl(), self::LOGIN, self::PASSWORD);
-
     $token = 'some_token';
-    $this->server->enqueue(array(
-      new Response(200, null, $token)
-    ));
+    $client = $this->getClient()
+      ->addResponse($this->createResponse(200, array(), $token));
 
     $this->assertEquals($token, $client->requestAuthenticationToken(self::TOKEN_APP_NAME, self::TOKEN_DEVICE));
-    $this->assertCount(1, $requests = $this->server->getReceivedRequests(true));
+    $this->assertCount(1, $requests = $client->getRequests());
 
-    /** @var EntityEnclosingRequest $request */
+    /** @var \Nuxeo\Client\Internals\Api\Request $request */
     list($request) = $requests;
 
-    $this->assertEquals('/authentication/token', $request->getPath());
+    $this->assertEquals('authentication/token', $request->getUrl(true)->getPath());
     $this->assertArraySubset(array(
         'applicationName' => self::TOKEN_APP_NAME,
         'deviceId' => self::TOKEN_DEVICE,
         'deviceDescription' => '',
         'permission' => Constants::SECURITY_READ_WRITE,
         'revoke' => false
-    ), $request->getQuery()->toArray());
+    ), $request->getUrl(true)->getQuery()->toArray());
   }
 
 }

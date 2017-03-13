@@ -19,7 +19,7 @@
 namespace Nuxeo\Client\Api\Objects\Blob;
 
 use JMS\Serializer\Annotation as Serializer;
-use Nuxeo\Client\Api\Objects\NuxeoEntity;
+use Nuxeo\Client\Internals\Spi\Objects\NuxeoEntity;
 
 
 class Blobs extends NuxeoEntity implements \Countable {

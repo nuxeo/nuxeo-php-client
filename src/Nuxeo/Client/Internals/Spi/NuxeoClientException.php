@@ -34,9 +34,14 @@ class NuxeoClientException extends \RuntimeException {
     parent::__construct($message, $code, $previous);
   }
 
-
+  /**
+   * @param \Exception $previous
+   * @param string $message
+   * @param int $code
+   * @return NuxeoClientException
+   */
   public static function fromPrevious($previous, $message='', $code=self::INTERNAL_ERROR_STATUS) {
-    return new NuxeoClientException($message, $code, $previous);
+    return new static($message, $code, $previous);
   }
 
 }

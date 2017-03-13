@@ -1,6 +1,6 @@
 <?php
 /**
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2017 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
  *
  */
 
-namespace Nuxeo\Client\Api\Objects\Operation;
+namespace Nuxeo\Client\Internals\Spi\Objects\Operation;
 
 use JMS\Serializer\Annotation as Serializer;
 

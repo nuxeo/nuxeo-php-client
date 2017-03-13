@@ -18,9 +18,10 @@
 
 namespace Nuxeo\Client\Api\Auth;
 
-
-use Guzzle\Http\Message\RequestInterface;
+use Nuxeo\Client\Api\Request;
 use Nuxeo\Client\Internals\Spi\Auth\AuthenticationInterceptor;
+use Nuxeo\Client\Internals\Spi\Http\Client;
+use Nuxeo\Client\Internals\Spi\NuxeoClientException;
 
 class TokenAuthentication implements AuthenticationInterceptor {
 
@@ -37,9 +38,11 @@ class TokenAuthentication implements AuthenticationInterceptor {
   }
 
   /**
-   * @param RequestInterface $request
+   * @param Client $client
+   * @param Request $request
+   * @throws NuxeoClientException
    */
-  public function proceed($request) {
+  public function proceed($client, $request) {
     $request->addHeader(self::HEADER_TOKEN, $this->token);
   }
 

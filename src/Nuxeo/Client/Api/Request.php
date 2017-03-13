@@ -1,6 +1,6 @@
 <?php
 /**
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2017 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,32 +14,56 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Contributors:
- *     Pierre-Gildas MILLON <pgmillon@nuxeo.com>
  */
 
-namespace Nuxeo\Client\Internals\Spi\Http;
+namespace Nuxeo\Client\Api;
 
-use Guzzle\Http\EntityBody;
-use Guzzle\Http\Message\EntityEnclosingRequest as BaseEntityEnclosingRequest;
+
+use Guzzle\Http\Message\EntityEnclosingRequest as BaseRequest;
+use Guzzle\Http\QueryString;
+use Guzzle\Http\Url;
 use Nuxeo\Client\Internals\Spi\Http\Message\MultipartRelatedIterator;
 use Nuxeo\Client\Internals\Spi\Http\Message\RelatedFile;
 use Nuxeo\Client\Internals\Spi\Http\Message\RelatedString;
+use Zend\Uri\Uri;
 
-class EntityEnclosingRequest extends BaseEntityEnclosingRequest {
+class Request extends BaseRequest {
 
   const className = __CLASS__;
   const MULTIPART_RELATED = 'multipart/related';
 
   protected $relatedParts = array();
 
-  protected $originalBody;
+  protected $originalBody = '';
   protected $originalContentType;
 
   protected $boundary;
 
+  /**
+   * Request constructor.
+   * @param string $method
+   * @param Uri|string $url
+   * @param array $headers
+   */
   public function __construct($method, $url, $headers = array()) {
-    parent::__construct($method, $url, array());
+    if($url instanceof Uri) {
+      list($username, $password) = $url->getUserInfo()?explode(':', $url->getUserInfo()):array(null, null);
+
+      $guzzle_url = new Url(
+        $url->getScheme(),
+        $url->getHost(),
+        $username,
+        $password,
+        $url->getPort(),
+        $url->getPath(),
+        new QueryString($url->getQueryAsArray()),
+        $url->getFragment()
+      );
+    } else {
+      $guzzle_url = $url;
+    }
+
+    parent::__construct($method, $guzzle_url, $headers);
 
     $this->boundary = uniqid('NXPHP-', true);
   }
@@ -54,7 +78,7 @@ class EntityEnclosingRequest extends BaseEntityEnclosingRequest {
   }
 
   /**
-   * @return EntityBody|\Guzzle\Http\EntityBodyInterface|null
+   * @return \Guzzle\Http\EntityBody|\Guzzle\Http\EntityBodyInterface|null
    */
   public function getBody() {
     if(!$this->body) {
