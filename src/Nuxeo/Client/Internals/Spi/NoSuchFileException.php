@@ -21,8 +21,6 @@
 namespace Nuxeo\Client\Internals\Spi;
 
 
-use RuntimeException;
-
 class NoSuchFileException extends \RuntimeException {
 
   public function __construct($file) {

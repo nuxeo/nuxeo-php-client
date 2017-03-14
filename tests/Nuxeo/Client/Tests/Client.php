@@ -19,8 +19,10 @@
 namespace Nuxeo\Client\Tests;
 
 use Nuxeo\Client\Api\NuxeoClient as BaseClient;
+use Nuxeo\Client\Api\Request;
 use Nuxeo\Client\Api\Response;
 use Nuxeo\Client\Tests\Http\Client as HttpClient;
+use Nuxeo\Client\Tests\Util\ArrayIterator;
 
 class Client extends BaseClient {
 
@@ -47,6 +49,14 @@ class Client extends BaseClient {
    */
   public function getRequests() {
     return $this->getHttpClient()->getRequests();
+  }
+
+  /**
+   * @param int $index
+   * @return Request
+   */
+  public function getRequest($index = 0) {
+    return ArrayIterator::fromArray($this->getHttpClient()->getRequests())->offsetGet($index);
   }
 
 }

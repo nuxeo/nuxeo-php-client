@@ -19,8 +19,6 @@
 namespace Nuxeo\Client\Api\Objects\Operation;
 
 
-use Nuxeo\Client\Api\Objects\Audit\LogEntry;
-
 class LogEntries extends \ArrayObject {
 
   const className = __CLASS__;

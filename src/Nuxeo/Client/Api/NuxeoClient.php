@@ -160,12 +160,11 @@ class NuxeoClient {
   }
 
   public function repository() {
-    $url = clone $this->baseUrl;
     return new Repository($this);
   }
 
   /**
-   * @param \Nuxeo\Client\Api\Auth\\Nuxeo\Client\Internals\Spi\Auth\AuthenticationInterceptor $authenticationInterceptor
+   * @param AuthenticationInterceptor $authenticationInterceptor
    * @return NuxeoClient
    */
   public function setAuthenticationMethod(AuthenticationInterceptor $authenticationInterceptor) {
@@ -251,6 +250,16 @@ class NuxeoClient {
   }
 
   /**
+   * @param $request
+   * @return Response
+   * @throws NuxeoClientException
+   */
+  public function perform($request) {
+    $this->interceptors($request);
+    return $this->getHttpClient()->send($request);
+  }
+
+  /**
    * @return Marshaller\NuxeoConverter
    */
   public function getConverter() {
@@ -311,8 +320,9 @@ class NuxeoClient {
   }
 
   /**
-   * @param \Nuxeo\Client\Internals\Api\Request $request
+   * @param \Nuxeo\Client\Api\Request $request
    * @return NuxeoClient
+   * @throws NuxeoClientException
    */
   protected function interceptors($request) {
     foreach($this->interceptors as $interceptor) {

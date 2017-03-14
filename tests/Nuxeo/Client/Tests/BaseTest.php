@@ -61,7 +61,7 @@ class BaseTest extends TestCase {
 
     $this->assertCount(1, $requests = $client->getRequests());
 
-    /** @var \Nuxeo\Client\Internals\Api\Request $request */
+    /** @var \Nuxeo\Client\Api\Request $request */
     list($request) = $requests;
 
     $this->assertFalse($request->hasHeader('Authorization'));
@@ -82,7 +82,7 @@ class BaseTest extends TestCase {
 
     $this->assertCount(1, $requests = $client->getRequests());
 
-    /** @var \Nuxeo\Client\Internals\Api\\Nuxeo\Client\Api\Request $request */
+    /** @var \Nuxeo\Client\Api\Request $request */
     list($request) = $requests;
 
     $this->assertFalse($request->hasHeader('Authorization'));
@@ -109,7 +109,7 @@ class BaseTest extends TestCase {
     $this->assertEquals($token, $client->requestAuthenticationToken(self::TOKEN_APP_NAME, self::TOKEN_DEVICE));
     $this->assertCount(1, $requests = $client->getRequests());
 
-    /** @var \Nuxeo\Client\Internals\Api\Request $request */
+    /** @var \Nuxeo\Client\Api\Request $request */
     list($request) = $requests;
 
     $this->assertEquals('authentication/token', $request->getUrl(true)->getPath());

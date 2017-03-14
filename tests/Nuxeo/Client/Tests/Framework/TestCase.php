@@ -22,6 +22,7 @@ namespace Nuxeo\Client\Tests\Framework;
 use Nuxeo\Client\Api\Constants;
 use Nuxeo\Client\Api\Response;
 use Nuxeo\Client\Tests\Client;
+use Zend\Uri\Uri;
 
 abstract class TestCase extends \PHPUnit_Framework_TestCase {
   const NEWFILE_NAME = 'myfile.txt';
@@ -80,6 +81,19 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase {
    */
   protected function createJsonResponse($jsonContent) {
     return $this->createResponse(200, array('Content-Type' => Constants::CONTENT_TYPE_JSON), $jsonContent);
+  }
+
+  protected function createJsonResponseFromFile($relativePath) {
+    return $this->createJsonResponse(file_get_contents($this->getResource($relativePath)));
+  }
+
+  /**
+   * @param Client $client
+   * @param string $relativePath
+   * @param integer $requestIndex
+   */
+  public function assertRequestPathMatches($client, $relativePath, $requestIndex = 0) {
+    self::assertEquals(Uri::merge($client->getApiUrl(), $relativePath)->getPath(), urldecode($client->getRequest($requestIndex)->getPath()));
   }
 
   /**

@@ -21,7 +21,6 @@
 namespace Nuxeo\Client\Api\Marshaller;
 
 
-use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\Reader;
 use JMS\Serializer\Construction\UnserializeObjectConstructor;
 use JMS\Serializer\DeserializationContext;

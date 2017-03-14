@@ -39,9 +39,11 @@ class Repository extends NuxeoEntity {
    * @GET("path")
    * @param string $type
    * @return mixed
+   * @throws \Nuxeo\Client\Internals\Spi\NuxeoClientException
+   * @throws \Nuxeo\Client\Internals\Spi\ClassCastException
    */
   public function fetchDocumentRoot($type = null) {
-    return $this->getResponse($type, array()); // Temporary tests fix
+    return $this->getResponse($type);
   }
 
 }

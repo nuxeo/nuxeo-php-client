@@ -106,9 +106,13 @@ class Operation extends NuxeoEntity {
    * @throws ClassCastException
    */
   public function execute($type = null, $operationId = null) {
-    $operationId = null === $operationId ? $this->operationId : $operationId;
+    if(null === $operationId) {
+      return $this->execute($type, $this->operationId);
+    }
+
     $input = $this->body->getInput();
     $client = $this->getNuxeoClient();
+    $blobs = null;
 
     if(null === $operationId) {
       throw new NoSuchOperationException($operationId);
@@ -124,18 +128,9 @@ class Operation extends NuxeoEntity {
         $blobs[] = $blob->getFile()->getPathname();
       }
       $client->voidOperation(true);
-
-      $response = $client->post(
-        $this->computeRequestUrl(Constants::AUTOMATION_PATH.$operationId),
-        $client->getConverter()->writeJSON($this->body),
-        $blobs);
-    } else {
-      $response = $client->post(
-        $this->computeRequestUrl(Constants::AUTOMATION_PATH.$operationId),
-        $client->getConverter()->writeJSON($this->body));
     }
 
-    return $this->computeResponse($response, $type);
+    return $this->getResponse($type, $client->getConverter()->writeJSON($this->body), $blobs);
   }
 
 }

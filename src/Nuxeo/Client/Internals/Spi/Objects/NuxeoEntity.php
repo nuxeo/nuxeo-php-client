@@ -23,7 +23,7 @@ use JMS\Serializer\Annotation as Serializer;
 use Nuxeo\Client\Api\Constants;
 use Nuxeo\Client\Api\NuxeoClient;
 use Nuxeo\Client\Api\Objects\Blob\Blob;
-use Nuxeo\Client\Api\Response;
+use Nuxeo\Client\Api\Request;
 use Nuxeo\Client\Internals\Spi\Annotations\HttpMethod;
 use Nuxeo\Client\Internals\Spi\ClassCastException;
 use Nuxeo\Client\Internals\Spi\NuxeoClientException;
@@ -72,42 +72,27 @@ abstract class NuxeoEntity {
   }
 
   /**
-   * @param Response $response
    * @param string $type
+   * @param string $body
+   * @param array $files
    * @return mixed
+   * @throws NuxeoClientException
    * @throws ClassCastException
    */
-  protected function computeResponse($response, $type = null) {
-    if(false === (
-        HttpUtils::isContentType($response, Constants::CONTENT_TYPE_JSON) ||
-        HttpUtils::isContentType($response, Constants::CONTENT_TYPE_JSON_NXENTITY))) {
+  protected function getResponse($type = null, $body = null, $files = null) {
+    $request = $this->getRequest();
 
-      if(Blob::className !== $type) {
-        throw new ClassCastException(sprintf('Cannot cast %s as %s', Blob::className, $type));
+    if(is_array($files)) {
+      foreach($files as $file) {
+        $request->addRelatedFile($file);
       }
-
-      return Blob::fromHttpResponse($response);
     }
-    $body = $this->nuxeoClient->getConverter()->readJSON($response->getBody(true), $type);
 
-    return $this->reconnectObject($body, $this->getNuxeoClient());
-  }
+    if(null !== $body) {
+      $request->setBody($body);
+    }
 
-  /**
-   * @param string $type
-   * @return mixed
-   * @throws ClassCastException
-   */
-  public function getResponse($type = null, $body = null, $files = null) {
-    //TODO: Use Zend\Http\Query
-    $method = $this->getMethod();
-
-    /** @var Response $response */
-    $response = $this->getNuxeoClient()->{$method->getName()}(
-      $this->computeRequestUrl($method->getPath()),
-      $body,
-      $files
-    );
+    $response = $this->getNuxeoClient()->perform($request);
 
     if(false === (
         HttpUtils::isContentType($response, Constants::CONTENT_TYPE_JSON) ||
@@ -126,16 +111,36 @@ abstract class NuxeoEntity {
 
   /**
    * @throws NuxeoClientException
-   * @return HttpMethod
+   * @return Request
    */
-  protected function getMethod() {
+  protected function getRequest() {
     $backtrace = debug_backtrace();
     $reflectionClass = new \ReflectionClass($backtrace[2]['class']);
     $reflectionMethod = $reflectionClass->getMethod($backtrace[2]['function']);
 
     foreach($this->getNuxeoClient()->getAnnotationReader()->getMethodAnnotations($reflectionMethod) as $annotation) {
       if($annotation instanceof HttpMethod) {
-        return $annotation;
+        try {
+          $params = array();
+          $paramIndex = 0;
+          $paramValues = $backtrace[2]['args'];
+          $paramNames = array_map(function ($parameter) {
+            /** @var \ReflectionParameter $parameter */
+            return $parameter->name;
+          }, $reflectionMethod->getParameters());
+
+          foreach($paramNames as $name) {
+            $params[$name] = isset($paramValues[$paramIndex])?$paramValues[$paramIndex]:null;
+            $paramIndex++;
+          }
+
+          return new Request(
+            $annotation->getName(),
+            $this->computeRequestUrl($annotation->computePath($params))
+          );
+        } catch(\InvalidArgumentException $e) {
+          throw NuxeoClientException::fromPrevious($e);
+        }
       }
     }
     throw new NuxeoClientException(
@@ -162,6 +167,13 @@ abstract class NuxeoEntity {
    */
   protected function getNuxeoClient() {
     return $this->nuxeoClient;
+  }
+
+  /**
+   * @return string
+   */
+  public function getEntityType() {
+    return $this->entityType;
   }
 
 }

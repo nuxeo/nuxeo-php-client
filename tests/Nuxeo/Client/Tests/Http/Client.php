@@ -19,7 +19,6 @@
 namespace Nuxeo\Client\Tests\Http;
 
 
-use Nuxeo\Client\Api\Request;
 use Nuxeo\Client\Api\Response;
 use Nuxeo\Client\Internals\Spi\Http\Client as BaseClient;
 
@@ -51,7 +50,7 @@ class Client extends BaseClient {
   }
 
   /**
-   * @param array|\Nuxeo\Client\Internals\Api\Request $requests
+   * @param array|\Nuxeo\Client\Api\Request $requests
    * @return array|Response|null
    */
   public function send($requests) {
@@ -63,7 +62,7 @@ class Client extends BaseClient {
   protected function sendMultiple(array $requests) {
     $responses = array();
 
-    /** @var \Nuxeo\Client\Internals\Api\Request $request */
+    /** @var \Nuxeo\Client\Api\Request $request */
     foreach($requests as $request) {
       // Get body to simulate sending the request (required for multipart/related)
       $request->getBody();

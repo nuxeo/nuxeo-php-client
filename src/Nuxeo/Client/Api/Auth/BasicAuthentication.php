@@ -20,7 +20,6 @@
 
 namespace Nuxeo\Client\Api\Auth;
 
-use Nuxeo\Client\Api\Request;
 use Nuxeo\Client\Internals\Spi\Auth\AuthenticationInterceptor;
 use Nuxeo\Client\Internals\Spi\Http\Client;
 use Nuxeo\Client\Internals\Spi\NuxeoClientException;
