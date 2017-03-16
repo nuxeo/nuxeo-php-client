@@ -139,7 +139,7 @@ class Documents extends NuxeoEntity {
     parent::__construct(Constants::ENTITY_TYPE_DOCUMENTS);
   }
 
-  public function getDocument($position) {
+  public function getDocument($position = 0) {
     return $this->documents[$position];
   }
 

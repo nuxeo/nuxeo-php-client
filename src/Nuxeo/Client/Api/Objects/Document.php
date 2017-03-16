@@ -116,8 +116,15 @@ class Document extends NuxeoEntity {
   /**
    * Document constructor.
    */
-  public function __construct() {
-    parent::__construct(Constants::ENTITY_TYPE_DOCUMENT);
+  public function __construct($nuxeoClient = null) {
+    parent::__construct(Constants::ENTITY_TYPE_DOCUMENT, $nuxeoClient);
+  }
+
+  /**
+   * @return self
+   */
+  public static function create($nuxeoClient = null) {
+    return new self($nuxeoClient);
   }
 
   /**
@@ -138,6 +145,16 @@ class Document extends NuxeoEntity {
   }
 
   /**
+   * @param string $name
+   * @param mixed $value
+   * @return self
+   */
+  public function setProperty($name, $value) {
+    $this->properties[$name] = $value;
+    return $this;
+  }
+
+  /**
    * @return string
    */
   public function getPath() {
@@ -146,7 +163,7 @@ class Document extends NuxeoEntity {
 
   /**
    * @param string $path
-   * @return Document
+   * @return self
    */
   public function setPath($path) {
     $this->path = $path;
@@ -162,7 +179,7 @@ class Document extends NuxeoEntity {
 
   /**
    * @param string $type
-   * @return Document
+   * @return self
    */
   public function setType($type) {
     $this->type = $type;
@@ -178,7 +195,7 @@ class Document extends NuxeoEntity {
 
   /**
    * @param string $state
-   * @return Document
+   * @return self
    */
   public function setState($state) {
     $this->state = $state;
@@ -194,7 +211,7 @@ class Document extends NuxeoEntity {
 
   /**
    * @param string $lockOwner
-   * @return Document
+   * @return self
    */
   public function setLockOwner($lockOwner) {
     $this->lockOwner = $lockOwner;
@@ -210,7 +227,7 @@ class Document extends NuxeoEntity {
 
   /**
    * @param string $lockCreated
-   * @return Document
+   * @return self
    */
   public function setLockCreated($lockCreated) {
     $this->lockCreated = $lockCreated;
@@ -226,7 +243,7 @@ class Document extends NuxeoEntity {
 
   /**
    * @param string $versionLabel
-   * @return Document
+   * @return self
    */
   public function setVersionLabel($versionLabel) {
     $this->versionLabel = $versionLabel;
@@ -242,7 +259,7 @@ class Document extends NuxeoEntity {
 
   /**
    * @param string $isCheckedOut
-   * @return Document
+   * @return self
    */
   public function setIsCheckedOut($isCheckedOut) {
     $this->isCheckedOut = $isCheckedOut;
@@ -258,7 +275,7 @@ class Document extends NuxeoEntity {
 
   /**
    * @param string $lastModified
-   * @return Document
+   * @return self
    */
   public function setLastModified($lastModified) {
     $this->lastModified = $lastModified;
@@ -274,7 +291,7 @@ class Document extends NuxeoEntity {
 
   /**
    * @param string $changeToken
-   * @return Document
+   * @return self
    */
   public function setChangeToken($changeToken) {
     $this->changeToken = $changeToken;
@@ -290,7 +307,7 @@ class Document extends NuxeoEntity {
 
   /**
    * @param string $parentRef
-   * @return Document
+   * @return self
    */
   public function setParentRef($parentRef) {
     $this->parentRef = $parentRef;
@@ -306,7 +323,7 @@ class Document extends NuxeoEntity {
 
   /**
    * @param string $uid
-   * @return Document
+   * @return self
    */
   public function setUid($uid) {
     $this->uid = $uid;
@@ -322,7 +339,7 @@ class Document extends NuxeoEntity {
 
   /**
    * @param string $title
-   * @return Document
+   * @return self
    */
   public function setTitle($title) {
     $this->title = $title;
@@ -338,7 +355,7 @@ class Document extends NuxeoEntity {
 
   /**
    * @param string[] $facets
-   * @return Document
+   * @return self
    */
   public function setFacets($facets) {
     $this->facets = $facets;
@@ -354,9 +371,11 @@ class Document extends NuxeoEntity {
 
   /**
    * @param mixed[] $properties
+   * @return self
    */
   public function setProperties($properties) {
     $this->properties = $properties;
+    return $this;
   }
 
 }

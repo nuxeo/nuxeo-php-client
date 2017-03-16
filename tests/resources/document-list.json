@@ -2,11 +2,11 @@
   "entity-type": "documents",
   "isPaginable": true,
   "resultsCount": 34,
-  "pageSize": 0,
+  "pageSize": 5,
   "maxPageSize": 1000,
-  "currentPageSize": 34,
+  "currentPageSize": 5,
   "currentPageIndex": 0,
-  "numberOfPages": 1,
+  "numberOfPages": 7,
   "isPreviousPageAvailable": false,
   "isNextPageAvailable": false,
   "isLastPageAvailable": false,
@@ -15,19 +15,19 @@
   "errorMessage": null,
   "totalSize": 34,
   "pageIndex": 0,
-  "pageCount": 1,
+  "pageCount": 7,
   "entries": [
     {
       "entity-type": "document",
       "repository": "default",
-      "uid": "0fa9d2a0-e69f-452d-87ff-0c5bd3b30d7d",
-      "path": "/default-domain",
-      "type": "Domain",
+      "uid": "3dd87292-1345-4ad8-acb5-4e74c26bf893",
+      "path": "/default-domain/workspaces/MyWorkspace/MyFile",
+      "type": "Note",
       "state": "project",
       "parentRef": "512c5555-6dce-4b88-81f1-12ddc8ac5de8",
       "isCheckedOut": true,
       "changeToken": "1444731706120",
-      "title": "Domain",
+      "title": "myfile.txt",
       "lastModified": "2015-10-13T10:21:46.12Z",
       "properties": {
         "common:size": null,
@@ -46,7 +46,7 @@
         "dc:expired": null,
         "dc:format": null,
         "dc:created": "2015-10-13T10:21:46.12Z",
-        "dc:title": "Domain",
+        "dc:title": "myfile.txt",
         "dc:issued": null,
         "dc:nature": null,
         "dc:subjects": [],
@@ -54,7 +54,13 @@
           "system"
         ],
         "dc:source": null,
-        "dc:publisher": null
+        "dc:publisher": null,
+        "custom:complex": {
+          "birthday": "1979-01-01T00:00:00.00Z",
+          "name": "Guin",
+          "height": 1.456
+        },
+        "custom:related": "69d953ad-1975-453a-8328-ab9ee1830fe4"
       },
       "facets": [
         "Folderish",

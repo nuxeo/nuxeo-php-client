@@ -98,7 +98,7 @@ class Operation extends NuxeoEntity {
   }
 
   /**
-   * @POST("/automation/{operationId}")
+   * @POST("automation/{operationId}")
    * @param string $type
    * @param string $operationId
    * @return mixed

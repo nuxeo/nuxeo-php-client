@@ -25,14 +25,20 @@ use Nuxeo\Client\Tests\Client;
 use Zend\Uri\Uri;
 
 abstract class TestCase extends \PHPUnit_Framework_TestCase {
-  const NEWFILE_NAME = 'myfile.txt';
-  const PASSWORD = 'Administrator';
-  const NEWFILE_PATH = 'myfile.txt';
   const LOGIN = 'Administrator';
-  const MYFILE_CONTENT = 'Hello World';
-  const NEWFILE_TYPE = 'text/plain';
-  const MYFILE_DOCPATH = '/default-domain/workspaces/MyWorkspace/MyFile';
-  const URL = 'http://localhost:8080/nuxeo';
+  const PASSWORD = 'Administrator';
+  const DOC_TITLE = 'myfile.txt';
+  const DOC_FS_PATH = 'myfile.txt';
+  const DOC_CONTENT = 'Hello World';
+  const DOC_MIME = 'text/plain';
+  const DOC_PATH = '/default-domain/workspaces/MyWorkspace/MyFile';
+  const DOC_TYPE = 'Note';
+  const DOC_PARENT_PATH = '/default-domain/workspaces/MyWorkspace';
+  const DOC_REPOSITORY = 'default';
+  const DOC_UID = '3dd87292-1345-4ad8-acb5-4e74c26bf893';
+  const IMG_MIME = 'image/png';
+  const IMG_FS_PATH = 'nuxeo.png';
+  const URL = 'http://localhost:8080/nuxeo/';
 
   /**
    * @var Client

@@ -1,0 +1,858 @@
+{
+  "entity-type": "exception",
+  "code": "org.nuxeo.ecm.core.io.registry.MarshallingException",
+  "status": 500,
+  "message": "Json object entity-type is wrong. Expected is document but was documnt",
+  "stacktrace": "org.nuxeo.ecm.webengine.WebException: Json object entity-type is wrong. Expected is document but was documnt\n\tat org.nuxeo.ecm.webengine.WebException.newException(WebException.java:133)\n\tat org.nuxeo.ecm.webengine.WebException.newException(WebException.java:122)\n\tat org.nuxeo.ecm.restapi.server.jaxrs.APIRoot.handleError(APIRoot.java:109)\n\tat org.nuxeo.ecm.webengine.WebException.toWebModuleResponse(WebException.java:263)\n\tat org.nuxeo.ecm.webengine.WebException.toResponse(WebException.java:253)\n\tat org.nuxeo.ecm.webengine.app.WebEngineExceptionMapper.toResponse(WebEngineExceptionMapper.java:68)\n\tat com.sun.jersey.spi.container.ContainerResponse.mapException(ContainerResponse.java:480)\n\tat com.sun.jersey.spi.container.ContainerResponse.mapMappableContainerException(ContainerResponse.java:417)\n\tat com.sun.jersey.server.impl.application.WebApplicationImpl._handleRequest(WebApplicationImpl.java:1477)\n\tat com.sun.jersey.server.impl.application.WebApplicationImpl.handleRequest(WebApplicationImpl.java:1419)\n\tat com.sun.jersey.server.impl.application.WebApplicationImpl.handleRequest(WebApplicationImpl.java:1409)\n\tat com.sun.jersey.spi.container.servlet.WebComponent.service(WebComponent.java:409)\n\tat com.sun.jersey.spi.container.servlet.ServletContainer.service(ServletContainer.java:558)\n\tat com.sun.jersey.spi.container.servlet.ServletContainer.service(ServletContainer.java:733)\n\tat org.nuxeo.ecm.webengine.app.jersey.WebEngineServlet.containerService(WebEngineServlet.java:178)\n\tat org.nuxeo.ecm.webengine.app.jersey.WebEngineServlet.service(WebEngineServlet.java:155)\n\tat javax.servlet.http.HttpServlet.service(HttpServlet.java:731)\n\tat org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:303)\n\tat org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)\n\tat org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52)\n\tat org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)\n\tat org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)\n\tat org.nuxeo.elasticsearch.ElasticSearchFilter.doFilter(ElasticSearchFilter.java:55)\n\tat org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)\n\tat org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)\n\tat org.nuxeo.ecm.webengine.jaxrs.session.SessionCleanupFilter.run(SessionCleanupFilter.java:50)\n\tat org.nuxeo.ecm.webengine.jaxrs.HttpFilter.doFilter(HttpFilter.java:49)\n\tat org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)\n\tat org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)\n\tat org.nuxeo.ecm.webengine.app.WebEngineFilter.doFilter(WebEngineFilter.java:92)\n\tat org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)\n\tat org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)\n\tat org.nuxeo.ecm.webengine.jaxrs.context.RequestContextFilter.run(RequestContextFilter.java:48)\n\tat org.nuxeo.ecm.webengine.jaxrs.HttpFilter.doFilter(HttpFilter.java:49)\n\tat org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)\n\tat org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)\n\tat org.nuxeo.ecm.core.management.jtajca.internal.Log4jWebFilter.doFilter(Log4jWebFilter.java:69)\n\tat org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)\n\tat org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)\n\tat org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter.doFilterInternal(NuxeoAuthenticationFilter.java:598)\n\tat org.nuxeo.ecm.platform.ui.web.auth.service.NuxeoAuthFilterChain.doFilter(NuxeoAuthFilterChain.java:51)\n\tat org.nuxeo.ecm.platform.ui.web.auth.oauth.NuxeoOAuthFilter.doFilter(NuxeoOAuthFilter.java:122)\n\tat org.nuxeo.ecm.platform.ui.web.auth.service.NuxeoAuthFilterChain.doFilter(NuxeoAuthFilterChain.java:49)\n\tat org.nuxeo.ecm.platform.ui.web.auth.oauth2.NuxeoOAuth2Filter.doFilter(NuxeoOAuth2Filter.java:83)\n\tat org.nuxeo.ecm.platform.ui.web.auth.service.NuxeoAuthFilterChain.doFilter(NuxeoAuthFilterChain.java:49)\n\tat org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter.doFilter(NuxeoAuthenticationFilter.java:408)\n\tat org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)\n\tat org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)\n\tat org.nuxeo.ecm.platform.web.common.exceptionhandling.NuxeoExceptionFilter.doFilter(NuxeoExceptionFilter.java:77)\n\tat org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)\n\tat org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)\n\tat org.nuxeo.ecm.platform.web.common.encoding.NuxeoEncodingFilter.doFilter(NuxeoEncodingFilter.java:75)\n\tat org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)\n\tat org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)\n\tat org.apache.catalina.core.ApplicationDispatcher.invoke(ApplicationDispatcher.java:747)\n\tat org.apache.catalina.core.ApplicationDispatcher.processRequest(ApplicationDispatcher.java:485)\n\tat org.apache.catalina.core.ApplicationDispatcher.doForward(ApplicationDispatcher.java:410)\n\tat org.apache.catalina.core.ApplicationDispatcher.forward(ApplicationDispatcher.java:337)\n\tat org.nuxeo.ecm.restapi.server.APIServlet.service(APIServlet.java:50)\n\tat javax.servlet.http.HttpServlet.service(HttpServlet.java:731)\n\tat org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:303)\n\tat org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)\n\tat org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52)\n\tat org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)\n\tat org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)\n\tat org.nuxeo.elasticsearch.ElasticSearchFilter.doFilter(ElasticSearchFilter.java:55)\n\tat org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)\n\tat org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)\n\tat org.nuxeo.ecm.platform.web.common.requestcontroller.filter.NuxeoThreadTrackerFilter.doFilter(NuxeoThreadTrackerFilter.java:43)\n\tat org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)\n\tat org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)\n\tat org.nuxeo.ecm.core.management.jtajca.internal.Log4jWebFilter.doFilter(Log4jWebFilter.java:69)\n\tat org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)\n\tat org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)\n\tat org.nuxeo.ecm.platform.ui.web.rest.FancyURLFilter.doFilter(FancyURLFilter.java:120)\n\tat org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)\n\tat org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)\n\tat org.nuxeo.ecm.platform.web.common.requestcontroller.filter.NuxeoRequestControllerFilter.doFilter(NuxeoRequestControllerFilter.java:146)\n\tat org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)\n\tat org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)\n\tat org.nuxeo.ecm.webdav.service.WIRequestFilter.doFilter(WIRequestFilter.java:61)\n\tat org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)\n\tat org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)\n\tat com.thetransactioncompany.cors.CORSFilter.doFilter(CORSFilter.java:197)\n\tat com.thetransactioncompany.cors.CORSFilter.doFilter(CORSFilter.java:274)\n\tat org.nuxeo.ecm.platform.web.common.requestcontroller.filter.NuxeoCorsFilter.doFilter(NuxeoCorsFilter.java:49)\n\tat org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)\n\tat org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)\n\tat org.nuxeo.ecm.platform.web.common.exceptionhandling.NuxeoExceptionFilter.doFilter(NuxeoExceptionFilter.java:77)\n\tat org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)\n\tat org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)\n\tat org.nuxeo.ecm.platform.web.common.encoding.NuxeoEncodingFilter.doFilter(NuxeoEncodingFilter.java:75)\n\tat org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)\n\tat org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)\n\tat org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:220)\n\tat org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:122)\n\tat org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:505)\n\tat org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:169)\n\tat org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:103)\n\tat org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:116)\n\tat org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:436)\n\tat org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1078)\n\tat org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:625)\n\tat org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor.run(JIoEndpoint.java:316)\n\tat java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)\n\tat java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)\n\tat org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)\n\tat java.lang.Thread.run(Thread.java:745)\nCaused by: org.nuxeo.ecm.core.io.registry.MarshallingException: Json object entity-type is wrong. Expected is document but was documnt\n\tat org.nuxeo.ecm.core.io.marshallers.json.EntityJsonReader.read(EntityJsonReader.java:62)\n\tat org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonReader.read(AbstractJsonReader.java:77)\n\tat org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonReader.read(DocumentModelJsonReader.java:94)\n\tat org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonReader.read(DocumentModelJsonReader.java:78)\n\tat org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.PartialCoreIODelegate.readFrom(PartialCoreIODelegate.java:134)\n\tat com.sun.jersey.spi.container.ContainerRequest.getEntity(ContainerRequest.java:490)\n\tat com.sun.jersey.server.impl.model.method.dispatch.EntityParamDispatchProvider$EntityInjectable.getValue(EntityParamDispatchProvider.java:123)\n\tat com.sun.jersey.server.impl.inject.InjectableValuesProvider.getInjectableValues(InjectableValuesProvider.java:86)\n\tat com.sun.jersey.server.impl.model.method.dispatch.AbstractResourceMethodDispatchProvider$EntityParamInInvoker.getParams(AbstractResourceMethodDispatchProvider.java:153)\n\tat com.sun.jersey.server.impl.model.method.dispatch.AbstractResourceMethodDispatchProvider$ResponseOutInvoker._dispatch(AbstractResourceMethodDispatchProvider.java:203)\n\tat com.sun.jersey.server.impl.model.method.dispatch.ResourceJavaMethodDispatcher.dispatch(ResourceJavaMethodDispatcher.java:75)\n\tat com.sun.jersey.server.impl.uri.rules.HttpMethodRule.accept(HttpMethodRule.java:302)\n\tat com.sun.jersey.server.impl.uri.rules.SubLocatorRule.accept(SubLocatorRule.java:137)\n\tat com.sun.jersey.server.impl.uri.rules.RightHandPathRule.accept(RightHandPathRule.java:147)\n\tat com.sun.jersey.server.impl.uri.rules.SubLocatorRule.accept(SubLocatorRule.java:137)\n\tat com.sun.jersey.server.impl.uri.rules.RightHandPathRule.accept(RightHandPathRule.java:147)\n\tat com.sun.jersey.server.impl.uri.rules.ResourceClassRule.accept(ResourceClassRule.java:108)\n\tat com.sun.jersey.server.impl.uri.rules.RightHandPathRule.accept(RightHandPathRule.java:147)\n\tat com.sun.jersey.server.impl.uri.rules.RootResourceClassesRule.accept(RootResourceClassesRule.java:84)\n\tat com.sun.jersey.server.impl.application.WebApplicationImpl._handleRequest(WebApplicationImpl.java:1542)\n\tat com.sun.jersey.server.impl.application.WebApplicationImpl._handleRequest(WebApplicationImpl.java:1473)\n\t... 99 more\n",
+  "exception": {
+    "className": "org.nuxeo.ecm.core.io.registry.MarshallingException",
+    "originalMessage": "Json object entity-type is wrong. Expected is document but was documnt",
+    "infos": [],
+    "message": "Json object entity-type is wrong. Expected is document but was documnt",
+    "cause": null,
+    "localizedMessage": "Json object entity-type is wrong. Expected is document but was documnt",
+    "stackTrace": [
+      {
+        "fileName": "EntityJsonReader.java",
+        "lineNumber": 62,
+        "className": "org.nuxeo.ecm.core.io.marshallers.json.EntityJsonReader",
+        "methodName": "read",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "AbstractJsonReader.java",
+        "lineNumber": 77,
+        "className": "org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonReader",
+        "methodName": "read",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "DocumentModelJsonReader.java",
+        "lineNumber": 94,
+        "className": "org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonReader",
+        "methodName": "read",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "DocumentModelJsonReader.java",
+        "lineNumber": 78,
+        "className": "org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonReader",
+        "methodName": "read",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "PartialCoreIODelegate.java",
+        "lineNumber": 134,
+        "className": "org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.PartialCoreIODelegate",
+        "methodName": "readFrom",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ContainerRequest.java",
+        "lineNumber": 490,
+        "className": "com.sun.jersey.spi.container.ContainerRequest",
+        "methodName": "getEntity",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "EntityParamDispatchProvider.java",
+        "lineNumber": 123,
+        "className": "com.sun.jersey.server.impl.model.method.dispatch.EntityParamDispatchProvider$EntityInjectable",
+        "methodName": "getValue",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "InjectableValuesProvider.java",
+        "lineNumber": 86,
+        "className": "com.sun.jersey.server.impl.inject.InjectableValuesProvider",
+        "methodName": "getInjectableValues",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "AbstractResourceMethodDispatchProvider.java",
+        "lineNumber": 153,
+        "className": "com.sun.jersey.server.impl.model.method.dispatch.AbstractResourceMethodDispatchProvider$EntityParamInInvoker",
+        "methodName": "getParams",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "AbstractResourceMethodDispatchProvider.java",
+        "lineNumber": 203,
+        "className": "com.sun.jersey.server.impl.model.method.dispatch.AbstractResourceMethodDispatchProvider$ResponseOutInvoker",
+        "methodName": "_dispatch",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ResourceJavaMethodDispatcher.java",
+        "lineNumber": 75,
+        "className": "com.sun.jersey.server.impl.model.method.dispatch.ResourceJavaMethodDispatcher",
+        "methodName": "dispatch",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "HttpMethodRule.java",
+        "lineNumber": 302,
+        "className": "com.sun.jersey.server.impl.uri.rules.HttpMethodRule",
+        "methodName": "accept",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "SubLocatorRule.java",
+        "lineNumber": 137,
+        "className": "com.sun.jersey.server.impl.uri.rules.SubLocatorRule",
+        "methodName": "accept",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "RightHandPathRule.java",
+        "lineNumber": 147,
+        "className": "com.sun.jersey.server.impl.uri.rules.RightHandPathRule",
+        "methodName": "accept",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "SubLocatorRule.java",
+        "lineNumber": 137,
+        "className": "com.sun.jersey.server.impl.uri.rules.SubLocatorRule",
+        "methodName": "accept",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "RightHandPathRule.java",
+        "lineNumber": 147,
+        "className": "com.sun.jersey.server.impl.uri.rules.RightHandPathRule",
+        "methodName": "accept",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ResourceClassRule.java",
+        "lineNumber": 108,
+        "className": "com.sun.jersey.server.impl.uri.rules.ResourceClassRule",
+        "methodName": "accept",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "RightHandPathRule.java",
+        "lineNumber": 147,
+        "className": "com.sun.jersey.server.impl.uri.rules.RightHandPathRule",
+        "methodName": "accept",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "RootResourceClassesRule.java",
+        "lineNumber": 84,
+        "className": "com.sun.jersey.server.impl.uri.rules.RootResourceClassesRule",
+        "methodName": "accept",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "WebApplicationImpl.java",
+        "lineNumber": 1542,
+        "className": "com.sun.jersey.server.impl.application.WebApplicationImpl",
+        "methodName": "_handleRequest",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "WebApplicationImpl.java",
+        "lineNumber": 1473,
+        "className": "com.sun.jersey.server.impl.application.WebApplicationImpl",
+        "methodName": "_handleRequest",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "WebApplicationImpl.java",
+        "lineNumber": 1419,
+        "className": "com.sun.jersey.server.impl.application.WebApplicationImpl",
+        "methodName": "handleRequest",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "WebApplicationImpl.java",
+        "lineNumber": 1409,
+        "className": "com.sun.jersey.server.impl.application.WebApplicationImpl",
+        "methodName": "handleRequest",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "WebComponent.java",
+        "lineNumber": 409,
+        "className": "com.sun.jersey.spi.container.servlet.WebComponent",
+        "methodName": "service",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ServletContainer.java",
+        "lineNumber": 558,
+        "className": "com.sun.jersey.spi.container.servlet.ServletContainer",
+        "methodName": "service",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ServletContainer.java",
+        "lineNumber": 733,
+        "className": "com.sun.jersey.spi.container.servlet.ServletContainer",
+        "methodName": "service",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "WebEngineServlet.java",
+        "lineNumber": 178,
+        "className": "org.nuxeo.ecm.webengine.app.jersey.WebEngineServlet",
+        "methodName": "containerService",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "WebEngineServlet.java",
+        "lineNumber": 155,
+        "className": "org.nuxeo.ecm.webengine.app.jersey.WebEngineServlet",
+        "methodName": "service",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "HttpServlet.java",
+        "lineNumber": 731,
+        "className": "javax.servlet.http.HttpServlet",
+        "methodName": "service",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 303,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "internalDoFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 208,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "WsFilter.java",
+        "lineNumber": 52,
+        "className": "org.apache.tomcat.websocket.server.WsFilter",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 241,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "internalDoFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 208,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ElasticSearchFilter.java",
+        "lineNumber": 55,
+        "className": "org.nuxeo.elasticsearch.ElasticSearchFilter",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 241,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "internalDoFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 208,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "SessionCleanupFilter.java",
+        "lineNumber": 50,
+        "className": "org.nuxeo.ecm.webengine.jaxrs.session.SessionCleanupFilter",
+        "methodName": "run",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "HttpFilter.java",
+        "lineNumber": 49,
+        "className": "org.nuxeo.ecm.webengine.jaxrs.HttpFilter",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 241,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "internalDoFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 208,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "WebEngineFilter.java",
+        "lineNumber": 92,
+        "className": "org.nuxeo.ecm.webengine.app.WebEngineFilter",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 241,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "internalDoFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 208,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "RequestContextFilter.java",
+        "lineNumber": 48,
+        "className": "org.nuxeo.ecm.webengine.jaxrs.context.RequestContextFilter",
+        "methodName": "run",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "HttpFilter.java",
+        "lineNumber": 49,
+        "className": "org.nuxeo.ecm.webengine.jaxrs.HttpFilter",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 241,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "internalDoFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 208,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "Log4jWebFilter.java",
+        "lineNumber": 69,
+        "className": "org.nuxeo.ecm.core.management.jtajca.internal.Log4jWebFilter",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 241,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "internalDoFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 208,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "NuxeoAuthenticationFilter.java",
+        "lineNumber": 598,
+        "className": "org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter",
+        "methodName": "doFilterInternal",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "NuxeoAuthFilterChain.java",
+        "lineNumber": 51,
+        "className": "org.nuxeo.ecm.platform.ui.web.auth.service.NuxeoAuthFilterChain",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "NuxeoOAuthFilter.java",
+        "lineNumber": 122,
+        "className": "org.nuxeo.ecm.platform.ui.web.auth.oauth.NuxeoOAuthFilter",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "NuxeoAuthFilterChain.java",
+        "lineNumber": 49,
+        "className": "org.nuxeo.ecm.platform.ui.web.auth.service.NuxeoAuthFilterChain",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "NuxeoOAuth2Filter.java",
+        "lineNumber": 83,
+        "className": "org.nuxeo.ecm.platform.ui.web.auth.oauth2.NuxeoOAuth2Filter",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "NuxeoAuthFilterChain.java",
+        "lineNumber": 49,
+        "className": "org.nuxeo.ecm.platform.ui.web.auth.service.NuxeoAuthFilterChain",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "NuxeoAuthenticationFilter.java",
+        "lineNumber": 408,
+        "className": "org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 241,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "internalDoFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 208,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "NuxeoExceptionFilter.java",
+        "lineNumber": 77,
+        "className": "org.nuxeo.ecm.platform.web.common.exceptionhandling.NuxeoExceptionFilter",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 241,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "internalDoFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 208,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "NuxeoEncodingFilter.java",
+        "lineNumber": 75,
+        "className": "org.nuxeo.ecm.platform.web.common.encoding.NuxeoEncodingFilter",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 241,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "internalDoFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 208,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationDispatcher.java",
+        "lineNumber": 747,
+        "className": "org.apache.catalina.core.ApplicationDispatcher",
+        "methodName": "invoke",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationDispatcher.java",
+        "lineNumber": 485,
+        "className": "org.apache.catalina.core.ApplicationDispatcher",
+        "methodName": "processRequest",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationDispatcher.java",
+        "lineNumber": 410,
+        "className": "org.apache.catalina.core.ApplicationDispatcher",
+        "methodName": "doForward",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationDispatcher.java",
+        "lineNumber": 337,
+        "className": "org.apache.catalina.core.ApplicationDispatcher",
+        "methodName": "forward",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "APIServlet.java",
+        "lineNumber": 50,
+        "className": "org.nuxeo.ecm.restapi.server.APIServlet",
+        "methodName": "service",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "HttpServlet.java",
+        "lineNumber": 731,
+        "className": "javax.servlet.http.HttpServlet",
+        "methodName": "service",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 303,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "internalDoFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 208,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "WsFilter.java",
+        "lineNumber": 52,
+        "className": "org.apache.tomcat.websocket.server.WsFilter",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 241,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "internalDoFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 208,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ElasticSearchFilter.java",
+        "lineNumber": 55,
+        "className": "org.nuxeo.elasticsearch.ElasticSearchFilter",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 241,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "internalDoFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 208,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "NuxeoThreadTrackerFilter.java",
+        "lineNumber": 43,
+        "className": "org.nuxeo.ecm.platform.web.common.requestcontroller.filter.NuxeoThreadTrackerFilter",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 241,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "internalDoFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 208,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "Log4jWebFilter.java",
+        "lineNumber": 69,
+        "className": "org.nuxeo.ecm.core.management.jtajca.internal.Log4jWebFilter",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 241,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "internalDoFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 208,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "FancyURLFilter.java",
+        "lineNumber": 120,
+        "className": "org.nuxeo.ecm.platform.ui.web.rest.FancyURLFilter",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 241,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "internalDoFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 208,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "NuxeoRequestControllerFilter.java",
+        "lineNumber": 146,
+        "className": "org.nuxeo.ecm.platform.web.common.requestcontroller.filter.NuxeoRequestControllerFilter",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 241,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "internalDoFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 208,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "WIRequestFilter.java",
+        "lineNumber": 61,
+        "className": "org.nuxeo.ecm.webdav.service.WIRequestFilter",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 241,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "internalDoFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 208,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "CORSFilter.java",
+        "lineNumber": 197,
+        "className": "com.thetransactioncompany.cors.CORSFilter",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "CORSFilter.java",
+        "lineNumber": 274,
+        "className": "com.thetransactioncompany.cors.CORSFilter",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "NuxeoCorsFilter.java",
+        "lineNumber": 49,
+        "className": "org.nuxeo.ecm.platform.web.common.requestcontroller.filter.NuxeoCorsFilter",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 241,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "internalDoFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 208,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "NuxeoExceptionFilter.java",
+        "lineNumber": 77,
+        "className": "org.nuxeo.ecm.platform.web.common.exceptionhandling.NuxeoExceptionFilter",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 241,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "internalDoFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 208,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "NuxeoEncodingFilter.java",
+        "lineNumber": 75,
+        "className": "org.nuxeo.ecm.platform.web.common.encoding.NuxeoEncodingFilter",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 241,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "internalDoFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ApplicationFilterChain.java",
+        "lineNumber": 208,
+        "className": "org.apache.catalina.core.ApplicationFilterChain",
+        "methodName": "doFilter",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "StandardWrapperValve.java",
+        "lineNumber": 220,
+        "className": "org.apache.catalina.core.StandardWrapperValve",
+        "methodName": "invoke",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "StandardContextValve.java",
+        "lineNumber": 122,
+        "className": "org.apache.catalina.core.StandardContextValve",
+        "methodName": "invoke",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "AuthenticatorBase.java",
+        "lineNumber": 505,
+        "className": "org.apache.catalina.authenticator.AuthenticatorBase",
+        "methodName": "invoke",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "StandardHostValve.java",
+        "lineNumber": 169,
+        "className": "org.apache.catalina.core.StandardHostValve",
+        "methodName": "invoke",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ErrorReportValve.java",
+        "lineNumber": 103,
+        "className": "org.apache.catalina.valves.ErrorReportValve",
+        "methodName": "invoke",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "StandardEngineValve.java",
+        "lineNumber": 116,
+        "className": "org.apache.catalina.core.StandardEngineValve",
+        "methodName": "invoke",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "CoyoteAdapter.java",
+        "lineNumber": 436,
+        "className": "org.apache.catalina.connector.CoyoteAdapter",
+        "methodName": "service",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "AbstractHttp11Processor.java",
+        "lineNumber": 1078,
+        "className": "org.apache.coyote.http11.AbstractHttp11Processor",
+        "methodName": "process",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "AbstractProtocol.java",
+        "lineNumber": 625,
+        "className": "org.apache.coyote.AbstractProtocol$AbstractConnectionHandler",
+        "methodName": "process",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "JIoEndpoint.java",
+        "lineNumber": 316,
+        "className": "org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor",
+        "methodName": "run",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ThreadPoolExecutor.java",
+        "lineNumber": 1142,
+        "className": "java.util.concurrent.ThreadPoolExecutor",
+        "methodName": "runWorker",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "ThreadPoolExecutor.java",
+        "lineNumber": 617,
+        "className": "java.util.concurrent.ThreadPoolExecutor$Worker",
+        "methodName": "run",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "TaskThread.java",
+        "lineNumber": 61,
+        "className": "org.apache.tomcat.util.threads.TaskThread$WrappingRunnable",
+        "methodName": "run",
+        "nativeMethod": false
+      },
+      {
+        "fileName": "Thread.java",
+        "lineNumber": 745,
+        "className": "java.lang.Thread",
+        "methodName": "run",
+        "nativeMethod": false
+      }
+    ],
+    "suppressed": []
+  }
+}

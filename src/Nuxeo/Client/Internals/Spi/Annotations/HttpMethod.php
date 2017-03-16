@@ -88,7 +88,7 @@ REGEX;
       if ($set[0][1] > $offset) {
         $url .= substr($route, $offset, $set[0][1] - $offset);
       }
-      if(!empty($params[$set[1][0]])) {
+      if(isset($params[$set[1][0]])) {
         $url .= $params[$set[1][0]];
       } else {
         throw new \InvalidArgumentException(sprintf('No value supplied for "%s"', $set[1][0]));

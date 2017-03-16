@@ -50,6 +50,7 @@ abstract class NuxeoEntity {
   private $nuxeoClient;
 
   /**
+   * @var string
    * @Serializer\SerializedName("repository")
    * @Serializer\Type("string")
    */
@@ -73,6 +74,28 @@ abstract class NuxeoEntity {
     return HttpUri::merge($this->getNuxeoClient()->getApiUrl(), $path);
   }
 
+  protected function getCall() {
+    $backtrace = debug_backtrace();
+    $reflectionClass = new \ReflectionClass($backtrace[2]['class']);
+    $reflectionMethod = $reflectionClass->getMethod($backtrace[2]['function']);
+
+    $params = array();
+    $paramIndex = 0;
+    $paramValues = $backtrace[2]['args'];
+    $paramNames = array_map(function ($parameter) {
+      /** @var \ReflectionParameter $parameter */
+      return array($parameter->name, $parameter->isDefaultValueAvailable()?$parameter->getDefaultValue():null);
+    }, $reflectionMethod->getParameters());
+
+    foreach($paramNames as $param) {
+      list($name, $default) = $param;
+      $params[$name] = isset($paramValues[$paramIndex])?$paramValues[$paramIndex]:$default;
+      $paramIndex++;
+    }
+
+    return array($reflectionMethod, $params);
+  }
+
   /**
    * @param string $type
    * @param string $body
@@ -81,8 +104,9 @@ abstract class NuxeoEntity {
    * @throws NuxeoClientException
    * @throws ClassCastException
    */
-  protected function getResponse($type = null, $body = null, $files = null) {
-    $request = $this->getRequest();
+  protected function getResponse($type = null, $body = null, $files = array()) {
+    list($reflectionMethod, $params) = $this->getCall();
+    $request = $this->getRequest($reflectionMethod, $params);
 
     if(is_array($files)) {
       foreach($files as $file) {
@@ -91,6 +115,9 @@ abstract class NuxeoEntity {
     }
 
     if(null !== $body) {
+      if(!is_string($body)) {
+        $body = $this->nuxeoClient->getConverter()->writeJSON($body);
+      }
       $request->setBody($body);
     }
 
@@ -134,27 +161,10 @@ abstract class NuxeoEntity {
    * @throws NuxeoClientException
    * @return Request
    */
-  protected function getRequest() {
-    $backtrace = debug_backtrace();
-    $reflectionClass = new \ReflectionClass($backtrace[2]['class']);
-    $reflectionMethod = $reflectionClass->getMethod($backtrace[2]['function']);
-
+  protected function getRequest($reflectionMethod, $params) {
     foreach($this->getNuxeoClient()->getAnnotationReader()->getMethodAnnotations($reflectionMethod) as $annotation) {
       if($annotation instanceof HttpMethod) {
         try {
-          $params = array();
-          $paramIndex = 0;
-          $paramValues = $backtrace[2]['args'];
-          $paramNames = array_map(function ($parameter) {
-            /** @var \ReflectionParameter $parameter */
-            return $parameter->name;
-          }, $reflectionMethod->getParameters());
-
-          foreach($paramNames as $name) {
-            $params[$name] = isset($paramValues[$paramIndex])?$paramValues[$paramIndex]:null;
-            $paramIndex++;
-          }
-
           return new Request(
             $annotation->getName(),
             $this->computeRequestUrl($annotation->computePath($params))
@@ -165,8 +175,7 @@ abstract class NuxeoEntity {
       }
     }
     throw new NuxeoClientException(
-      sprintf('No method found for API %s and method name "%s". Check method name and parameters.',
-        $reflectionClass->getName(),
+      sprintf('No method found for method name "%s". Check method name and parameters.',
         $reflectionMethod->getName())
     );
   }
@@ -195,6 +204,13 @@ abstract class NuxeoEntity {
    */
   public function getEntityType() {
     return $this->entityType;
+  }
+
+  /**
+   * @return string
+   */
+  public function getRepositoryName() {
+    return $this->repositoryName;
   }
 
 }
