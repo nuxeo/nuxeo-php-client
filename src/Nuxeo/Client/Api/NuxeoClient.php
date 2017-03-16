@@ -21,6 +21,7 @@ namespace Nuxeo\Client\Api;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\Reader;
+use Guzzle\Common\Exception\GuzzleException;
 use Nuxeo\Client\Api\Auth\BasicAuthentication;
 use Nuxeo\Client\Api\Marshaller;
 use Nuxeo\Client\Api\Objects\Blob\Blob;
@@ -31,7 +32,9 @@ use Nuxeo\Client\Internals\Spi\Auth\AuthenticationInterceptor;
 use Nuxeo\Client\Internals\Spi\Http\Client;
 use Nuxeo\Client\Internals\Spi\Interceptor;
 use Nuxeo\Client\Internals\Spi\NuxeoClientException;
+use Nuxeo\Client\Internals\Spi\NuxeoException;
 use Nuxeo\Client\Internals\Spi\SimpleInterceptor;
+use Nuxeo\Client\Internals\Util\HttpUtils;
 use Zend\Uri\Exception\InvalidUriPartException;
 use Zend\Uri\Http as HttpUri;
 
@@ -202,25 +205,16 @@ class NuxeoClient {
    */
   public function get($url, $query = array()) {
     $request = new Request(Request::GET, $url);
-    $response = null;
 
     try {
       $request->getQuery()->replace($query);
 
       $this->interceptors($request);
 
-      $response = $this->getHttpClient()->send($request);
-
-      if($response->getStatusCode() >= 400) {
-        throw new NuxeoClientException($response->getBody(true));
-      }
-    } catch(\RuntimeException $ex) {
-      throw NuxeoClientException::fromPrevious($ex);
-    } catch(\InvalidArgumentException $e) {
+      return $this->getHttpClient()->send($request);
+    } catch(GuzzleException $e) {
       throw NuxeoClientException::fromPrevious($e);
     }
-
-    return $response;
   }
 
   /**
@@ -242,9 +236,7 @@ class NuxeoClient {
 
       $this->interceptors($request);
       return $this->getHttpClient()->send($request);
-    } catch(\RuntimeException $ex) {
-      throw NuxeoClientException::fromPrevious($ex);
-    } catch(\InvalidArgumentException $e) {
+    } catch(GuzzleException $e) {
       throw NuxeoClientException::fromPrevious($e);
     }
   }
@@ -305,6 +297,7 @@ class NuxeoClient {
     $this->getConverter()->registerMarshaller(Operation\DocRef::className, new Marshaller\DocRefMarshaller($this));
     $this->getConverter()->registerMarshaller(Operation\LogEntries::className, new Marshaller\LogEntriesMarshaller());
     $this->getConverter()->registerMarshaller(Operation\UserGroupList::className, new Marshaller\UserGroupListMarshaller());
+    $this->getConverter()->registerMarshaller(NuxeoException::className, new Marshaller\NuxeoExceptionMarshaller());
     return $this;
   }
 

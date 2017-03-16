@@ -39,6 +39,7 @@ use Metadata\MetadataFactory;
 use Metadata\MetadataFactoryInterface;
 use Nuxeo\Client\Api\Objects\Document;
 use Nuxeo\Client\Api\Objects\Documents;
+use Nuxeo\Client\Internals\Spi\NuxeoClientException;
 use Nuxeo\Client\Internals\Spi\Serializer\JsonSerializationVisitor;
 
 class NuxeoConverter {
@@ -135,6 +136,7 @@ class NuxeoConverter {
    * @param string $data
    * @param string $type
    * @return mixed
+   * @throws NuxeoClientException
    */
   public function readJSON($data, $type = null) {
     $visitor = $this->getDeserializationVisitor();
@@ -159,7 +161,13 @@ class NuxeoConverter {
       }
     }
 
-    return $this->readData($array_data, $type);
+    try {
+      $result = $this->readData($array_data, $type);
+    } catch(\ReflectionException $e) {
+      throw NuxeoClientException::fromPrevious($e);
+    }
+
+    return $result;
   }
 
   /**

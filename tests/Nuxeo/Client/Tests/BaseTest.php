@@ -23,6 +23,8 @@ use Nuxeo\Client\Api\Auth\PortalSSOAuthentication;
 use Nuxeo\Client\Api\Auth\TokenAuthentication;
 use Nuxeo\Client\Api\Constants;
 use Nuxeo\Client\Api\Request;
+use Nuxeo\Client\Internals\Spi\NuxeoClientException;
+use Nuxeo\Client\Internals\Spi\NuxeoException;
 use Nuxeo\Client\Tests\Framework\TestCase;
 use Nuxeo\Client\Tests\Util\ArrayIterator;
 
@@ -89,16 +91,14 @@ class BaseTest extends TestCase {
     $this->assertEquals($auth_token, $request->getHeader(TokenAuthentication::HEADER_TOKEN));
   }
 
-  /**
-   * @expectedException \Nuxeo\Client\Internals\Spi\NuxeoClientException
-   */
   public function testUnauthorized() {
     $client = $this->getClient(self::URL, self::LOGIN, null)
-      ->addResponse($this->createResponse(401, array(), 'Unauthorized'));
+      ->addResponse($this->createResponse(401));
 
-    $client->get('/');
+    $response = $client->get('/');
 
     $this->assertCount(1, $client->getRequests());
+    $this->assertEquals(401, $response->getStatusCode());
   }
 
   public function testRequestAuthenticationToken() {

@@ -19,6 +19,7 @@
 namespace Nuxeo\Client\Internals\Spi\Objects;
 
 
+use Guzzle\Http\Exception\BadResponseException;
 use JMS\Serializer\Annotation as Serializer;
 use Nuxeo\Client\Api\Constants;
 use Nuxeo\Client\Api\NuxeoClient;
@@ -27,6 +28,7 @@ use Nuxeo\Client\Api\Request;
 use Nuxeo\Client\Internals\Spi\Annotations\HttpMethod;
 use Nuxeo\Client\Internals\Spi\ClassCastException;
 use Nuxeo\Client\Internals\Spi\NuxeoClientException;
+use Nuxeo\Client\Internals\Spi\NuxeoException;
 use Nuxeo\Client\Internals\Util\HttpUtils;
 use Zend\Uri\Http as HttpUri;
 use Zend\Uri\Uri;
@@ -92,21 +94,40 @@ abstract class NuxeoEntity {
       $request->setBody($body);
     }
 
-    $response = $this->getNuxeoClient()->perform($request);
+    try {
+      $response = $this->getNuxeoClient()->perform($request);
 
-    if(false === (
-        HttpUtils::isContentType($response, Constants::CONTENT_TYPE_JSON) ||
-        HttpUtils::isContentType($response, Constants::CONTENT_TYPE_JSON_NXENTITY))) {
+      if($response->getBody()->getContentLength() > 0) {
+        if(false === (
+            HttpUtils::isContentType($response, Constants::CONTENT_TYPE_JSON) ||
+            HttpUtils::isContentType($response, Constants::CONTENT_TYPE_JSON_NXENTITY))) {
 
-      if(Blob::className !== $type) {
-        throw new ClassCastException(sprintf('Cannot cast %s as %s', Blob::className, $type));
+          if(Blob::className !== $type) {
+            throw new ClassCastException(sprintf('Cannot cast %s as %s', Blob::className, $type));
+          }
+
+          return Blob::fromHttpResponse($response);
+        }
+        $body = $this->nuxeoClient->getConverter()->readJSON($response->getBody(true), $type);
+
+        return $this->reconnectObject($body, $this->getNuxeoClient());
       }
-
-      return Blob::fromHttpResponse($response);
+    } catch(BadResponseException $e) {
+      $response = $e->getResponse();
+      $responseBody = $response->getBody(true);
+      if(empty($responseBody)) {
+        throw new NuxeoClientException($response->getReasonPhrase(), $response->getStatusCode());
+      } elseif(!HttpUtils::isContentType($response, Constants::CONTENT_TYPE_JSON)) {
+        throw new NuxeoClientException($responseBody, $response->getStatusCode());
+      } else {
+        throw NuxeoClientException::fromPrevious(
+          $this->getNuxeoClient()->getConverter()->readJSON($responseBody, NuxeoException::className),
+          $response->getReasonPhrase(),
+          $response->getStatusCode()
+        );
+      }
     }
-    $body = $this->nuxeoClient->getConverter()->readJSON($response->getBody(true), $type);
-
-    return $this->reconnectObject($body, $this->getNuxeoClient());
+    return null;
   }
 
   /**

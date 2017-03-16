@@ -1,6 +1,6 @@
 <?php
 /**
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2017 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Contributors:
- *     Pierre-Gildas MILLON <pgmillon@nuxeo.com>
  */
 
 namespace Nuxeo\Client\Internals\Spi;
@@ -23,28 +21,44 @@ namespace Nuxeo\Client\Internals\Spi;
 use Exception;
 use JMS\Serializer\Annotation as Serializer;
 
-class NuxeoClientException extends \RuntimeException {
-
-  const INTERNAL_ERROR_STATUS = 666;
+class NuxeoException extends \Exception {
 
   const className = __CLASS__;
 
-  public function __construct($message = '', $code = self::INTERNAL_ERROR_STATUS, Exception $previous = null) {
-    if(null !== $previous && '' === $message) {
-      $message = $previous->getMessage();
-    }
+  protected $type;
 
+  public function __construct($type, $message = "", $code = 0, Exception $previous = null) {
     parent::__construct($message, $code, $previous);
+    $this->type = $type;
   }
 
   /**
-   * @param \Exception $previous
-   * @param string $message
-   * @param int $code
-   * @return NuxeoClientException
+   * @param $trace
+   * @return $this
    */
-  public static function fromPrevious($previous, $message='', $code=self::INTERNAL_ERROR_STATUS) {
-    return new static($message, $code, $previous);
+  public function setTrace($trace) {
+    $property = new \ReflectionProperty('Exception', 'trace');
+    $property->setAccessible(true);
+    $property->setValue($this, $trace);
+    return $this;
+  }
+
+  /**
+   * @param string $file
+   * @param string $line
+   * @return $this
+   */
+  public function setLocation($file, $line) {
+    $this->file = $file;
+    $this->line = $line;
+    return $this;
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getType() {
+    return $this->type;
   }
 
 }
