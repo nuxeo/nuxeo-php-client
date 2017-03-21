@@ -35,6 +35,9 @@
     "psr-4": { "Nuxeo\\": "src/Nuxeo" }
   },
   "autoload-dev" : {
-    "psr-4": { "Nuxeo\\Client\\Tests\\" : "tests/Nuxeo/Client/Tests" }
+    "psr-4": {
+      "Nuxeo\\Client\\Tests\\" : "tests/Nuxeo/Client/Tests",
+      "Nuxeo\\Client\\FTests\\" : "ftests/src/test/php/Nuxeo/Client/FTests"
+    }
   }
 }

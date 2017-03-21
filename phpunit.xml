@@ -13,15 +13,13 @@
   ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
-  ~
-  ~ Contributors:
-  ~     Pierre-Gildas MILLON <pgmillon@nuxeo.com>
   -->
 <phpunit bootstrap="vendor/autoload.php"
          verbose="true">
   <testsuites>
     <testsuite name="nuxeo-automation-php-client-suite">
       <directory suffix="Test.php">tests/Nuxeo/Client/Tests</directory>
+      <directory suffix="Test.php">ftests/src/test/php/Nuxeo/Client/FTests</directory>
     </testsuite>
   </testsuites>
 
