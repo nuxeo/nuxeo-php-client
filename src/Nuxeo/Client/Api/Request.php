@@ -20,8 +20,10 @@ namespace Nuxeo\Client\Api;
 
 
 use Guzzle\Http\Message\EntityEnclosingRequest as BaseRequest;
+use Guzzle\Http\Message\Response as BaseResponse;
 use Guzzle\Http\QueryString;
 use Guzzle\Http\Url;
+use Nuxeo\Client\Internals\Spi\Http\Message\HeaderFactory;
 use Nuxeo\Client\Internals\Spi\Http\Message\MultipartRelatedIterator;
 use Nuxeo\Client\Internals\Spi\Http\Message\RelatedFile;
 use Nuxeo\Client\Internals\Spi\Http\Message\RelatedString;
@@ -70,6 +72,12 @@ class Request extends BaseRequest {
 
   public function addRelatedFile($filename, $contentType = null) {
     $this->relatedParts[] = new RelatedFile($filename, $contentType);
+  }
+
+  public function startResponse(BaseResponse $response) {
+    $response->setHeaderFactory(new HeaderFactory());
+
+    return parent::startResponse($response);
   }
 
   public function setBody($body, $contentType = null) {

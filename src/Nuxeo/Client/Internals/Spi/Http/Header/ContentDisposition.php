@@ -21,11 +21,15 @@
 namespace Nuxeo\Client\Internals\Spi\Http\Header;
 
 
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Guzzle\Http\Message\Header;
 
-class ContentDisposition extends \Zend\Http\Header\ContentDisposition {
+class ContentDisposition extends Header {
 
   const className = __CLASS__;
+
+  const DISPOSITION_ATTACHMENT = 'attachment';
+
+  const DISPOSITION_INLINE = 'inline';
 
   /**
    * @var string
@@ -37,37 +41,62 @@ class ContentDisposition extends \Zend\Http\Header\ContentDisposition {
    */
   protected $filename;
 
-  public function __construct($value) {
-    $value = urldecode($value);
+  public function __construct($header, $values) {
+    parent::__construct($header, $values);
 
-    foreach(explode(';', $value) as $part) {
-      $part = trim($part);
+    array_walk($this->values, function(&$value) {
+      $disposition = null;
+      $filename = null;
 
-      if(in_array($part, array(ResponseHeaderBag::DISPOSITION_ATTACHMENT, ResponseHeaderBag::DISPOSITION_INLINE), true)) {
-        $this->disposition = $part;
-      } elseif(preg_match('/^filename\*?=/', $part)) {
-        list(, $filename) = explode('=', $part);
+      foreach(explode(';', $value) as $part) {
+        $part = trim($part);
 
-        if(preg_match('/^[^\']+\'\'/', $filename)) {
-          list(, $filename) = explode('\'\'', $filename);
+        if(in_array($part, array(ContentDisposition::DISPOSITION_ATTACHMENT, ContentDisposition::DISPOSITION_INLINE), true)) {
+          $disposition = $part;
+        } elseif(preg_match('/^filename\*?=/', $part)) {
+          list(, $filename) = explode('=', $part);
+
+          if(preg_match('/^[^\']+\'\'/', $filename)) {
+            list(, $filename) = explode('\'\'', $filename);
+          }
         }
-        $this->filename = $filename;
       }
+
+      $value = array(
+        'disposition' => $disposition,
+        'filename' => $filename
+      );
+    });
+  }
+
+  /**
+   * @param int $index
+   * @return string
+   * @throws \OutOfRangeException
+   */
+  public function getDisposition($index = 0) {
+    if($index > count($this->values)) {
+      throw new \OutOfRangeException();
     }
+    return $this->values[$index]['disposition'];
   }
 
   /**
+   * @param int $index
    * @return string
+   * @throws \OutOfRangeException
    */
-  public function getDisposition() {
-    return $this->disposition;
+  public function getFilename($index = 0) {
+    if($index > count($this->values)) {
+      throw new \OutOfRangeException();
+    }
+    return $this->values[$index]['filename'];
   }
 
-  /**
-   * @return string
-   */
-  public function getFilename() {
-    return $this->filename;
+  public function __toString() {
+    return implode($this->glue, array_map(function($item) {
+      return "${item['disposition']}; filename=${item['filename']}";
+    }, $this->values));
   }
 
 }

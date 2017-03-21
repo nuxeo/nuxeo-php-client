@@ -72,7 +72,8 @@ class Client extends BaseClient {
       if(empty($this->responses)) {
         $responses[] = new Response(500);
       } else {
-        $responses[] = array_shift($this->responses);
+        $responses[] = $response = array_shift($this->responses);
+        $request->startResponse($response);
       }
     }
     return $responses;

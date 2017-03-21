@@ -21,6 +21,7 @@ namespace Nuxeo\Client\Tests\Framework;
 
 use Nuxeo\Client\Api\Constants;
 use Nuxeo\Client\Api\Response;
+use Nuxeo\Client\Internals\Spi\Http\Message\HeaderFactory;
 use Nuxeo\Client\Tests\Client;
 use Zend\Uri\Uri;
 
@@ -75,8 +76,10 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase {
    */
   protected function createResponse($code = 200, $headers = array(), $body = '') {
     $response = new Response($code);
-    $response->addHeaders($headers);
-    $response->setBody($body);
+    $response
+      ->setBody($body)
+      ->setHeaderFactory(new HeaderFactory())
+      ->addHeaders($headers);
 
     return $response;
   }

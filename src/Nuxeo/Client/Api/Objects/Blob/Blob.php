@@ -79,12 +79,13 @@ class Blob extends NuxeoEntity {
    * @return Blob
    */
   public static function fromHttpResponse($response) {
-    $disposition = new ContentDisposition($response->getContentDisposition());
+    /** @var ContentDisposition $disposition */
+    $disposition = $response->getHeader('Content-Disposition');
 
     return new Blob(
       $disposition->getFilename(),
       IOUtils::copyToTempFile($response->getBody()->getStream()),
-      $response->getBody()->getContentType());
+      $response->getContentType());
   }
 
   /**
