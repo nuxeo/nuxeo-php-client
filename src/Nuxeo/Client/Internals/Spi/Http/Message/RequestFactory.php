@@ -27,6 +27,7 @@ class RequestFactory extends BaseRequestFactory {
     parent::__construct();
 
     $this->entityEnclosingRequestClass = Request::className;
+    $this->requestClass = Request::className;
   }
 
 }

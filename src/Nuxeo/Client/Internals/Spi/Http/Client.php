@@ -37,7 +37,8 @@ class Client extends BaseClient {
       parent::__construct($baseUrl, $config);
 
       $this->setRequestFactory(new RequestFactory());
-      $this->setDefaultOption('headers/content-type', Constants::CONTENT_TYPE_JSON_NXENTITY);
+      $this->setDefaultOption('headers/content-type', Constants::CONTENT_TYPE_JSON);
+      $this->setDefaultOption('headers/accept', Constants::CONTENT_TYPE_JSON);
     } catch(\RuntimeException $e) {
       throw NuxeoClientException::fromPrevious($e);
     }

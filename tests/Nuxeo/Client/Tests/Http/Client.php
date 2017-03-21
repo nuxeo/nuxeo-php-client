@@ -19,6 +19,7 @@
 namespace Nuxeo\Client\Tests\Http;
 
 
+use Guzzle\Http\Exception\BadResponseException;
 use Nuxeo\Client\Api\Response;
 use Nuxeo\Client\Internals\Spi\Http\Client as BaseClient;
 
@@ -71,8 +72,13 @@ class Client extends BaseClient {
 
       if(empty($this->responses)) {
         $responses[] = new Response(500);
+        throw BadResponseException::factory($request, new Response(500));
       } else {
+        /** @var Response $response */
         $responses[] = $response = array_shift($this->responses);
+        if(!$response->isSuccessful()) {
+          throw BadResponseException::factory($request, $response);
+        }
         $request->startResponse($response);
       }
     }

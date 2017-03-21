@@ -166,7 +166,7 @@ abstract class NuxeoEntity {
     foreach($this->getNuxeoClient()->getAnnotationReader()->getMethodAnnotations($reflectionMethod) as $annotation) {
       if($annotation instanceof HttpMethod) {
         try {
-          $request = new Request(
+          $request = $this->getNuxeoClient()->createRequest(
             $annotation->getName(),
             $this->computeRequestUrl($annotation->computePath($params))
           );

@@ -19,6 +19,7 @@
 namespace Nuxeo\Client\Tests;
 
 
+use Guzzle\Http\Exception\ClientErrorResponseException;
 use Nuxeo\Client\Api\Auth\PortalSSOAuthentication;
 use Nuxeo\Client\Api\Auth\TokenAuthentication;
 use Nuxeo\Client\Api\Constants;
@@ -91,14 +92,22 @@ class BaseTest extends TestCase {
     $this->assertEquals($auth_token, $request->getHeader(TokenAuthentication::HEADER_TOKEN));
   }
 
+  /**
+   * @expectedException \Nuxeo\Client\Internals\Spi\NuxeoClientException
+   */
   public function testUnauthorized() {
     $client = $this->getClient(self::URL, self::LOGIN, null)
       ->addResponse($this->createResponse(401));
 
-    $response = $client->get('/');
-
-    $this->assertCount(1, $client->getRequests());
-    $this->assertEquals(401, $response->getStatusCode());
+    try {
+      $response = $client->get('/');
+    } catch(NuxeoClientException $e) {
+      /** @var ClientErrorResponseException $previous */
+      $this->assertInstanceOf('\Guzzle\Http\Exception\ClientErrorResponseException', $previous = $e->getPrevious());
+      $this->assertEquals(401, $previous->getResponse()->getStatusCode());
+      throw $e;
+    }
+    $this->fail('Should be unauthorized');
   }
 
   public function testRequestAuthenticationToken() {
