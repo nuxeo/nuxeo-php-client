@@ -40,6 +40,8 @@ class Repository extends NuxeoEntity {
     parent::__construct(Constants::ENTITY_TYPE_DOCUMENT, $nuxeoClient);
   }
 
+  //region Documents
+
   /**
    * @GET("path")
    * @param $repositoryName
@@ -56,86 +58,81 @@ class Repository extends NuxeoEntity {
   }
 
   /**
-   * @GET("repo/{repositoryName}/path")
-   * @param $repositoryName
-   * @param string $type
-   * @return mixed
-   * @throws NuxeoClientException
-   * @throws ClassCastException
-   */
-  protected function fetchDocumentRootWithRepositoryName($repositoryName, $type = null) {
-    return $this->getResponse($type);
-  }
-
-  /**
-   * @GET("path{docPath}")
-   * @param string $docPath
-   * @param string $repositoryName
-   * @param string $type
-   * @return mixed
-   * @throws NuxeoClientException
-   * @throws ClassCastException
-   */
-  public function fetchDocumentByPath($docPath, $repositoryName = null, $type = null) {
-    if(null !== $repositoryName) {
-      return $this->fetchDocumentByPathWithRepositoryName($docPath, $repositoryName, $type);
-    }
-    return $this->getResponse($type);
-  }
-
-  /**
-   * @GET("repo/{repositoryName}/path{docPath}")
-   * @param string $docPath
-   * @param $repositoryName
-   * @param null $type
-   * @return mixed
-   * @throws NuxeoClientException
-   * @throws ClassCastException
-   */
-  public function fetchDocumentByPathWithRepositoryName($docPath, $repositoryName, $type = null) {
-    return $this->getResponse($type);
-  }
-
-  /**
-   * @GET("id/{docId}")
-   * @param string $docId
-   * @param string $repositoryName
-   * @param string $type
-   * @return mixed
-   * @throws NuxeoClientException
-   * @throws ClassCastException
-   */
-  public function fetchDocumentById($docId, $repositoryName = null, $type = null) {
-    if(null !== $repositoryName) {
-      return $this->fetchDocumentByIdWithRepositoryName($docId, $repositoryName, $type);
-    }
-    return $this->getResponse($type);
-  }
-
-  /**
-   * @GET("repo/{repositoryName}/id/{docId}")
-   * @param string $docId
-   * @param $repositoryName
-   * @param string $type
-   * @return mixed
-   * @throws NuxeoClientException
-   * @throws ClassCastException
-   */
-  public function fetchDocumentByIdWithRepositoryName($docId, $repositoryName, $type = null) {
-    return $this->getResponse($type);
-  }
-
-  /**
    * @POST("path{parentPath}")
    * @param string $parentPath
    * @param Document $document
+   * @param string $repositoryName
    * @param string $type
    * @return mixed
    * @throws NuxeoClientException
    * @throws ClassCastException
    */
-  public function createDocumentByPath($parentPath, $document, $type = null) {
+  public function createDocumentByPath($parentPath, $document, $repositoryName = null, $type = null) {
+    if(null !== $repositoryName) {
+      return $this->createDocumentByPathWithRepositoryName($parentPath, $repositoryName, $document, $type);
+    }
     return $this->getResponse($type, $document);
+  }
+
+  /**
+   * @POST("id/{parentId}")
+   * @param string $parentId
+   * @param Document $document
+   * @param string $repositoryName
+   * @param string $type
+   * @return mixed
+   * @throws NuxeoClientException
+   * @throws ClassCastException
+   */
+  public function createDocumentById($parentId, $document, $repositoryName = null, $type = null) {
+    if(null !== $repositoryName) {
+      return $this->createDocumentByIdWithRepositoryName($parentId, $repositoryName, $document, $type);
+    }
+    return $this->getResponse($type, $document);
+  }
+
+  /**
+   * @GET("path{documentPath}")
+   * @param string $documentPath
+   * @param string $repositoryName
+   * @param string $type
+   * @return mixed
+   * @throws NuxeoClientException
+   * @throws ClassCastException
+   */
+  public function fetchDocumentByPath($documentPath, $repositoryName = null, $type = null) {
+    if(null !== $repositoryName) {
+      return $this->fetchDocumentByPathWithRepositoryName($documentPath, $repositoryName, $type);
+    }
+    return $this->getResponse($type);
+  }
+
+  /**
+   * @GET("id/{documentId}")
+   * @param string $documentId
+   * @param string $repositoryName
+   * @param string $type
+   * @return mixed
+   * @throws NuxeoClientException
+   * @throws ClassCastException
+   */
+  public function fetchDocumentById($documentId, $repositoryName = null, $type = null) {
+    if(null !== $repositoryName) {
+      return $this->fetchDocumentByIdWithRepositoryName($documentId, $repositoryName, $type);
+    }
+    return $this->getResponse($type);
+  }
+
+  /**
+   * @param Document $document
+   * @param string $repositoryName
+   * @param string $type
+   * @return mixed
+   * @throws NuxeoClientException
+   * @throws ClassCastException
+   */
+  public function updateDocument($document, $repositoryName = null, $type = null) {
+    return $this->updateDocumentById($document->getUid(), $document, $repositoryName, $type);
   }
 
   /**
@@ -152,27 +149,30 @@ class Repository extends NuxeoEntity {
   }
 
   /**
-   * @PUT("id/{docId}")
-   * @param $docId
-   * @param $document
+   * @PUT("id/{documentId}")
+   * @param string $documentId
+   * @param Document $document
+   * @param string $repositoryName
    * @param string $type
    * @return mixed
    * @throws NuxeoClientException
    * @throws ClassCastException
    */
-  public function updateDocumentById($docId, $document, $type = null) {
+  public function updateDocumentById($documentId, $document, $repositoryName = null, $type = null) {
+    if(null !== $repositoryName) {
+      return $this->updateDocumentByIdWithRepositoryName($documentId, $repositoryName, $document, $type);
+    }
     return $this->getResponse($type, $document);
   }
 
   /**
    * @param Document $document
-   * @param string $type
-   * @return mixed
+   * @param string $repositoryName
    * @throws NuxeoClientException
    * @throws ClassCastException
    */
-  public function updateDocument($document, $type = null) {
-    return $this->updateDocumentById($document->getUid(), $document, $type);
+  public function deleteDocument($document, $repositoryName = null) {
+    $this->deleteDocumentById($document->getUid(), $repositoryName);
   }
 
   /**
@@ -186,24 +186,117 @@ class Repository extends NuxeoEntity {
   }
 
   /**
-   * @DELETE("id/{docId}")
-   * @param string $docId
+   * @DELETE("id/{documentId}")
+   * @param string $documentId
+   * @param string $repositoryName
    * @throws NuxeoClientException
    * @throws ClassCastException
    */
-  public function deleteDocumentById($docId) {
+  public function deleteDocumentById($documentId, $repositoryName = null) {
+    if(null !== $repositoryName) {
+      $this->deleteDocumentByIdWithRepositoryName($documentId, $repositoryName);
+    }
     $this->getResponse();
   }
 
+  //endregion
+
+  //region Documents with Repository filter
+
   /**
-   * @param Document $document
+   * @GET("repo/{repositoryName}/path")
+   * @param $repositoryName
+   * @param string $type
+   * @return mixed
    * @throws NuxeoClientException
    * @throws ClassCastException
    */
-  public function deleteDocument($document) {
-    $this->deleteDocumentById($document->getUid());
+  protected function fetchDocumentRootWithRepositoryName($repositoryName, $type = null) {
+    return $this->getResponse($type);
   }
 
+  /**
+   * @GET("repo/{repositoryName}/path{documentPath}")
+   * @param string $documentPath
+   * @param $repositoryName
+   * @param null $type
+   * @return mixed
+   * @throws NuxeoClientException
+   * @throws ClassCastException
+   */
+  protected function fetchDocumentByPathWithRepositoryName($documentPath, $repositoryName, $type = null) {
+    return $this->getResponse($type);
+  }
+
+  /**
+   * @GET("repo/{repositoryName}/id/{documentId}")
+   * @param string $documentId
+   * @param $repositoryName
+   * @param string $type
+   * @return mixed
+   * @throws NuxeoClientException
+   * @throws ClassCastException
+   */
+  protected function fetchDocumentByIdWithRepositoryName($documentId, $repositoryName, $type = null) {
+    return $this->getResponse($type);
+  }
+
+  /**
+   * @POST("repo/{repositoryName}/id/{parentId}")
+   * @param string $parentId
+   * @param string $repositoryName
+   * @param Document $document
+   * @param string $type
+   * @return mixed
+   * @throws NuxeoClientException
+   * @throws ClassCastException
+   */
+  protected function createDocumentByIdWithRepositoryName($parentId, $repositoryName, $document, $type = null) {
+    return $this->getResponse($type, $document);
+  }
+
+  /**
+   * @POST("repo/{repositoryName}/path{parentPath}")
+   * @param string $parentPath
+   * @param string $repositoryName
+   * @param Document $document
+   * @param string $type
+   * @return mixed
+   * @throws NuxeoClientException
+   * @throws ClassCastException
+   */
+  protected function createDocumentByPathWithRepositoryName($parentPath, $repositoryName, $document, $type = null) {
+    return $this->getResponse($type, $document);
+  }
+
+  /**
+   * @PUT("repo/{repositoryName}id/{documentId}")
+   * @param string $documentId
+   * @param string $repositoryName
+   * @param Document $document
+   * @param string $type
+   * @return mixed
+   * @throws NuxeoClientException
+   * @throws ClassCastException
+   */
+  protected function updateDocumentByIdWithRepositoryName($documentId, $repositoryName, $document, $type = null) {
+    return $this->getResponse($type, $document);
+  }
+
+  /**
+   * @DELETE("repo/{repositoryName}/id/{documentId}")
+   * @param string $documentId
+   * @param string $repositoryName
+   * @throws NuxeoClientException
+   * @throws ClassCastException
+   */
+  protected function deleteDocumentByIdWithRepositoryName($documentId, $repositoryName) {
+    $this->getResponse();
+  }
+
+  //endregion
+
+  //region Query
   /**
    * @GET("query?query={query}&pageSize={pageSize}&currentPageIndex={currentPageIndex}&maxResults={maxResults}&sortBy={sortBy}&sortOrder={sortOrder}&queryParams={queryParams}")
    * @param string $query

@@ -45,76 +45,64 @@ class RepositoryTest extends TestCase {
 
   public function testFetchDocumentRoot() {
     $client = $this->getClient()
+      ->addResponse($this->createJsonResponseFromFile('documentRoot.json'))
       ->addResponse($this->createJsonResponseFromFile('documentRoot.json'));
+
+    $repositoryName = self::DOC_REPOSITORY;
 
     /** @var Objects\Document $document */
     $document = $client->repository()->fetchDocumentRoot();
 
     $this->assertFetched($client, 'path', $document, 'Root', 'document');
     $this->assertEquals('/', $document->getPath());
-  }
-
-  public function testFetchDocumentRootWithRepositoryName() {
-    $client = $this->getClient()
-      ->addResponse($this->createJsonResponseFromFile('documentRoot.json'));
-
-    $repositoryName = self::DOC_REPOSITORY;
 
     /** @var Objects\Document $document */
     $document = $client->repository()->fetchDocumentRoot(self::DOC_REPOSITORY);
 
-    $this->assertFetched($client, "repo/${repositoryName}/path", $document, 'Root', 'document');
+    $this->assertFetched($client, "repo/${repositoryName}/path", $document, 'Root', 'document', 1);
     $this->assertEquals($repositoryName, $document->getRepositoryName());
     $this->assertEquals('/', $document->getPath());
   }
 
   public function testFetchDocumentByPath() {
     $client = $this->getClient()
+      ->addResponse($this->createJsonResponseFromFile('document.json'))
       ->addResponse($this->createJsonResponseFromFile('document.json'));
+
+    $repositoryName = self::DOC_REPOSITORY;
 
     /** @var Objects\Document $document */
     $document = $client->repository()->fetchDocumentByPath(self::DOC_PATH);
 
     $this->assertFetched($client, 'path'.self::DOC_PATH, $document, self::DOC_TYPE, 'document');
     $this->assertEquals(self::DOC_PATH, $document->getPath());
-  }
-
-  public function testFetchDocumentByPathWithRepositoryName() {
-    $client = $this->getClient()
-      ->addResponse($this->createJsonResponseFromFile('document.json'));
-
-    $repositoryName = self::DOC_REPOSITORY;
 
     /** @var Objects\Document $document */
-    $document = $client->repository()->fetchDocumentByPathWithRepositoryName(self::DOC_PATH, self::DOC_REPOSITORY);
+    $document = $client->repository()->fetchDocumentByPath(self::DOC_PATH, self::DOC_REPOSITORY);
 
-    $this->assertFetched($client, "repo/${repositoryName}/path".self::DOC_PATH, $document, self::DOC_TYPE, 'document');
+    $this->assertFetched($client, "repo/${repositoryName}/path".self::DOC_PATH, $document, self::DOC_TYPE, 'document', 1);
     $this->assertEquals($repositoryName, $document->getRepositoryName());
     $this->assertEquals(self::DOC_PATH, $document->getPath());
   }
 
-  public function testFetchDocumentById() {
+  public function testFetchDocument() {
     $client = $this->getClient()
-      ->addResponse($this->createJsonResponseFromFile('document.json'));
-
-    /** @var Objects\Document $document */
-    $document = $client->repository()->fetchDocumentById(self::DOC_UID);
-
-    $this->assertFetched($client, 'id/'.self::DOC_UID, $document, 'Note', 'document');
-    $this->assertEquals(self::DOC_UID, $document->getUid());
-  }
-
-  public function testFetchDocumentByIdWithRepositoryName() {
-    $client = $this->getClient()
+      ->addResponse($this->createJsonResponseFromFile('document.json'))
       ->addResponse($this->createJsonResponseFromFile('document.json'));
 
     $uid = self::DOC_UID;
     $repositoryName = self::DOC_REPOSITORY;
 
     /** @var Objects\Document $document */
-    $document = $client->repository()->fetchDocumentByIdWithRepositoryName($uid, 'default');
+    $document = $client->repository()->fetchDocumentById(self::DOC_UID);
 
-    $this->assertFetched($client, "repo/${repositoryName}/id/".$uid, $document, 'Note', 'document');
+    $this->assertFetched($client, 'id/'.self::DOC_UID, $document, 'Note', 'document');
+    $this->assertEquals(self::DOC_UID, $document->getUid());
+
+    /** @var Objects\Document $document */
+    $document = $client->repository()->fetchDocumentById($uid, 'default');
+
+    $this->assertFetched($client, "repo/${repositoryName}/id/".$uid, $document, 'Note', 'document', 1);
     $this->assertEquals($repositoryName, $document->getRepositoryName());
     $this->assertEquals($uid, $document->getUid());
   }
