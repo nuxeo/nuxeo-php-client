@@ -20,6 +20,7 @@ namespace Nuxeo\Client\Internals\Spi\Objects;
 
 
 use Guzzle\Http\Exception\BadResponseException;
+use Guzzle\Plugin\Log\LogPlugin;
 use JMS\Serializer\Annotation as Serializer;
 use Nuxeo\Client\Api\Constants;
 use Nuxeo\Client\Api\NuxeoClient;
@@ -165,10 +166,14 @@ abstract class NuxeoEntity {
     foreach($this->getNuxeoClient()->getAnnotationReader()->getMethodAnnotations($reflectionMethod) as $annotation) {
       if($annotation instanceof HttpMethod) {
         try {
-          return new Request(
+          $request = new Request(
             $annotation->getName(),
             $this->computeRequestUrl($annotation->computePath($params))
           );
+          if($this->getNuxeoClient()->isDebug()) {
+            $request->addSubscriber(LogPlugin::getDebugPlugin(true, $this->getNuxeoClient()->getDebugStream()));
+          }
+          return $request;
         } catch(\InvalidArgumentException $e) {
           throw NuxeoClientException::fromPrevious($e);
         }

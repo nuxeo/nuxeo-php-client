@@ -22,6 +22,7 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\Reader;
 use Guzzle\Common\Exception\GuzzleException;
+use Guzzle\Plugin\Log\LogPlugin;
 use Nuxeo\Client\Api\Auth\BasicAuthentication;
 use Nuxeo\Client\Api\Marshaller;
 use Nuxeo\Client\Api\Objects\Blob\Blob;
@@ -70,6 +71,16 @@ class NuxeoClient {
    * @var Reader
    */
   private $annotationReader;
+
+  /**
+   * @var bool
+   */
+  private $debug = false;
+
+  /**
+   * @var resource
+   */
+  private $debugStream;
 
   /**
    * @param string $url
@@ -145,11 +156,11 @@ class NuxeoClient {
   /**
    * @param string $outputFile
    * @return NuxeoClient
+   * @throws NuxeoClientException
    */
   public function debug($outputFile = null) {
-    //TODO: Fixme
-//    $stream = $outputFile ? fopen($outputFile, 'w+b') : null;
-//    $this->httpClient->addSubscriber(LogPlugin::getDebugPlugin(true, $stream));
+    $this->debugStream = $outputFile ? fopen($outputFile, 'w+b') : null;
+    $this->debug = true;
     return $this;
   }
 
@@ -332,6 +343,29 @@ class NuxeoClient {
       $this->annotationReader = new AnnotationReader();
     }
     return $this->annotationReader;
+  }
+
+  /**
+   * @return bool
+   */
+  public function isDebug() {
+    return $this->debug;
+  }
+
+  /**
+   * @return resource
+   */
+  public function getDebugStream() {
+    return $this->debugStream;
+  }
+
+  /**
+   * @param string $method
+   * @param string $url
+   * @return Request
+   */
+  public function createRequest($method, $url) {
+    return $this->getHttpClient()->createRequest($method, $url);
   }
 
 }
