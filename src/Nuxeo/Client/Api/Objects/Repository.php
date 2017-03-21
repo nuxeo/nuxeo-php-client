@@ -21,6 +21,7 @@ namespace Nuxeo\Client\Api\Objects;
 
 use JMS\Serializer\Annotation as Serializer;
 use Nuxeo\Client\Api\Constants;
+use Nuxeo\Client\Api\Objects\Blob\Blob;
 use Nuxeo\Client\Internals\Spi\Annotations\DELETE;
 use Nuxeo\Client\Internals\Spi\Annotations\GET;
 use Nuxeo\Client\Internals\Spi\Annotations\POST;
@@ -313,5 +314,38 @@ class Repository extends NuxeoEntity {
   public function query($query, $pageSize = 0, $currentPageIndex = 0, $maxResults = 200, $sortBy = '', $sortOrder = '', $queryParams = '') {
     return $this->getResponse();
   }
+
+  //endregion
+
+  //region Children
+
+  /**
+   * @GET("id/{parentId}/@children")
+   * @param $parentId
+   * @return Documents
+   * @throws NuxeoClientException
+   * @throws ClassCastException
+   */
+  public function fetchChildrenById($parentId) {
+    return $this->getResponse(Documents::className);
+  }
+
+  //endregion
+
+  //region Blobs
+
+  /**
+   * @GET("id/{documentId}/@blob/{fieldPath}")
+   * @param $documentId
+   * @param $fieldPath
+   * @return Blob
+   * @throws NuxeoClientException
+   * @throws ClassCastException
+   */
+  public function fetchBlobById($documentId, $fieldPath) {
+    return $this->getResponse(Blob::className);
+  }
+
+  //endregion
 
 }

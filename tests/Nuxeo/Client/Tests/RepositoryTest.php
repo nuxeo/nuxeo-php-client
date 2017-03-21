@@ -256,4 +256,36 @@ class RepositoryTest extends TestCase {
     $this->fail('Should be Internal Server Error');
   }
 
+  public function testDocumentFetchBlob() {
+    $content = file_get_contents($this->getResource(self::IMG_FS_PATH));
+
+    $client = $this->getClient(self::URL, self::LOGIN, null)
+      ->addResponse($this->createResponse(
+        200,
+        array(
+          'Content-Type' => self::IMG_MIME,
+          'Content-Disposition' => 'attachment; filename*=UTF-8\'\''.self::IMG_FS_PATH
+        ),
+        $content
+      ));
+
+    $blob = Objects\Document::create($client)
+      ->setUid(self::DOC_UID)
+      ->fetchBlob();
+
+    $this->assertEquals(self::IMG_FS_PATH, $blob->getFilename());
+    $this->assertEquals(self::IMG_MIME, $blob->getMimeType());
+    $this->assertEquals(md5_file($this->getResource(self::IMG_FS_PATH)), md5_file($blob->getFile()->getRealPath()));
+  }
+
+  public function testDocumentFetchChildren() {
+    $client = $this->getClient(self::URL, self::LOGIN, null)
+      ->addResponse($this->createJsonResponseFromFile('document-list.json'));
+
+    $parent = Objects\Document::create($client)
+      ->setUid(self::DOC_UID);
+    $children = $parent->fetchChildren();
+    $this->assertEquals(5, $children->size());
+  }
+
 }

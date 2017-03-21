@@ -23,6 +23,8 @@ namespace Nuxeo\Client\Api\Objects;
 
 use JMS\Serializer\Annotation as Serializer;
 use Nuxeo\Client\Api\Constants;
+use Nuxeo\Client\Internals\Spi\ClassCastException;
+use Nuxeo\Client\Internals\Spi\NuxeoClientException;
 use Nuxeo\Client\Internals\Spi\Objects\NuxeoEntity;
 
 class Document extends NuxeoEntity {
@@ -152,6 +154,32 @@ class Document extends NuxeoEntity {
   public function setProperty($name, $value) {
     $this->properties[$name] = $value;
     return $this;
+  }
+
+  /**
+   * @return Blob\Blob
+   * @throws NuxeoClientException
+   * @throws ClassCastException
+   */
+  public function fetchBlob() {
+    if($this->getNuxeoClient()) {
+      return $this->getNuxeoClient()->repository()->fetchBlobById($this->getUid(), Constants::DEFAULT_FILE_CONTENT);
+    } else {
+      throw new NuxeoClientException('You should pass to your Nuxeo object the client instance');
+    }
+  }
+
+  /**
+   * @return Documents
+   * @throws NuxeoClientException
+   * @throws ClassCastException
+   */
+  public function fetchChildren() {
+    if($this->getNuxeoClient()) {
+      return $this->getNuxeoClient()->repository()->fetchChildrenById($this->getUid());
+    } else {
+      throw new NuxeoClientException('You should pass to your Nuxeo object the client instance');
+    }
   }
 
   /**
