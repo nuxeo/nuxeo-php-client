@@ -116,6 +116,12 @@ class Document extends NuxeoEntity {
   private $facets;
 
   /**
+   * @var string
+   * @Serializer\Type("string")
+   */
+  private $name;
+
+  /**
    * Document constructor.
    */
   public function __construct($nuxeoClient = null) {
@@ -387,6 +393,22 @@ class Document extends NuxeoEntity {
    */
   public function setFacets($facets) {
     $this->facets = $facets;
+    return $this;
+  }
+
+  /**
+   * @return string
+   */
+  public function getName() {
+    return $this->name;
+  }
+
+  /**
+   * @param string $name
+   * @return self
+   */
+  public function setName($name) {
+    $this->name = $name;
     return $this;
   }
 
