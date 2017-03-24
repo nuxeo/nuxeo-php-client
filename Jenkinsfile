@@ -27,12 +27,13 @@ node('SLAVE') {
                 stage 'build'
                 sh 'rm -rf vendor && composer install'
                 stage 'tests'
-                sh 'php vendor/bin/phpunit'
+                sh 'php vendor/bin/phpunit --exclude-group server'
                 stage 'dependencies vulnerability check'
                 sh 'php vendor/bin/security-checker security:check'
             }
         }
     } catch (e) {
+        currentBuild.result = "FAILURE"
         step([$class: 'ClaimPublisher'])
         throw e
     }
