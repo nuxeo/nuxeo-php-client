@@ -18,7 +18,7 @@
 
 namespace Nuxeo\Client\FTests\Framework;
 
-use Nuxeo\Client\Api\NuxeoClient;
+use Nuxeo\Client\NuxeoClient;
 use Nuxeo\Client\Tests\Framework\TestCase as BaseCase;
 
 class TestCase extends BaseCase {

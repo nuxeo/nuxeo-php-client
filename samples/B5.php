@@ -20,17 +20,17 @@
 
 require_once '../vendor/autoload.php';
 
-$client = new \Nuxeo\Client\Api\NuxeoClient('http://nuxeo:8080/nuxeo', 'Administrator', 'Administrator');
+$client = new \Nuxeo\Client\NuxeoClient('http://nuxeo:8080/nuxeo', 'Administrator', 'Administrator');
 
 if(!empty($_POST['path'])) {
     $path = $_POST['path'];
 
     try {
-        /** @var \Nuxeo\Client\Api\Objects\Blob\Blob $blob */
+        /** @var \Nuxeo\Client\Objects\Blob\Blob $blob */
         $blob = $client
           ->automation('Blob.Get')
           ->input('doc:' . $path)
-          ->execute(\Nuxeo\Client\Api\Objects\Blob\Blob::className);
+          ->execute(\Nuxeo\Client\Objects\Blob\Blob::className);
 
         $response = new \Symfony\Component\HttpFoundation\BinaryFileResponse($blob->getFile());
         $response->setContentDisposition(
@@ -39,7 +39,7 @@ if(!empty($_POST['path'])) {
         );
 
         $response->prepare(\Symfony\Component\HttpFoundation\Request::createFromGlobals())->send();
-    } catch(\Nuxeo\Client\Internals\Spi\NuxeoClientException $ex) {
+    } catch(\Nuxeo\Client\Spi\NuxeoClientException $ex) {
         throw new RuntimeException(sprintf('Could not fetch blob of %s: ', $path) . $ex->getMessage());
     }
 }

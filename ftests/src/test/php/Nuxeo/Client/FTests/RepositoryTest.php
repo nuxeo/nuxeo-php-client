@@ -19,8 +19,8 @@
 namespace Nuxeo\Client\FTests;
 
 
-use Nuxeo\Client\Api\Objects\Blob\Blob;
-use Nuxeo\Client\Api\Objects\Document;
+use Nuxeo\Client\Objects\Blob\Blob;
+use Nuxeo\Client\Objects\Document;
 use Nuxeo\Client\FTests\Framework\TestCase;
 
 class RepositoryTest extends TestCase {

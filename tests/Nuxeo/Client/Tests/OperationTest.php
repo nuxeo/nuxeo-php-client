@@ -22,11 +22,11 @@ namespace Nuxeo\Client\Tests;
 use Guzzle\Http\Message\EntityEnclosingRequest;
 use Guzzle\Http\Message\EntityEnclosingRequestInterface;
 use JMS\Serializer\Annotation as Serializer;
-use Nuxeo\Client\Api\Objects\Audit\LogEntry;
-use Nuxeo\Client\Api\Objects\Blob\Blob;
-use Nuxeo\Client\Api\Objects\Document;
-use Nuxeo\Client\Api\Objects\Documents;
-use Nuxeo\Client\Api\Objects\Operation;
+use Nuxeo\Client\Objects\Audit\LogEntry;
+use Nuxeo\Client\Objects\Blob\Blob;
+use Nuxeo\Client\Objects\Document;
+use Nuxeo\Client\Objects\Documents;
+use Nuxeo\Client\Objects\Operation;
 use Nuxeo\Client\Tests\Framework\TestCase;
 use Nuxeo\Client\Tests\Objects\Character;
 use Nuxeo\Client\Tests\Objects\MyDocType;
@@ -122,7 +122,7 @@ class OperationTest extends TestCase {
         'Content-Disposition' => 'attachment; filename*=UTF-8\'\''.self::IMG_FS_PATH
       ), self::DOC_CONTENT));
 
-    /** @var \Nuxeo\Client\Api\Objects\Blob\Blob $blob */
+    /** @var \Nuxeo\Client\Objects\Blob\Blob $blob */
     $blob = $client->automation('Blob.Get')
       ->input(self::DOC_PATH)
       ->execute(Blob::className);
@@ -133,7 +133,7 @@ class OperationTest extends TestCase {
   }
 
   /**
-   * @expectedException \Nuxeo\Client\Internals\Spi\NuxeoClientException
+   * @expectedException \Nuxeo\Client\Spi\NuxeoClientException
    */
   public function testCannotLoadBlob() {
     $client = $this->getClient()

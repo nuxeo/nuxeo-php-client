@@ -20,8 +20,8 @@ namespace Nuxeo\Client\Tests\Http;
 
 
 use Guzzle\Http\Exception\BadResponseException;
-use Nuxeo\Client\Api\Response;
-use Nuxeo\Client\Internals\Spi\Http\Client as BaseClient;
+use Nuxeo\Client\Response;
+use Nuxeo\Client\Spi\Http\Client as BaseClient;
 
 class Client extends BaseClient {
 
@@ -51,7 +51,7 @@ class Client extends BaseClient {
   }
 
   /**
-   * @param array|\Nuxeo\Client\Api\Request $requests
+   * @param array|\Nuxeo\Client\Request $requests
    * @return array|Response|null
    */
   public function send($requests) {
@@ -63,7 +63,7 @@ class Client extends BaseClient {
   protected function sendMultiple(array $requests) {
     $responses = array();
 
-    /** @var \Nuxeo\Client\Api\Request $request */
+    /** @var \Nuxeo\Client\Request $request */
     foreach($requests as $request) {
       // Get body to simulate sending the request (required for multipart/related)
       $request->getBody();

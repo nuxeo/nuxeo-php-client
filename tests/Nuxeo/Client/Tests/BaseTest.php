@@ -20,12 +20,12 @@ namespace Nuxeo\Client\Tests;
 
 
 use Guzzle\Http\Exception\ClientErrorResponseException;
-use Nuxeo\Client\Api\Auth\PortalSSOAuthentication;
-use Nuxeo\Client\Api\Auth\TokenAuthentication;
-use Nuxeo\Client\Api\Constants;
-use Nuxeo\Client\Api\Request;
-use Nuxeo\Client\Internals\Spi\NuxeoClientException;
-use Nuxeo\Client\Internals\Spi\NuxeoException;
+use Nuxeo\Client\Auth\PortalSSOAuthentication;
+use Nuxeo\Client\Auth\TokenAuthentication;
+use Nuxeo\Client\Constants;
+use Nuxeo\Client\Request;
+use Nuxeo\Client\Spi\NuxeoClientException;
+use Nuxeo\Client\Spi\NuxeoException;
 use Nuxeo\Client\Tests\Framework\TestCase;
 use Nuxeo\Client\Tests\Util\ArrayIterator;
 
@@ -64,7 +64,7 @@ class BaseTest extends TestCase {
 
     $this->assertCount(1, $requests = $client->getRequests());
 
-    /** @var \Nuxeo\Client\Api\Request $request */
+    /** @var \Nuxeo\Client\Request $request */
     list($request) = $requests;
 
     $this->assertFalse($request->hasHeader('Authorization'));
@@ -85,7 +85,7 @@ class BaseTest extends TestCase {
 
     $this->assertCount(1, $requests = $client->getRequests());
 
-    /** @var \Nuxeo\Client\Api\Request $request */
+    /** @var \Nuxeo\Client\Request $request */
     list($request) = $requests;
 
     $this->assertFalse($request->hasHeader('Authorization'));
@@ -93,7 +93,7 @@ class BaseTest extends TestCase {
   }
 
   /**
-   * @expectedException \Nuxeo\Client\Internals\Spi\NuxeoClientException
+   * @expectedException \Nuxeo\Client\Spi\NuxeoClientException
    */
   public function testUnauthorized() {
     $client = $this->getClient(self::URL, self::LOGIN, null)
@@ -118,7 +118,7 @@ class BaseTest extends TestCase {
     $this->assertEquals($token, $client->requestAuthenticationToken(self::TOKEN_APP_NAME, self::TOKEN_DEVICE));
     $this->assertCount(1, $requests = $client->getRequests());
 
-    /** @var \Nuxeo\Client\Api\Request $request */
+    /** @var \Nuxeo\Client\Request $request */
     list($request) = $requests;
 
     $this->assertEquals('authentication/token', $request->getUrl(true)->getPath());

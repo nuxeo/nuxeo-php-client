@@ -18,9 +18,9 @@
 
 namespace Nuxeo\Client\Tests;
 
-use Nuxeo\Client\Api\NuxeoClient as BaseClient;
-use Nuxeo\Client\Api\Request;
-use Nuxeo\Client\Api\Response;
+use Nuxeo\Client\NuxeoClient as BaseClient;
+use Nuxeo\Client\Request;
+use Nuxeo\Client\Response;
 use Nuxeo\Client\Tests\Http\Client as HttpClient;
 use Nuxeo\Client\Tests\Util\ArrayIterator;
 

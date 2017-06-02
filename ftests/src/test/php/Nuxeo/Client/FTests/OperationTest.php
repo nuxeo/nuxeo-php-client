@@ -19,10 +19,10 @@
 namespace Nuxeo\Client\FTests;
 
 
-use Nuxeo\Client\Api\Objects\Blob\Blob;
-use Nuxeo\Client\Api\Objects\Document;
-use Nuxeo\Client\Api\Objects\Documents;
-use Nuxeo\Client\Api\Objects\Operation\DirectoryEntries;
+use Nuxeo\Client\Objects\Blob\Blob;
+use Nuxeo\Client\Objects\Document;
+use Nuxeo\Client\Objects\Documents;
+use Nuxeo\Client\Objects\Operation\DirectoryEntries;
 use Nuxeo\Client\FTests\Framework\TestCase;
 
 class OperationTest extends TestCase {

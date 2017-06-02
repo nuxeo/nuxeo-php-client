@@ -19,11 +19,11 @@
 namespace Nuxeo\Client\Tests;
 
 
-use Nuxeo\Client\Api\Constants;
-use Nuxeo\Client\Api\Objects;
-use Nuxeo\Client\Api\Request;
-use Nuxeo\Client\Internals\Spi\NuxeoClientException;
-use Nuxeo\Client\Internals\Spi\NuxeoException;
+use Nuxeo\Client\Constants;
+use Nuxeo\Client\Objects;
+use Nuxeo\Client\Request;
+use Nuxeo\Client\Spi\NuxeoClientException;
+use Nuxeo\Client\Spi\NuxeoException;
 use Nuxeo\Client\Tests\Framework\TestCase;
 use Nuxeo\Client\Tests\Objects\MyDocType;
 
@@ -223,7 +223,7 @@ class RepositoryTest extends TestCase {
   }
 
   /**
-   * @expectedException \Nuxeo\Client\Internals\Spi\NuxeoClientException
+   * @expectedException \Nuxeo\Client\Spi\NuxeoClientException
    */
   public function testFail() {
     $client = $this->getClient()->addResponse($this->createResponse(404));
@@ -232,7 +232,7 @@ class RepositoryTest extends TestCase {
   }
 
   /**
-   * @expectedException \Nuxeo\Client\Internals\Spi\NuxeoClientException
+   * @expectedException \Nuxeo\Client\Spi\NuxeoClientException
    */
   public function testServerError() {
     $client = $this->getClient(self::URL, self::LOGIN, null)

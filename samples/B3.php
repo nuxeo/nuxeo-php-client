@@ -21,16 +21,16 @@
 require_once '../vendor/autoload.php';
 
 $documents = null;
-$client = new \Nuxeo\Client\Api\NuxeoClient('http://nuxeo:8080/nuxeo', 'Administrator', 'Administrator');
+$client = new \Nuxeo\Client\NuxeoClient('http://nuxeo:8080/nuxeo', 'Administrator', 'Administrator');
 
 if(!empty($_POST['date'])) {
     $date = DateTime::createFromFormat('Y/m/d', $_POST['date']);
 
-    /** @var \Nuxeo\Client\Api\Objects\Documents $documents */
+    /** @var \Nuxeo\Client\Objects\Documents $documents */
     $documents = $client
       ->automation('Document.Query')
       ->param('query', sprintf('SELECT * FROM Document WHERE dc:created >= DATE "%s"', date_format($date, 'Y-m-d')))
-      ->execute(\Nuxeo\Client\Api\Objects\Documents::className);
+      ->execute(\Nuxeo\Client\Objects\Documents::className);
 }
 ?>
 <!DOCTYPE html>
@@ -73,7 +73,7 @@ if(!empty($_POST['date'])) {
             <th>State</th>
             <th>Title</th>
         </tr>
-        <?php foreach($documents->getDocuments() as $document): /** @var \Nuxeo\Client\Api\Objects\Document */ ?>
+        <?php foreach($documents->getDocuments() as $document): /** @var \Nuxeo\Client\Objects\Document */ ?>
             <tr>
                 <td><?php echo $document->getUid() ?></td>
                 <td><?php echo $document->getPath() ?></td>

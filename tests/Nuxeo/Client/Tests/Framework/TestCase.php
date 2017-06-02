@@ -19,9 +19,9 @@
 namespace Nuxeo\Client\Tests\Framework;
 
 
-use Nuxeo\Client\Api\Constants;
-use Nuxeo\Client\Api\Response;
-use Nuxeo\Client\Internals\Spi\Http\Message\HeaderFactory;
+use Nuxeo\Client\Constants;
+use Nuxeo\Client\Response;
+use Nuxeo\Client\Spi\Http\Message\HeaderFactory;
 use Nuxeo\Client\Tests\Client;
 use Zend\Uri\Uri;
 

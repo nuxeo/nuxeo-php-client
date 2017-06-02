@@ -21,18 +21,18 @@
 require_once '../vendor/autoload.php';
 
 $documents = null;
-$client = new \Nuxeo\Client\Api\NuxeoClient('http://nuxeo:8080/nuxeo', 'Administrator', 'Administrator');
+$client = new \Nuxeo\Client\NuxeoClient('http://nuxeo:8080/nuxeo', 'Administrator', 'Administrator');
 
 if(!empty($_POST['path'])) {
   $path = $_POST['path'];
   $schema = $_POST['schema'] ?: '*';
 
-  /** @var \Nuxeo\Client\Api\Objects\Documents $documents */
+  /** @var \Nuxeo\Client\Objects\Documents $documents */
   $documents = $client
     ->schemas($schema)
     ->automation('Document.Query')
     ->param('query', sprintf('SELECT * FROM Document WHERE ecm:path = "%s"', $path))
-    ->execute(\Nuxeo\Client\Api\Objects\Documents::className);
+    ->execute(\Nuxeo\Client\Objects\Documents::className);
 }
 ?>
 <!DOCTYPE html>
@@ -80,7 +80,7 @@ if(!empty($_POST['path'])) {
         <th>Property 1</th>
         <th>Property 2</th>
       </tr>
-      <?php foreach($documents->getDocuments() as $document): /** @var \Nuxeo\Client\Api\Objects\Document */ ?>
+      <?php foreach($documents->getDocuments() as $document): /** @var \Nuxeo\Client\Objects\Document */ ?>
         <tr>
           <td><?php echo $document->getUid() ?></td>
           <td><?php echo $document->getPath() ?></td>

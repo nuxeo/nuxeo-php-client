@@ -21,7 +21,7 @@
 require_once '../vendor/autoload.php';
 
 $documents = null;
-$client = new \Nuxeo\Client\Api\NuxeoClient('http://nuxeo:8080/nuxeo', 'Administrator', 'Administrator');
+$client = new \Nuxeo\Client\NuxeoClient('http://nuxeo:8080/nuxeo', 'Administrator', 'Administrator');
 
 $blobTempStorage = __DIR__ . DIRECTORY_SEPARATOR . 'blobs';
 
@@ -29,11 +29,11 @@ if(!@mkdir($blobTempStorage) && !is_dir($blobTempStorage)) {
     throw new \Symfony\Component\HttpFoundation\File\Exception\FileException(sprintf('Could not create %s: ', $blobTempStorage));
 }
 
-/** @var \Nuxeo\Client\Api\Objects\Documents $availablePaths */
+/** @var \Nuxeo\Client\Objects\Documents $availablePaths */
 $availablePaths = $client
   ->automation('Document.Query')
   ->param('query', 'SELECT * FROM Workspace')
-  ->execute(\Nuxeo\Client\Api\Objects\Documents::className);
+  ->execute(\Nuxeo\Client\Objects\Documents::className);
 
 $httpRequest = \Symfony\Component\HttpFoundation\Request::createFromGlobals();
 $document = null;
@@ -46,7 +46,7 @@ if($httpRequest->files->has('blob') && $httpRequest->request->has('path')) {
     $blob = $uploadedBlob->move($blobTempStorage, $uploadedBlob->getClientOriginalName());
 
     try {
-        /** @var \Nuxeo\Client\Api\Objects\Document $document */
+        /** @var \Nuxeo\Client\Objects\Document $document */
         $document = $client->automation('Document.Create')
           ->input('doc:' . $path)
           ->params(array(
@@ -54,19 +54,19 @@ if($httpRequest->files->has('blob') && $httpRequest->request->has('path')) {
             'name' => $blob->getFilename(),
             'properties' => 'dc:title=' . $blob->getFilename()
           ))
-          ->execute(\Nuxeo\Client\Api\Objects\Document::className);
-    } catch(\Nuxeo\Client\Internals\Spi\NuxeoClientException $ex) {
+          ->execute(\Nuxeo\Client\Objects\Document::className);
+    } catch(\Nuxeo\Client\Spi\NuxeoClientException $ex) {
         throw new RuntimeException(sprintf('Could not create Document %s: ' . $ex->getMessage(), $blob->getFilename()));
     }
 
     try {
         if(null !== $document) {
             $client->automation('Blob.Attach')
-              ->input(\Nuxeo\Client\Api\Objects\Blob\Blob::fromFile($blob->getPathname(), $blob->getMimeType()))
+              ->input(\Nuxeo\Client\Objects\Blob\Blob::fromFile($blob->getPathname(), $blob->getMimeType()))
               ->param('document', $document->getPath())
-              ->execute(\Nuxeo\Client\Api\Objects\Blob\Blob::className);
+              ->execute(\Nuxeo\Client\Objects\Blob\Blob::className);
         }
-    } catch(\Nuxeo\Client\Internals\Spi\NuxeoClientException $ex) {
+    } catch(\Nuxeo\Client\Spi\NuxeoClientException $ex) {
         throw new RuntimeException('Could not attach blob to document: ' . $ex->getMessage());
     }
 }
@@ -102,7 +102,7 @@ if($httpRequest->files->has('blob') && $httpRequest->request->has('path')) {
         <label for="path">Path</label>
         <select name="path" class="form-control">
           <?php foreach($availablePaths->getDocuments() as $path) {
-            /** @var \Nuxeo\Client\Api\Objects\Document $path */
+            /** @var \Nuxeo\Client\Objects\Document $path */
             printf('<option value="%s">%s</option>', $path->getPath(), $path->getTitle());
           }
           ?>

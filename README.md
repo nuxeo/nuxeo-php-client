@@ -63,7 +63,7 @@ $url = 'http://localhost:8080/nuxeo';
 And given credentials:
 
 ```php
-use Nuxeo\Client\Api\NuxeoClient;
+use Nuxeo\Client\NuxeoClient;
 
 $client = new NuxeoClient($url, 'Administrator', 'Administrator');
 ```
@@ -78,8 +78,8 @@ $client = $client->schemas("*");
 ```php
 // For changing authentication method
 
-use Nuxeo\Client\Api\Auth\PortalSSOAuthentication;
-use Nuxeo\Client\Api\Auth\TokenAuthentication;
+use Nuxeo\Client\Auth\PortalSSOAuthentication;
+use Nuxeo\Client\Auth\TokenAuthentication;
 
 // PortalSSOAuthentication with nuxeo-platform-login-portal-sso
 $client = $client->setAuthenticationMethod(new PortalSSOAuthentication($secret, $username));
@@ -92,24 +92,24 @@ $client = $client->setAuthenticationMethod(new TokenAuthentication($token));
 
 ##### Automation API
 
-To use the Automation API, `Nuxeo\Client\Api\NuxeoClient#automation()` is the entry point for all calls:
+To use the Automation API, `Nuxeo\Client\NuxeoClient#automation()` is the entry point for all calls:
 
 ```php
 // Fetch the root document
 $result = $client->automation('Repository.GetDocument')->param("value", "/")->execute();
-// Type auto-detected and cast as Nuxeo\Client\Api\Objects\Document
+// Type auto-detected and cast as Nuxeo\Client\Objects\Document
 ```
 
 ```php
 // Execute query
 $operation = $client->automation('Repository.Query')->param('query', 'SELECT * FROM Document');
 $result = $operation->execute();
-// Type auto-detected and cast as Nuxeo\Client\Api\Objects\Documents
+// Type auto-detected and cast as Nuxeo\Client\Objects\Documents
 ```
 
 ```php
-use Nuxeo\Client\Api\Objects\Blob\Blob;
-use Nuxeo\Client\Api\Objects\Blob\Blobs;
+use Nuxeo\Client\Objects\Blob\Blob;
+use Nuxeo\Client\Objects\Blob\Blobs;
 
 // To upload|download blob(s)
 
@@ -125,9 +125,9 @@ $resultBlob = $client->automation('Document.GetBlob')->input('folder/file')->exe
 ```
 
 ```php
-use Nuxeo\Client\Api\Objects\Document;
+use Nuxeo\Client\Objects\Document;
 
-class MyBusinessClass extends Nuxeo\Client\Api\Objects\Document {
+class MyBusinessClass extends Nuxeo\Client\Objects\Document {
     const className = __CLASS__;
 
     ...
@@ -139,8 +139,8 @@ $result = $operation->execute(MyBusinessClass::className);
 ```
 
 ```php
-use Nuxeo\Client\Api\Objects\Document;
-use Nuxeo\Client\Api\Objects\Operation\DocRef;
+use Nuxeo\Client\Objects\Document;
+use Nuxeo\Client\Objects\Operation\DocRef;
 
 // Enforce type of a property
 $doc = $client->automation('Document.Fetch')->param('value', '0fa9d2a0-e69f-452d-87ff-0c5bd3b30d7d')->execute(Document::className);
@@ -149,7 +149,7 @@ $property = $doc->getProperty('custom:related', DocRef::className);
 
 #### Errors/Exceptions
 
-The main exception type is `Nuxeo\Client\Internals\Spi\NuxeoClientException` and contains:
+The main exception type is `Nuxeo\Client\Spi\NuxeoClientException` and contains:
 
 - The HTTP error status code (666 for internal errors)
 

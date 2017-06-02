@@ -19,7 +19,7 @@
 namespace Nuxeo\Client\Tests\Objects;
 
 
-use Nuxeo\Client\Api\Objects\Document;
+use Nuxeo\Client\Objects\Document;
 
 class MyDocType extends Document {
 
