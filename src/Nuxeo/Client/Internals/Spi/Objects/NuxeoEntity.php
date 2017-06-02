@@ -28,6 +28,7 @@ use Nuxeo\Client\Api\Objects\Blob\Blob;
 use Nuxeo\Client\Api\Request;
 use Nuxeo\Client\Internals\Spi\Annotations\HttpMethod;
 use Nuxeo\Client\Internals\Spi\ClassCastException;
+use Nuxeo\Client\Internals\Spi\Http\Method\AbstractMethod;
 use Nuxeo\Client\Internals\Spi\NuxeoClientException;
 use Nuxeo\Client\Internals\Spi\NuxeoException;
 use Nuxeo\Client\Internals\Util\HttpUtils;
@@ -97,17 +98,13 @@ abstract class NuxeoEntity {
     return array($reflectionMethod, $params);
   }
 
-  /**
-   * @param string $type
-   * @param string $body
-   * @param array $files
-   * @return mixed
-   * @throws NuxeoClientException
-   * @throws ClassCastException
-   */
-  protected function getResponse($type = null, $body = null, $files = array()) {
-    list($reflectionMethod, $params) = $this->getCall();
-    $request = $this->getRequest($reflectionMethod, $params);
+  protected function getResponseNew(AbstractMethod $method, $type = null) {
+    $body = $method->getBody();
+    $files = $method->getFiles();
+
+    list(, $params) = $this->getCall();
+
+    $request = $this->getRequest($method, $params);
 
     if(is_array($files)) {
       foreach($files as $file) {
@@ -159,30 +156,25 @@ abstract class NuxeoEntity {
   }
 
   /**
+   * @param AbstractMethod $method
+   * @param $params
    * @throws NuxeoClientException
    * @return Request
    */
-  protected function getRequest($reflectionMethod, $params) {
-    foreach($this->getNuxeoClient()->getAnnotationReader()->getMethodAnnotations($reflectionMethod) as $annotation) {
-      if($annotation instanceof HttpMethod) {
-        try {
-          $request = $this->getNuxeoClient()->createRequest(
-            $annotation->getName(),
-            $this->computeRequestUrl($annotation->computePath($params))
-          );
-          if($this->getNuxeoClient()->isDebug()) {
-            $request->addSubscriber(LogPlugin::getDebugPlugin(true, $this->getNuxeoClient()->getDebugStream()));
-          }
-          return $request;
-        } catch(\InvalidArgumentException $e) {
-          throw NuxeoClientException::fromPrevious($e);
-        }
+  protected function getRequest(AbstractMethod $method, $params) {
+    try {
+      $request = $this->getNuxeoClient()->createRequest(
+        $method->getName(),
+        $this->computeRequestUrl($method->computePath($params))
+      );
+      if($this->getNuxeoClient()->isDebug()) {
+        $request->addSubscriber(LogPlugin::getDebugPlugin(true, $this->getNuxeoClient()->getDebugStream()));
       }
+
+      return $request;
+    } catch(\InvalidArgumentException $e) {
+      throw NuxeoClientException::fromPrevious($e);
     }
-    throw new NuxeoClientException(
-      sprintf('No method found for method name "%s". Check method name and parameters.',
-        $reflectionMethod->getName())
-    );
   }
 
   /**

@@ -21,13 +21,12 @@
 namespace Nuxeo\Client\Api\Objects;
 
 
-use JMS\Serializer\Annotation as Serializer;
 use Nuxeo\Client\Api\Constants;
 use Nuxeo\Client\Api\NuxeoClient;
 use Nuxeo\Client\Api\Objects\Blob\Blob;
 use Nuxeo\Client\Api\Objects\Blob\Blobs;
-use Nuxeo\Client\Internals\Spi\Annotations\POST;
 use Nuxeo\Client\Internals\Spi\ClassCastException;
+use Nuxeo\Client\Internals\Spi\Http\Method\POST;
 use Nuxeo\Client\Internals\Spi\NoSuchOperationException;
 use Nuxeo\Client\Internals\Spi\NuxeoClientException;
 use Nuxeo\Client\Internals\Spi\Objects\NuxeoEntity;
@@ -98,7 +97,6 @@ class Operation extends NuxeoEntity {
   }
 
   /**
-   * @POST("automation/{operationId}")
    * @param string $type
    * @param string $operationId
    * @return mixed
@@ -130,7 +128,10 @@ class Operation extends NuxeoEntity {
       $client->voidOperation(true);
     }
 
-    return $this->getResponse($type, $client->getConverter()->writeJSON($this->body), $blobs);
+    return $this->getResponseNew(POST::create('automation/{operationId}')
+      ->setBody($client->getConverter()->writeJSON($this->body))
+      ->setFiles($blobs),
+      $type);
   }
 
 }

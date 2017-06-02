@@ -16,10 +16,10 @@
  *
  */
 
-namespace Nuxeo\Client\Internals\Spi\Annotations;
+namespace Nuxeo\Client\Internals\Spi\Http\Method;
 
 
-abstract class HttpMethod {
+abstract class AbstractMethod {
 
   /**
    * Inspired from https://github.com/nikic/FastRoute
@@ -42,6 +42,16 @@ REGEX;
   private $name;
 
   /**
+   * @var string
+   */
+  private $body;
+
+  /**
+   * @var array
+   */
+  private $files = array();
+
+  /**
    * HttpMethod constructor.
    * @param string $name
    * @param string $path
@@ -49,20 +59,6 @@ REGEX;
   public function __construct($name, $path) {
     $this->name = $name;
     $this->path = $path;
-  }
-
-  /**
-   * @return string
-   */
-  public function getPath() {
-    return $this->path;
-  }
-
-  /**
-   * @return string
-   */
-  public function getName() {
-    return $this->name;
   }
 
   /**
@@ -100,6 +96,52 @@ REGEX;
     }
 
     return $url;
+  }
+
+  /**
+   * @return string
+   */
+  public function getPath() {
+    return $this->path;
+  }
+
+  /**
+   * @return string
+   */
+  public function getName() {
+    return $this->name;
+  }
+
+  /**
+   * @return string
+   */
+  public function getBody() {
+    return $this->body;
+  }
+
+  /**
+   * @param mixed $body
+   * @return AbstractMethod
+   */
+  public function setBody($body) {
+    $this->body = $body;
+    return $this;
+  }
+
+  /**
+   * @return array
+   */
+  public function getFiles() {
+    return $this->files;
+  }
+
+  /**
+   * @param mixed $files
+   * @return AbstractMethod
+   */
+  public function setFiles($files) {
+    $this->files = $files;
+    return $this;
   }
 
 }

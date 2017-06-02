@@ -19,14 +19,13 @@
 namespace Nuxeo\Client\Api\Objects;
 
 
-use JMS\Serializer\Annotation as Serializer;
 use Nuxeo\Client\Api\Constants;
 use Nuxeo\Client\Api\Objects\Blob\Blob;
-use Nuxeo\Client\Internals\Spi\Annotations\DELETE;
-use Nuxeo\Client\Internals\Spi\Annotations\GET;
-use Nuxeo\Client\Internals\Spi\Annotations\POST;
-use Nuxeo\Client\Internals\Spi\Annotations\PUT;
 use Nuxeo\Client\Internals\Spi\ClassCastException;
+use Nuxeo\Client\Internals\Spi\Http\Method\DELETE;
+use Nuxeo\Client\Internals\Spi\Http\Method\GET;
+use Nuxeo\Client\Internals\Spi\Http\Method\POST;
+use Nuxeo\Client\Internals\Spi\Http\Method\PUT;
 use Nuxeo\Client\Internals\Spi\NuxeoClientException;
 use Nuxeo\Client\Internals\Spi\Objects\NuxeoEntity;
 
@@ -44,7 +43,6 @@ class Repository extends NuxeoEntity {
   //region Documents
 
   /**
-   * @GET("path")
    * @param $repositoryName
    * @param string $type
    * @return mixed
@@ -55,11 +53,10 @@ class Repository extends NuxeoEntity {
     if(null !== $repositoryName) {
       return $this->fetchDocumentRootWithRepositoryName($repositoryName);
     }
-    return $this->getResponse($type);
+    return $this->getResponseNew(GET::create('path'), $type);
   }
 
   /**
-   * @POST("path{parentPath}")
    * @param string $parentPath
    * @param Document $document
    * @param string $repositoryName
@@ -72,11 +69,12 @@ class Repository extends NuxeoEntity {
     if(null !== $repositoryName) {
       return $this->createDocumentByPathWithRepositoryName($parentPath, $repositoryName, $document, $type);
     }
-    return $this->getResponse($type, $document);
+    return $this->getResponseNew(POST::create('path{parentPath}')
+      ->setBody($document),
+      $type);
   }
 
   /**
-   * @POST("id/{parentId}")
    * @param string $parentId
    * @param Document $document
    * @param string $repositoryName
@@ -89,11 +87,12 @@ class Repository extends NuxeoEntity {
     if(null !== $repositoryName) {
       return $this->createDocumentByIdWithRepositoryName($parentId, $repositoryName, $document, $type);
     }
-    return $this->getResponse($type, $document);
+    return $this->getResponseNew(POST::create('id/{parentId}')
+      ->setBody($document),
+      $type);
   }
 
   /**
-   * @GET("path{documentPath}")
    * @param string $documentPath
    * @param string $repositoryName
    * @param string $type
@@ -105,11 +104,10 @@ class Repository extends NuxeoEntity {
     if(null !== $repositoryName) {
       return $this->fetchDocumentByPathWithRepositoryName($documentPath, $repositoryName, $type);
     }
-    return $this->getResponse($type);
+    return $this->getResponseNew(GET::create('path{documentPath}'), $type);
   }
 
   /**
-   * @GET("id/{documentId}")
    * @param string $documentId
    * @param string $repositoryName
    * @param string $type
@@ -121,7 +119,7 @@ class Repository extends NuxeoEntity {
     if(null !== $repositoryName) {
       return $this->fetchDocumentByIdWithRepositoryName($documentId, $repositoryName, $type);
     }
-    return $this->getResponse($type);
+    return $this->getResponseNew(GET::create('id/{documentId}'), $type);
   }
 
   /**
@@ -137,7 +135,6 @@ class Repository extends NuxeoEntity {
   }
 
   /**
-   * @PUT("path{path}")
    * @param $path
    * @param $document
    * @param string $type
@@ -146,11 +143,12 @@ class Repository extends NuxeoEntity {
    * @throws ClassCastException
    */
   public function updateDocumentByPath($path, $document, $type = null) {
-    return $this->getResponse($type, $document);
+    return $this->getResponseNew(PUT::create('path{path}')
+      ->setBody($document),
+      $type);
   }
 
   /**
-   * @PUT("id/{documentId}")
    * @param string $documentId
    * @param Document $document
    * @param string $repositoryName
@@ -163,7 +161,9 @@ class Repository extends NuxeoEntity {
     if(null !== $repositoryName) {
       return $this->updateDocumentByIdWithRepositoryName($documentId, $repositoryName, $document, $type);
     }
-    return $this->getResponse($type, $document);
+    return $this->getResponseNew(PUT::create('id/{documentId}')
+      ->setBody($document),
+      $type);
   }
 
   /**
@@ -177,17 +177,15 @@ class Repository extends NuxeoEntity {
   }
 
   /**
-   * @DELETE("path{path}")
    * @param string $path
    * @throws NuxeoClientException
    * @throws ClassCastException
    */
   public function deleteDocumentByPath($path) {
-    $this->getResponse();
+    $this->getResponseNew(DELETE::create('path{path}'));
   }
 
   /**
-   * @DELETE("id/{documentId}")
    * @param string $documentId
    * @param string $repositoryName
    * @throws NuxeoClientException
@@ -197,7 +195,7 @@ class Repository extends NuxeoEntity {
     if(null !== $repositoryName) {
       $this->deleteDocumentByIdWithRepositoryName($documentId, $repositoryName);
     }
-    $this->getResponse();
+    $this->getResponseNew(DELETE::create('id/{documentId}'));
   }
 
   //endregion
@@ -205,7 +203,6 @@ class Repository extends NuxeoEntity {
   //region Documents with Repository filter
 
   /**
-   * @GET("repo/{repositoryName}/path")
    * @param $repositoryName
    * @param string $type
    * @return mixed
@@ -213,11 +210,10 @@ class Repository extends NuxeoEntity {
    * @throws ClassCastException
    */
   protected function fetchDocumentRootWithRepositoryName($repositoryName, $type = null) {
-    return $this->getResponse($type);
+    return $this->getResponseNew(GET::create('repo/{repositoryName}/path'), $type);
   }
 
   /**
-   * @GET("repo/{repositoryName}/path{documentPath}")
    * @param string $documentPath
    * @param $repositoryName
    * @param null $type
@@ -226,11 +222,10 @@ class Repository extends NuxeoEntity {
    * @throws ClassCastException
    */
   protected function fetchDocumentByPathWithRepositoryName($documentPath, $repositoryName, $type = null) {
-    return $this->getResponse($type);
+    return $this->getResponseNew(GET::create('repo/{repositoryName}/path{documentPath}'), $type);
   }
 
   /**
-   * @GET("repo/{repositoryName}/id/{documentId}")
    * @param string $documentId
    * @param $repositoryName
    * @param string $type
@@ -239,11 +234,10 @@ class Repository extends NuxeoEntity {
    * @throws ClassCastException
    */
   protected function fetchDocumentByIdWithRepositoryName($documentId, $repositoryName, $type = null) {
-    return $this->getResponse($type);
+    return $this->getResponseNew(GET::create('repo/{repositoryName}/id/{documentId}'), $type);
   }
 
   /**
-   * @POST("repo/{repositoryName}/id/{parentId}")
    * @param string $parentId
    * @param string $repositoryName
    * @param Document $document
@@ -253,11 +247,12 @@ class Repository extends NuxeoEntity {
    * @throws ClassCastException
    */
   protected function createDocumentByIdWithRepositoryName($parentId, $repositoryName, $document, $type = null) {
-    return $this->getResponse($type, $document);
+    return $this->getResponseNew(POST::create('repo/{repositoryName}/id/{parentId}')
+      ->setBody($document),
+      $type);
   }
 
   /**
-   * @POST("repo/{repositoryName}/path{parentPath}")
    * @param string $parentPath
    * @param string $repositoryName
    * @param Document $document
@@ -267,11 +262,12 @@ class Repository extends NuxeoEntity {
    * @throws ClassCastException
    */
   protected function createDocumentByPathWithRepositoryName($parentPath, $repositoryName, $document, $type = null) {
-    return $this->getResponse($type, $document);
+    return $this->getResponseNew(POST::create('repo/{repositoryName}/path{parentPath}')
+      ->setBody($document),
+      $type);
   }
 
   /**
-   * @PUT("repo/{repositoryName}id/{documentId}")
    * @param string $documentId
    * @param string $repositoryName
    * @param Document $document
@@ -281,25 +277,25 @@ class Repository extends NuxeoEntity {
    * @throws ClassCastException
    */
   protected function updateDocumentByIdWithRepositoryName($documentId, $repositoryName, $document, $type = null) {
-    return $this->getResponse($type, $document);
+    return $this->getResponseNew(PUT::create('repo/{repositoryName}id/{documentId}')
+      ->setBody($document),
+      $type);
   }
 
   /**
-   * @DELETE("repo/{repositoryName}/id/{documentId}")
    * @param string $documentId
    * @param string $repositoryName
    * @throws NuxeoClientException
    * @throws ClassCastException
    */
   protected function deleteDocumentByIdWithRepositoryName($documentId, $repositoryName) {
-    $this->getResponse();
+    $this->getResponseNew(DELETE::create('repo/{repositoryName}/id/{documentId}'));
   }
 
   //endregion
 
   //region Query
   /**
-   * @GET("query?query={query}&pageSize={pageSize}&currentPageIndex={currentPageIndex}&maxResults={maxResults}&sortBy={sortBy}&sortOrder={sortOrder}&queryParams={queryParams}")
    * @param string $query
    * @param int $pageSize
    * @param int $currentPageIndex
@@ -312,7 +308,7 @@ class Repository extends NuxeoEntity {
    * @throws ClassCastException
    */
   public function query($query, $pageSize = 0, $currentPageIndex = 0, $maxResults = 200, $sortBy = '', $sortOrder = '', $queryParams = '') {
-    return $this->getResponse();
+    return $this->getResponseNew(GET::create('query?query={query}&pageSize={pageSize}&currentPageIndex={currentPageIndex}&maxResults={maxResults}&sortBy={sortBy}&sortOrder={sortOrder}&queryParams={queryParams}'));
   }
 
   //endregion
@@ -320,14 +316,13 @@ class Repository extends NuxeoEntity {
   //region Children
 
   /**
-   * @GET("id/{parentId}/@children")
    * @param $parentId
    * @return Documents
    * @throws NuxeoClientException
    * @throws ClassCastException
    */
   public function fetchChildrenById($parentId) {
-    return $this->getResponse(Documents::className);
+    return $this->getResponseNew(GET::create('id/{parentId}/@children'),Documents::className);
   }
 
   //endregion
@@ -335,7 +330,6 @@ class Repository extends NuxeoEntity {
   //region Blobs
 
   /**
-   * @GET("id/{documentId}/@blob/{fieldPath}")
    * @param $documentId
    * @param $fieldPath
    * @return Blob
@@ -343,7 +337,7 @@ class Repository extends NuxeoEntity {
    * @throws ClassCastException
    */
   public function fetchBlobById($documentId, $fieldPath) {
-    return $this->getResponse(Blob::className);
+    return $this->getResponseNew(GET::create('id/{documentId}/@blob/{fieldPath}'), Blob::className);
   }
 
   //endregion

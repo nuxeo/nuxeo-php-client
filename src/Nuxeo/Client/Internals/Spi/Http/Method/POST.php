@@ -16,19 +16,24 @@
  *
  */
 
-namespace Nuxeo\Client\Internals\Spi\Annotations;
+namespace Nuxeo\Client\Internals\Spi\Http\Method;
 
-/**
- * @Annotation
- * @Target("METHOD")
- */
-class DELETE extends HttpMethod {
+class POST extends AbstractMethod {
 
   /**
-   * DELETE constructor.
+   * POST constructor.
+   * @param string $path
    */
-  public function __construct(array $values) {
-    parent::__construct('delete', $values['value']);
+  public function __construct($path) {
+    parent::__construct('post', $path);
+  }
+
+  /**
+   * @param $path
+   * @return POST
+   */
+  public static function create($path) {
+    return new self($path);
   }
 
 }

@@ -16,19 +16,24 @@
  *
  */
 
-namespace Nuxeo\Client\Internals\Spi\Annotations;
+namespace Nuxeo\Client\Internals\Spi\Http\Method;
 
-/**
- * @Annotation
- * @Target("METHOD")
- */
-class PUT extends HttpMethod {
+class GET extends AbstractMethod {
 
   /**
-   * PUT constructor.
+   * GET constructor.
+   * @param string $path
    */
-  public function __construct(array $values) {
-    parent::__construct('put', $values['value']);
+  public function __construct($path) {
+    parent::__construct('get', $path);
+  }
+
+  /**
+   * @param $path
+   * @return GET
+   */
+  public static function create($path) {
+    return new self($path);
   }
 
 }
