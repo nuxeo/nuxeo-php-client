@@ -1,9 +1,9 @@
 
-[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=Client/nuxeo-automation-php-client/master)](https://qa.nuxeo.org/jenkins/job/Client/job/nuxeo-automation-php-client/job/master/)
+[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=Client/nuxeo-php-client/master)](https://qa.nuxeo.org/jenkins/job/Client/job/nuxeo-php-client/job/master/)
 
-# Nuxeo Automation PHP Client
+# Nuxeo PHP Client
 
-The Nuxeo Automation PHP Client is a PHP client library for Nuxeo Automation API.
+The Nuxeo PHP Client is a PHP client library for Nuxeo Rest API.
 
 This is supported by Nuxeo and compatible with Nuxeo LTS 2015 and latest Fast Tracks.
 
@@ -37,8 +37,8 @@ This is supported by Nuxeo and compatible with Nuxeo LTS 2015 and latest Fast Tr
 
 ### Library import
 
-Download the latest build [Nuxeo Automation PHP Client master](https://github.com/nuxeo/nuxeo-automation-php-client/archive/master.zip).
-Download the latest stable release [Nuxeo Automation PHP Client 1.5.0](https://github.com/nuxeo/nuxeo-automation-php-client/archive/1.5.0.tar.gz).
+Download the latest build [Nuxeo PHP Client master](https://github.com/nuxeo/nuxeo-php-client/archive/master.zip).
+Download the latest stable release [Nuxeo Automation PHP Client 1.5.0](https://github.com/nuxeo/nuxeo-php-client/archive/1.5.0.tar.gz).
 
 Composer:
 
@@ -157,7 +157,7 @@ The main exception type is `Nuxeo\Client\Spi\NuxeoClientException` and contains:
 
 ## Docker
 
-We provide a [docker-compose.yml](https://github.com/nuxeo/nuxeo-automation-php-client/blob/master/docker-compose.yml) for quick testing
+We provide a [docker-compose.yml](https://github.com/nuxeo/nuxeo-php-client/blob/master/docker-compose.yml) for quick testing
 
 Just install docker-compose and run `docker-compose up`, you'll have a nuxeo running on http://localhost:9081/ and nginx on http://localhost:9080/
 
@@ -168,7 +168,7 @@ You can access the samples with http://localhost:9080/samples/B1.php for example
 We are glad to welcome new developers, and even simple usage feedback is great
 
  * Ask your questions on http://answers.nuxeo.com/
- * Report issues on this GitHub repository (see [issues link](https://github.com/nuxeo/nuxeo-automation-php-client/issues) on the right)
+ * Report issues on this GitHub repository (see [issues link](https://github.com/nuxeo/nuxeo-php-client/issues) on the right)
 
 # License
 
