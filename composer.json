@@ -1,7 +1,7 @@
 {
-  "name": "nuxeo/nuxeo-automation-php-client",
+  "name": "nuxeo/nuxeo-php-client",
   "description": "PHP Client Library for the Nuxeo Automation API",
-  "keywords": ["nuxeo", "automation"],
+  "keywords": ["nuxeo", "automation", "client"],
   "homepage": "http://www.nuxeo.com",
   "license": "AL2",
   "authors": [
