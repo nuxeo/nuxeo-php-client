@@ -1,0 +1,72 @@
+{
+  "entity-type": "tasks",
+  "entries": [
+    {
+      "entity-type": "task",
+      "id": "7bb67cd2-5848-4687-93af-30b3e715453e",
+      "name": "wf.serialDocumentReview.DocumentValidation",
+      "workflowInstanceId": "05fd04ca-9f4f-42e8-89f1-5e529477f8da",
+      "workflowModelName": "SerialDocumentReview",
+      "workflowInitiator": "Administrator",
+      "workflowTitle": "wf.serialDocumentReview.SerialDocumentReview",
+      "workflowLifeCycleState": "running",
+      "graphResource": "https://demo.nuxeo.com/nuxeo/api/v1/workflow/05fd04ca-9f4f-42e8-89f1-5e529477f8da/graph",
+      "state": "opened",
+      "directive": "wf.serialDocumentReview.AcceptReject",
+      "created": "2015-02-24T23:12:53.817Z",
+      "dueDate": "2015-03-01T23:12:53.812Z",
+      "nodeName": "Task6d8",
+      "targetDocumentIds": [
+        {
+          "id": "4d2a827e-3191-469e-8b61-fe7c07304c2c"
+        }
+      ],
+      "actors": [
+        {
+          "id": "user:john"
+        }
+      ],
+      "comments": [],
+      "variables": {
+        "comment": "",
+        "participants": [
+          "user:john",
+          "group:mobilityExperts"
+        ],
+        "initiatorComment": ""
+      },
+      "taskInfo": {
+        "taskActions": [
+          {
+            "name": "reject",
+            "url": "https://demo.nuxeo.com/nuxeo/api/v1/task/7bb67cd2-5848-4687-93af-30b3e715453e/reject",
+            "label": "wf.serialDocumentReview.Reject"
+          },
+          {
+            "name": "validate",
+            "url": "https://demo.nuxeo.com/nuxeo/api/v1/task/7bb67cd2-5848-4687-93af-30b3e715453e/validate",
+            "label": "wf.serialDocumentReview.Validate"
+          }
+        ],
+        "layoutResource": {
+          "name": "Task6d8@taskLayout",
+          "url": "https://demo.nuxeo.com/nuxeo/site/layout-manager/layouts/?layoutName=Task6d8@taskLayout"
+        },
+        "schemas": [
+          {
+            "name": "var_Task6d8",
+            "url": "https://demo.nuxeo.com/nuxeo/api/v1/config/schemas/var_Task6d8"
+          },
+          {
+            "name": "dublincore",
+            "url": "https://demo.nuxeo.com/nuxeo/api/v1/config/schemas/dublincore"
+          },
+          {
+            "name": "route_node",
+            "url": "https://demo.nuxeo.com/nuxeo/api/v1/config/schemas/route_node"
+          }
+        ]
+      }
+    }
+  ]
+}

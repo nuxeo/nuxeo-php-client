@@ -1,0 +1,41 @@
+{
+  "entity-type": "workflows",
+  "entries": [
+    {
+      "entity-type": "workflow",
+      "id": "98f51d90-ff1f-4ec7-a751-af1cb26fdb62",
+      "name": "ParallelDocumentReview",
+      "title": "wf.parallelDocumentReview.ParallelDocumentReview",
+      "state": "validated",
+      "workflowModelName": "ParallelDocumentReview",
+      "initiator": null,
+      "attachedDocumentIds": [],
+      "variables": {
+        "end_date": null,
+        "initiatorComment": null,
+        "participants": [],
+        "review_result": null,
+        "review_result_file": null,
+        "validationOrReview": null
+      },
+      "graphResource": "http://localhost:8080/nuxeo/api/v1/workflowModel/ParallelDocumentReview/graph"
+    },
+    {
+      "entity-type": "workflow",
+      "id": "ec59e964-7886-4d69-9792-bee0da2549b9",
+      "name": "SerialDocumentReview",
+      "title": "wf.serialDocumentReview.SerialDocumentReview",
+      "state": "validated",
+      "workflowModelName": "SerialDocumentReview",
+      "initiator": null,
+      "attachedDocumentIds": [],
+      "variables": {
+        "participants": [],
+        "validationOrReview": "validation",
+        "initiatorComment": null,
+        "index": 0
+      },
+      "graphResource": "http://localhost:8080/nuxeo/api/v1/workflowModel/SerialDocumentReview/graph"
+    }
+  ]
+}

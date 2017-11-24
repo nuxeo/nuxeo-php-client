@@ -53,13 +53,13 @@ class RepositoryTest extends TestCase {
     /** @var Objects\Document $document */
     $document = $client->repository()->fetchDocumentRoot();
 
-    $this->assertFetched($client, 'path', $document, 'Root', 'document');
+    $this->assertFetched($client, 'path/', $document, 'Root', 'document');
     $this->assertEquals('/', $document->getPath());
 
     /** @var Objects\Document $document */
     $document = $client->repository()->fetchDocumentRoot(self::DOC_REPOSITORY);
 
-    $this->assertFetched($client, "repo/${repositoryName}/path", $document, 'Root', 'document', 1);
+    $this->assertFetched($client, "repo/${repositoryName}/path/", $document, 'Root', 'document', 1);
     $this->assertEquals($repositoryName, $document->getRepositoryName());
     $this->assertEquals('/', $document->getPath());
   }

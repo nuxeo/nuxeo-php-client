@@ -23,9 +23,11 @@ use Nuxeo\Client\Spi\Objects\NuxeoEntity;
 
 /**
  * @Serializer\Discriminator(field="entity-type", map={
- *   "users": "Nuxeo\Client\Objects\User\Users",
+ *   "documents": "Nuxeo\Client\Objects\Documents",
  *   "groups": "Nuxeo\Client\Objects\User\Groups",
- *   "documents": "Nuxeo\Client\Objects\Documents"
+ *   "users": "Nuxeo\Client\Objects\User\Users",
+ *   "tasks": "Nuxeo\Client\Objects\Workflow\Tasks",
+ *   "workflows": "Nuxeo\Client\Objects\Workflow\Workflows"
  *   })
  */
 abstract class AbstractEntityList extends NuxeoEntity implements \ArrayAccess, \Iterator, \Countable {

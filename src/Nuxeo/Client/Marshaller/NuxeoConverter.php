@@ -23,6 +23,7 @@ use JMS\Serializer\Construction\UnserializeObjectConstructor;
 use JMS\Serializer\DeserializationContext;
 use JMS\Serializer\EventDispatcher\EventDispatcher;
 use JMS\Serializer\GraphNavigator;
+use JMS\Serializer\Handler\DateHandler;
 use JMS\Serializer\Handler\HandlerRegistry;
 use JMS\Serializer\JsonDeserializationVisitor;
 use JMS\Serializer\Metadata\Driver\AnnotationDriver;
@@ -240,6 +241,7 @@ class NuxeoConverter {
 
       $self = $this;
 
+      $registry->registerSubscribingHandler(new DateHandler());
       foreach($this->getMarshallers() as $type => $marshaller) {
         $registry->registerHandler(
           GraphNavigator::DIRECTION_SERIALIZATION,

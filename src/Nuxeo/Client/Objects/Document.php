@@ -135,6 +135,18 @@ class Document extends NuxeoEntity {
 
   /**
    * @param $name
+   * @param string $type
+   * @param NuxeoClient $nuxeoClient
+   * @return self
+   */
+  public static function createWithName($name, $type = null, $nuxeoClient = null) {
+    return (new self($nuxeoClient))
+      ->setName($name)
+      ->setType($type);
+  }
+
+  /**
+   * @param $name
    * @param $type
    * @return string|mixed
    * @throws \Doctrine\Common\Annotations\AnnotationException
@@ -179,6 +191,38 @@ class Document extends NuxeoEntity {
   public function fetchChildren() {
     if($this->getNuxeoClient()) {
       return $this->getNuxeoClient()->repository()->fetchChildrenById($this->getUid());
+    }
+    throw new NuxeoClientException('You should pass to your Nuxeo object the client instance');
+  }
+
+  /**
+   * @return Workflow\Workflows
+   * @throws NuxeoClientException
+   * @throws ClassCastException
+   */
+  public function fetchWorkflows() {
+    if($this->getNuxeoClient()) {
+      return $this->getNuxeoClient()->workflows()->fetchWorkflowsById($this->getUid());
+    }
+    throw new NuxeoClientException('You should pass to your Nuxeo object the client instance');
+  }
+
+  /**
+   * @param string $workflowModelName
+   * @return Workflow\Workflow
+   * @throws NuxeoClientException
+   * @throws ClassCastException
+   */
+  public function startWorkflow($workflowModelName) {
+    if($this->getNuxeoClient()) {
+      return $this->getNuxeoClient()->workflows()->startWorkflowByNameWithDocId($workflowModelName, $this->getUid());
+    }
+    throw new NuxeoClientException('You should pass to your Nuxeo object the client instance');
+  }
+
+  public function fetchTasks() {
+    if($this->getNuxeoClient()) {
+      return $this->getNuxeoClient()->workflows()->fetchTasksByDocumentId($this->getUid());
     }
     throw new NuxeoClientException('You should pass to your Nuxeo object the client instance');
   }

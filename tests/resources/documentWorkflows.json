@@ -1,0 +1,28 @@
+{
+  "entity-type": "workflows",
+  "entries": [
+    {
+      "entity-type": "workflow",
+      "id": "5c8d369e-6d3a-43ce-a711-8d794728e8e4",
+      "name": "ParallelDocumentReview",
+      "title": "wf.parallelDocumentReview.ParallelDocumentReview",
+      "state": "running",
+      "workflowModelName": "ParallelDocumentReview",
+      "initiator": "Administrator",
+      "attachedDocumentIds": [
+        {
+          "id": "d80fce7d-ab33-4a56-8365-57ac4af83309"
+        }
+      ],
+      "variables": {
+        "end_date": null,
+        "initiatorComment": null,
+        "participants": [],
+        "review_result": null,
+        "review_result_file": null,
+        "validationOrReview": null
+      },
+      "graphResource": "http://localhost:8080/nuxeo/api/v1/workflow/5c8d369e-6d3a-43ce-a711-8d794728e8e4/graph"
+    }
+  ]
+}

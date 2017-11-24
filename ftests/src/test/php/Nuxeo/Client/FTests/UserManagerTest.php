@@ -29,7 +29,6 @@ class UserManagerTest extends TestCase {
    */
   public function testUsersAndGroups() {
     $userManager = $this->getClient()
-      ->debug()
       ->userManager();
 
     $user = (new User())

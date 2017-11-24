@@ -40,6 +40,8 @@ use Nuxeo\Client\Objects\Operation;
 use Nuxeo\Client\Objects\Repository;
 use Nuxeo\Client\Objects\User\User;
 use Nuxeo\Client\Objects\UserManager;
+use Nuxeo\Client\Objects\Workflow\Workflows;
+use Nuxeo\Client\Objects\WorkflowManager;
 use Nuxeo\Client\Spi\Auth\AuthenticationInterceptor;
 use Nuxeo\Client\Spi\Interceptor;
 use Nuxeo\Client\Spi\NuxeoClientException;
@@ -219,6 +221,13 @@ class NuxeoClient {
    */
   public function userManager() {
     return new UserManager($this);
+  }
+
+  /**
+   * @return WorkflowManager
+   */
+  public function workflows() {
+    return new WorkflowManager($this);
   }
 
   /**

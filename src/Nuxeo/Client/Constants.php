@@ -50,6 +50,14 @@ class Constants {
 
   const ENTITY_TYPE_GROUPS = 'groups';
 
+  const ENTITY_TYPE_WORKFLOW = 'workflow';
+
+  const ENTITY_TYPE_WORKFLOWS = 'workflows';
+
+  const ENTITY_TYPE_TASKS = 'tasks';
+
+  const ENTITY_TYPE_TASK = 'task';
+
   const SECURITY_EVERYTHING = 'Everything';
 
   const SECURITY_RESTRICTED_READ = 'RestrictedRead';
