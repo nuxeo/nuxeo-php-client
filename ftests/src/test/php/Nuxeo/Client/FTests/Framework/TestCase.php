@@ -28,6 +28,8 @@ class TestCase extends BaseCase {
    */
   private $client;
 
+  const URL = 'http://nuxeo:8080/nuxeo/';
+
   /**
    * @param string $url
    * @param string $username
