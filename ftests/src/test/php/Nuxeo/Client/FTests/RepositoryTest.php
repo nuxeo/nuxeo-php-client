@@ -32,7 +32,7 @@ class RepositoryTest extends TestCase {
     $repository = $this->getClient()->repository();
 
     /** @var Document $workspace */
-    $workspace = $repository->fetchDocumentByPath('/default-domain/UserWorkspaces/Administrator');
+    $workspace = $repository->fetchDocumentByPath('/');
 
     /** @var Document $doc */
     $doc = $repository->createDocumentById($workspace->getUid(), Document::create()

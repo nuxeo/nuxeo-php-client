@@ -9,9 +9,10 @@
 
   <artifactId>nuxeo-php-client-ftest</artifactId>
   <name>Functional Tests for Nuxeo PHP Client</name>
+  <version>2.0.0-SNAPSHOT</version>
 
   <properties>
-    <nuxeo.tested.version>${nuxeo.distribution.version}</nuxeo.tested.version>
+    <nuxeo.tested.version>[9.10,10.0)</nuxeo.tested.version>
     <phpReportsDir>php-reports</phpReportsDir>
     <itests.basepath>${basedir}/..</itests.basepath>
     <phpunit.path>${itests.basepath}/vendor/phpunit/phpunit/phpunit</phpunit.path>
