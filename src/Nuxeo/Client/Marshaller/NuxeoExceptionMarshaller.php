@@ -29,7 +29,7 @@ use Nuxeo\Client\Spi\NuxeoException;
 class NuxeoExceptionMarshaller implements NuxeoMarshaller {
 
   public function read($in, VisitorInterface $visitor, DeserializationContext $context) {
-    $exception = new NuxeoException($in['code'], $in['message']);
+    $exception = new NuxeoException($in['message']);
 
     if(array_key_exists('exception', $in)) {
       $backtrace = $in['exception']['stackTrace'];

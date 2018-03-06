@@ -25,16 +25,14 @@ class NuxeoException extends \Exception {
 
   const className = __CLASS__;
 
-  protected $type;
-
-  public function __construct($type, $message = "", $code = 0, Exception $previous = null) {
+  public function __construct($message = '', $code = 0, Exception $previous = null) {
     parent::__construct($message, $code, $previous);
-    $this->type = $type;
   }
 
   /**
    * @param $trace
    * @return $this
+   * @throws \ReflectionException
    */
   public function setTrace($trace) {
     $property = new \ReflectionProperty('Exception', 'trace');
@@ -52,13 +50,6 @@ class NuxeoException extends \Exception {
     $this->file = $file;
     $this->line = $line;
     return $this;
-  }
-
-  /**
-   * @return mixed
-   */
-  public function getType() {
-    return $this->type;
   }
 
 }

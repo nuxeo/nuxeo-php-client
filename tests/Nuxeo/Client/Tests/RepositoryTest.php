@@ -249,7 +249,6 @@ class RepositoryTest extends TestCase {
 
       /** @var NuxeoException $previous */
       $this->assertInstanceOf(NuxeoException::className, $previous = $e->getPrevious());
-      $this->assertContains('MarshallingException', $previous->getType());
       $this->assertCount(119, $previous->getTrace());
       throw $e;
     }
