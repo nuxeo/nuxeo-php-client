@@ -42,6 +42,17 @@ node('SLAVE') {
                     stage('dependencies vulnerability check') {
                         sh 'php vendor/bin/security-checker security:check --end-point=http://security.sensiolabs.org/check_lock'
                     }
+                    stage('dependencies outdated check') {
+                        try {
+                            echo """
+Outdated dependencies Report
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~"""
+                            sh 'php composer.phar outdated -D --strict'
+                        } catch (ignore) {
+                            echo 'There are outdated dependencies, marking the build as Unstable.'
+                            currentBuild.result = 'UNSTABLE'
+                        }
+                    }
                     stage('unit tests') {
                         sh 'php vendor/bin/phpunit --exclude-group server'
                     }
