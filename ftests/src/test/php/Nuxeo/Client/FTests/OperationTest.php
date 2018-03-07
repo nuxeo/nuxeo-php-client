@@ -48,7 +48,7 @@ class OperationTest extends TestCase {
     /** @var Document $doc */
     $doc = $this->getClient()
       ->automation('Document.Create')
-      ->input('doc:/default-domain/UserWorkspaces/Administrator')
+      ->input('doc:/')
       ->params(array(
         'type' => 'File',
         'name' => 'Some file',
@@ -61,7 +61,7 @@ class OperationTest extends TestCase {
       ->automation('Blob.Attach')
       ->param('document', $doc->getPath())
       ->input(Blob::fromFile($this->getResource('nuxeo.png'), null))
-      ->execute();
+      ->execute(Blob::className);
 
     $blob = $this->getClient()
       ->voidOperation(false)

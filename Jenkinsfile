@@ -24,14 +24,14 @@ node('SLAVE') {
                 tool type: 'hudson.model.JDK', name: 'java-8-openjdk'
                 tool type: 'hudson.tasks.Maven$MavenInstallation', name: 'maven-3'
 
-                def dockerImage = docker.image('dockerin.nuxeo.com/nuxeo/nuxeo-qaimage-php:php53-cli')
+                docker.image('dockerin.nuxeo.com/nuxeo/nuxeo-qaimage-php:php53-cli').pull()
                 String ctnrId = sh(script:"cat /proc/self/cgroup | cut -d : -f3 | grep -oe '[0-9a-fA-F]\\{12,\\}' | head -1 || true", returnStdout: true).trim()
-
-                dockerImage.pull()
 
                 stage('checkout') {
                     checkout scm
                 }
+
+                def dockerImage = docker.build('nuxeo-qaimage-php-client', 'docker/qa')
                 dockerImage.inside {
                     stage('install dependencies') {
                         sh """#!/bin/bash -ex
