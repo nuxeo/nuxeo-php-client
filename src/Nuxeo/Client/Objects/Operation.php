@@ -26,6 +26,7 @@ use Nuxeo\Client\NuxeoClient;
 use Nuxeo\Client\Objects\Blob\Blob;
 use Nuxeo\Client\Objects\Blob\Blobs;
 use Nuxeo\Client\Spi\ClassCastException;
+use Nuxeo\Client\Spi\Http\Message\RelatedFile;
 use Nuxeo\Client\Spi\Http\Method\POST;
 use Nuxeo\Client\Spi\NoSuchOperationException;
 use Nuxeo\Client\Spi\NuxeoClientException;
@@ -110,7 +111,7 @@ class Operation extends NuxeoEntity {
 
     $input = $this->body->getInput();
     $client = $this->getNuxeoClient();
-    $blobs = null;
+    $files = [];
 
     if(null === $operationId) {
       throw new NoSuchOperationException($operationId);
@@ -121,16 +122,15 @@ class Operation extends NuxeoEntity {
     }
 
     if($input instanceof Blobs) {
-      $blobs = array();
-      foreach($input->getBlobs() as $blob) {
-        $blobs[] = $blob->getFile()->getPathname();
-      }
       $client->voidOperation(true);
+      foreach($input->getBlobs() as $blob) {
+        $files[] = new RelatedFile($blob->getFilename(), $blob->getStream(), $blob->getMimeType());
+      }
     }
 
     return $this->getResponseNew(POST::create('automation/{operationId}')
       ->setBody($client->getConverter()->writeJSON($this->body))
-      ->setFiles($blobs),
+      ->setFiles($files),
       $type);
   }
 

@@ -17,11 +17,12 @@
   },
   "config": {
     "platform": {
-      "php": "5.3.3"
+      "php": "7.0.28"
     }
   },
   "require": {
-    "guzzlehttp/guzzle": "3.8.*",
+    "guzzlehttp/guzzle": "6.3.*",
+    "monolog/monolog": "1.9.*",
     "jms/serializer": "0.16.*",
     "zendframework/zend-http": "2.2.*",
     "paragonie/random_compat": "2.0.*"

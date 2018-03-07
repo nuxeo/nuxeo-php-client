@@ -19,70 +19,40 @@
 namespace Nuxeo\Client\Tests\Http;
 
 
-use Guzzle\Http\Exception\BadResponseException;
+use GuzzleHttp\HandlerStack;
 use Nuxeo\Client\Response;
-use Nuxeo\Client\Spi\Http\Client as BaseClient;
+use GuzzleHttp\Client as BaseClient;
+use Nuxeo\Client\Tests\Http\Handler\MockHandler;
+use Psr\Http\Message\RequestInterface;
 
 class Client extends BaseClient {
 
-  private $requests;
+  /**
+   * @var MockHandler
+   */
+  private $handler;
 
-  private $responses;
+  public function __construct($baseUrl = '', $config = []) {
+    $this->handler = new MockHandler();
 
-  public function __construct($baseUrl = '', $config = null) {
-    parent::__construct($baseUrl, $config);
-
-    $this->requests = array();
-    $this->responses = array();
+    parent::__construct($config + [
+      'base_uri' => $baseUrl,
+      'handler' => HandlerStack::create($this->handler)
+    ]);
   }
 
   /**
    * @param Response $response
    */
   public function addResponse($response) {
-    $this->responses[] = $response;
+    $this->handler->append($response);
   }
 
   /**
    * @return array
    */
   public function getRequests() {
-    return $this->requests;
-  }
-
-  /**
-   * @param array|\Nuxeo\Client\Request $requests
-   * @return array|Response|null
-   */
-  public function send($requests) {
-    list($response) = $this->sendMultiple(array($requests));
-
-    return $response;
-  }
-
-  protected function sendMultiple(array $requests) {
-    $responses = array();
-
-    /** @var \Nuxeo\Client\Request $request */
-    foreach($requests as $request) {
-      // Get body to simulate sending the request (required for multipart/related)
-      $request->getBody();
-
-      $this->requests[] = $request;
-
-      if(empty($this->responses)) {
-        $responses[] = new Response(500);
-        throw BadResponseException::factory($request, new Response(500));
-      } else {
-        /** @var Response $response */
-        $responses[] = $response = array_shift($this->responses);
-        if(!$response->isSuccessful()) {
-          throw BadResponseException::factory($request, $response);
-        }
-        $request->startResponse($response);
-      }
-    }
-    return $responses;
+    return $this->handler->getRequests();
   }
 
 }

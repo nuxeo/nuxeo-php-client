@@ -20,9 +20,9 @@
 
 namespace Nuxeo\Client\Auth;
 
+use GuzzleHttp\Client;
 use Nuxeo\Client\Request;
 use Nuxeo\Client\Spi\Auth\AuthenticationInterceptor;
-use Nuxeo\Client\Spi\Http\Client;
 use Nuxeo\Client\Spi\NuxeoClientException;
 
 class PortalSSOAuthentication implements AuthenticationInterceptor {
@@ -49,8 +49,9 @@ class PortalSSOAuthentication implements AuthenticationInterceptor {
    * @param Client $client
    * @param Request $request
    * @throws NuxeoClientException
+   * @return Request
    */
-  public function proceed($client, $request) {
+  public function proceed(Client $client, Request $request) {
     $timestamp = time() * 1000;
     $random = random_int(0, $timestamp);
 
@@ -58,7 +59,7 @@ class PortalSSOAuthentication implements AuthenticationInterceptor {
     $hashedToken = hash('md5', $clearToken, true);
     $base64HashedToken = base64_encode($hashedToken);
 
-    $request->addHeaders(array(
+    return $request->withHeaders(array(
       self::NX_TS => $timestamp,
       self::NX_RD => $random,
       self::NX_TOKEN => $base64HashedToken,

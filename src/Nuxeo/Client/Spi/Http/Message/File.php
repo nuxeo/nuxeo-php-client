@@ -21,7 +21,6 @@
 namespace Nuxeo\Client\Spi\Http\Message;
 
 
-use Guzzle\Common\Exception\InvalidArgumentException;
 use Guzzle\Http\Mimetypes;
 
 class File {
@@ -50,7 +49,7 @@ class File {
     }
 
     if(!is_readable($filename)) {
-      throw new InvalidArgumentException("Unable to open {$filename} for reading");
+      throw new \InvalidArgumentException("Unable to open {$filename} for reading");
     }
 
     $this->file = new \SplFileInfo($filename);

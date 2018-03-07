@@ -19,7 +19,7 @@
 namespace Nuxeo\Client\Spi\Objects;
 
 
-use Guzzle\Http\Exception\BadResponseException;
+use GuzzleHttp\Exception\BadResponseException;
 use Guzzle\Plugin\Log\LogPlugin;
 use JMS\Serializer\Annotation as Serializer;
 use Nuxeo\Client\Constants;
@@ -75,6 +75,10 @@ abstract class NuxeoEntity {
     return HttpUri::merge($this->getNuxeoClient()->getApiUrl(), $path);
   }
 
+  /**
+   * @return array
+   * @throws \ReflectionException
+   */
   protected function getCall() {
     $backtrace = debug_backtrace();
     $reflectionClass = new \ReflectionClass($backtrace[2]['class']);
@@ -88,8 +92,7 @@ abstract class NuxeoEntity {
       return array($parameter->name, $parameter->isDefaultValueAvailable()?$parameter->getDefaultValue():null);
     }, $reflectionMethod->getParameters());
 
-    foreach($paramNames as $param) {
-      list($name, $default) = $param;
+    foreach($paramNames as list($name, $default)) {
       $params[$name] = isset($paramValues[$paramIndex])?$paramValues[$paramIndex]:$default;
       $paramIndex++;
     }
@@ -97,6 +100,16 @@ abstract class NuxeoEntity {
     return array($reflectionMethod, $params);
   }
 
+  /**
+   * @param AbstractMethod $method
+   * @param null $type
+   * @return null
+   * @throws \RuntimeException
+   * @throws \Nuxeo\Client\Spi\NuxeoClientException
+   * @throws \Nuxeo\Client\Spi\ClassCastException
+   * @throws \Doctrine\Common\Annotations\AnnotationException
+   * @throws \ReflectionException
+   */
   protected function getResponseNew(AbstractMethod $method, $type = null) {
     $body = $method->getBody();
     $files = $method->getFiles();
@@ -107,7 +120,7 @@ abstract class NuxeoEntity {
 
     if(is_array($files)) {
       foreach($files as $file) {
-        $request->addRelatedFile($file);
+        $request = $request->addRelatedFile($file);
       }
     }
 
@@ -115,13 +128,13 @@ abstract class NuxeoEntity {
       if(!is_string($body)) {
         $body = $this->nuxeoClient->getConverter()->writeJSON($body);
       }
-      $request->setBody($body);
+      $request = $request->setBody($body);
     }
 
     try {
       $response = $this->getNuxeoClient()->perform($request);
 
-      if($response->getBody()->getContentLength() > 0) {
+      if($response->getBody()->getSize() > 0) {
         if(false === (
             HttpUtils::isContentType($response, Constants::CONTENT_TYPE_JSON) ||
             HttpUtils::isContentType($response, Constants::CONTENT_TYPE_JSON_NXENTITY))) {
@@ -132,13 +145,13 @@ abstract class NuxeoEntity {
 
           return Blob::fromHttpResponse($response);
         }
-        $body = $this->nuxeoClient->getConverter()->readJSON($response->getBody(true), $type);
+        $body = $this->nuxeoClient->getConverter()->readJSON($response->getBody()->getContents(), $type);
 
         return $this->reconnectObject($body, $this->getNuxeoClient());
       }
     } catch(BadResponseException $e) {
       $response = $e->getResponse();
-      $responseBody = $response->getBody(true);
+      $responseBody = $response->getBody()->getContents();
       if(empty($responseBody)) {
         throw new NuxeoClientException($response->getReasonPhrase(), $response->getStatusCode());
       } elseif(!HttpUtils::isContentType($response, Constants::CONTENT_TYPE_JSON)) {
@@ -166,9 +179,6 @@ abstract class NuxeoEntity {
         $method->getName(),
         $this->computeRequestUrl($method->computePath($params))
       );
-      if($this->getNuxeoClient()->isDebug()) {
-        $request->addSubscriber(LogPlugin::getDebugPlugin(true, $this->getNuxeoClient()->getDebugStream()));
-      }
 
       return $request;
     } catch(\InvalidArgumentException $e) {

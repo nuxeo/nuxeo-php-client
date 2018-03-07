@@ -129,7 +129,7 @@ class OperationTest extends TestCase {
 
     $this->assertRequestPathMatches($client, 'automation/Blob.Get');
     $this->assertEquals(sprintf('{"params":{},"input":"%s"}', self::DOC_PATH), (string) $client->getRequest()->getBody());
-    $this->assertStringEqualsFile($blob->getFile()->getPathname(), self::DOC_CONTENT);
+    $this->assertEquals($blob->getStream()->getContents(), self::DOC_CONTENT);
   }
 
   /**
@@ -157,7 +157,7 @@ class OperationTest extends TestCase {
     $this->assertArrayHasKey('content-type', $client->getRequest()->getHeaders());
     $this->assertStringMatchesFormat(
       'multipart/related;boundary=%s',
-      $client->getRequest()->getHeader('content-type')->__toString());
+      $client->getRequest()->getHeader('content-type')[0]);
 
   }
 
@@ -190,7 +190,7 @@ class OperationTest extends TestCase {
     $this->assertCount(2, $requests = $client->getRequests());
 
     $this->assertRequestPathMatches($client, 'automation/Directory.CreateEntries', 1);
-    $this->assertNotNull($decoded = json_decode((string) $client->getRequest(1)->getBody(), true));
+    $this->assertNotNull($decoded = json_decode((string) $client->getRequest(1)->getBody()->getContents(), true));
     $this->assertTrue(!empty($decoded['params']['entries']) && is_string($decoded['params']['entries']));
     $this->assertTrue(null !== ($entries = json_decode($decoded['params']['entries'], true)) && !empty($entries[0]['id']));
     $this->assertEquals('id001', $entries[0]['id']);

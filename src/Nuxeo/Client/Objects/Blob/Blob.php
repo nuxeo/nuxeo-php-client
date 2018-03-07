@@ -18,12 +18,14 @@
 
 namespace Nuxeo\Client\Objects\Blob;
 
+use GuzzleHttp\Psr7\Stream;
+use function GuzzleHttp\Psr7\stream_for;
 use Nuxeo\Client\Response;
 use Nuxeo\Client\Spi\Http\Header\ContentDisposition;
 use Nuxeo\Client\Spi\NoSuchFileException;
 use Nuxeo\Client\Spi\NuxeoClientException;
 use Nuxeo\Client\Spi\Objects\NuxeoEntity;
-use Nuxeo\Client\Util\IOUtils;
+use Psr\Http\Message\StreamInterface;
 
 
 class Blob extends NuxeoEntity {
@@ -36,9 +38,9 @@ class Blob extends NuxeoEntity {
   protected $mimeType;
 
   /**
-   * @var \SplFileInfo
+   * @var StreamInterface
    */
-  protected $file;
+  protected $stream;
 
   /**
    * @var string
@@ -48,13 +50,13 @@ class Blob extends NuxeoEntity {
   /**
    * Blob constructor.
    * @param string $filename ASCII-only filename
-   * @param \SplFileInfo $file
+   * @param StreamInterface $stream
    * @param string $mimeType
    */
-  public function __construct($filename, $file, $mimeType) {
+  public function __construct($filename, $stream, $mimeType) {
     parent::__construct(null);
 
-    $this->file = $file;
+    $this->stream = $stream;
     $this->mimeType = $mimeType;
     $this->filename = $filename;
   }
@@ -63,15 +65,15 @@ class Blob extends NuxeoEntity {
    * @param string $filename
    * @param string $mimeType
    * @return Blob
+   * @throws \InvalidArgumentException
    * @throws NuxeoClientException
    */
   public static function fromFile($filename, $mimeType) {
     $fileInfo = new \SplFileInfo($filename);
     if($fileInfo->isReadable()) {
-      return new Blob($fileInfo->getFilename(), $fileInfo, $mimeType);
-    } else {
-      throw NuxeoClientException::fromPrevious(new NoSuchFileException($filename));
+      return new Blob($fileInfo->getFilename(), stream_for($fileInfo->openFile('rb')), $mimeType);
     }
+    throw NuxeoClientException::fromPrevious(new NoSuchFileException($filename));
   }
 
   /**
@@ -80,11 +82,25 @@ class Blob extends NuxeoEntity {
    */
   public static function fromHttpResponse($response) {
     /** @var ContentDisposition $disposition */
-    $disposition = $response->getHeader('Content-Disposition');
+    $disposition = $response->getHeader('Content-Disposition')[0];
+    $filename = null;
+
+    foreach(explode(';', $disposition) as $part) {
+      if(preg_match('/^filename\*?=/', trim($part))) {
+        list($field, $value) = explode('=', $part);
+        if(null === $filename || strpos($field, '*') !== false) {
+          $filename = $value;
+        }
+      }
+    }
+
+    if(preg_match('/^[^\']+\'\'/', $filename)) {
+      list(, $filename) = explode('\'\'', $filename);
+    }
 
     return new Blob(
-      $disposition->getFilename(),
-      IOUtils::copyToTempFile($response->getBody()->getStream()),
+      $filename,
+      $response->getBody(),
       $response->getContentType());
   }
 
@@ -103,10 +119,10 @@ class Blob extends NuxeoEntity {
   }
 
   /**
-   * @return \SplFileInfo
+   * @return StreamInterface
    */
-  public function getFile() {
-    return $this->file;
+  public function getStream() {
+    return $this->stream;
   }
 
 }

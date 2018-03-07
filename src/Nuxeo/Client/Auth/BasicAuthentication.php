@@ -20,8 +20,9 @@
 
 namespace Nuxeo\Client\Auth;
 
+use GuzzleHttp\Client;
+use Nuxeo\Client\Request;
 use Nuxeo\Client\Spi\Auth\AuthenticationInterceptor;
-use Nuxeo\Client\Spi\Http\Client;
 use Nuxeo\Client\Spi\NuxeoClientException;
 
 class BasicAuthentication implements AuthenticationInterceptor {
@@ -42,12 +43,13 @@ class BasicAuthentication implements AuthenticationInterceptor {
 
   /**
    * @param Client $client
-   * @param \Nuxeo\Client\Request $request
+   * @param Request $request
+   * @return Request
    * @throws NuxeoClientException
    */
-  public function proceed($client, $request) {
+  public function proceed(Client $client, Request $request) {
     try {
-      $request->setAuth($this->username, $this->password);
+      return $request->withAuth([$this->username, $this->password]);
     } catch(\InvalidArgumentException $e) {
       throw NuxeoClientException::fromPrevious($e);
     }

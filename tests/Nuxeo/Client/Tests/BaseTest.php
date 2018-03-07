@@ -19,13 +19,12 @@
 namespace Nuxeo\Client\Tests;
 
 
-use Guzzle\Http\Exception\ClientErrorResponseException;
+use GuzzleHttp\Exception\ClientException;
 use Nuxeo\Client\Auth\PortalSSOAuthentication;
 use Nuxeo\Client\Auth\TokenAuthentication;
 use Nuxeo\Client\Constants;
 use Nuxeo\Client\Request;
 use Nuxeo\Client\Spi\NuxeoClientException;
-use Nuxeo\Client\Spi\NuxeoException;
 use Nuxeo\Client\Tests\Framework\TestCase;
 use Nuxeo\Client\Tests\Util\ArrayIterator;
 
@@ -45,7 +44,7 @@ class BaseTest extends TestCase {
     /** @var Request $request */
     list($request) = $requests;
 
-    $this->assertNotFalse($authorization = $request->getHeader('Authorization'));
+    $this->assertNotFalse($authorization = $request->getHeaderLine('Authorization'));
 
     list($username, $password) = explode(':', base64_decode(ArrayIterator::fromArray(explode(
       ' ', $authorization))->offsetGet(1)));
@@ -68,10 +67,10 @@ class BaseTest extends TestCase {
     list($request) = $requests;
 
     $this->assertFalse($request->hasHeader('Authorization'));
-    $this->assertNotFalse($request->getHeader(PortalSSOAuthentication::NX_TS));
-    $this->assertNotFalse($request->getHeader(PortalSSOAuthentication::NX_RD));
-    $this->assertNotFalse($request->getHeader(PortalSSOAuthentication::NX_TOKEN));
-    $this->assertNotFalse($request->getHeader(PortalSSOAuthentication::NX_USER));
+    $this->assertNotFalse($request->hasHeader(PortalSSOAuthentication::NX_TS));
+    $this->assertNotFalse($request->hasHeader(PortalSSOAuthentication::NX_RD));
+    $this->assertNotFalse($request->hasHeader(PortalSSOAuthentication::NX_TOKEN));
+    $this->assertNotFalse($request->hasHeader(PortalSSOAuthentication::NX_USER));
   }
 
   public function testTokenAuthentication() {
@@ -89,7 +88,7 @@ class BaseTest extends TestCase {
     list($request) = $requests;
 
     $this->assertFalse($request->hasHeader('Authorization'));
-    $this->assertEquals($auth_token, $request->getHeader(TokenAuthentication::HEADER_TOKEN));
+    $this->assertEquals($auth_token, $request->getHeaderLine(TokenAuthentication::HEADER_TOKEN));
   }
 
   /**
@@ -100,10 +99,10 @@ class BaseTest extends TestCase {
       ->addResponse($this->createResponse(401));
 
     try {
-      $response = $client->get('/');
+      $client->get('/');
     } catch(NuxeoClientException $e) {
-      /** @var ClientErrorResponseException $previous */
-      $this->assertInstanceOf('\Guzzle\Http\Exception\ClientErrorResponseException', $previous = $e->getPrevious());
+      /** @var ClientException $previous */
+      $this->assertInstanceOf(ClientException::class, $previous = $e->getPrevious());
       $this->assertEquals(401, $previous->getResponse()->getStatusCode());
       throw $e;
     }
@@ -121,14 +120,18 @@ class BaseTest extends TestCase {
     /** @var \Nuxeo\Client\Request $request */
     list($request) = $requests;
 
-    $this->assertEquals('authentication/token', $request->getUrl(true)->getPath());
+    $this->assertEquals('authentication/token', $request->getUri()->getPath());
+
+    $queryParams = [];
+    parse_str($request->getUri()->getQuery(), $queryParams);
+
     $this->assertArraySubset(array(
         'applicationName' => self::TOKEN_APP_NAME,
         'deviceId' => self::TOKEN_DEVICE,
         'deviceDescription' => '',
         'permission' => Constants::SECURITY_READ_WRITE,
         'revoke' => false
-    ), $request->getUrl(true)->getQuery()->toArray());
+    ), $queryParams);
   }
 
 }

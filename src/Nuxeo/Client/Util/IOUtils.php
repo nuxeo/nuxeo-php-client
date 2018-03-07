@@ -19,18 +19,20 @@
 namespace Nuxeo\Client\Util;
 
 
+use Psr\Http\Message\StreamInterface;
+
 class IOUtils {
 
   /**
-   * @param resource $in
+   * @param StreamInterface $in
    * @return \SplFileInfo
    */
   public static function copyToTempFile($in) {
     $fileName = tempnam(sys_get_temp_dir(), 'nx-');
     $out = fopen($fileName, 'w+');
-    $originalPos = ftell($in);
+    $originalPos = $in->tell();
 
-    fseek($in, 0);
+    $in->seek(0);
     stream_copy_to_stream($in, $out, -1, 0);
     fseek($in, $originalPos);
 

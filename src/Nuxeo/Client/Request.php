@@ -19,14 +19,17 @@
 namespace Nuxeo\Client;
 
 
-use Guzzle\Http\Message\EntityEnclosingRequest as BaseRequest;
-use Guzzle\Http\Message\Response as BaseResponse;
-use Guzzle\Http\QueryString;
-use Guzzle\Http\Url;
+use GuzzleHttp\Psr7\AppendStream;
+use GuzzleHttp\Psr7\MultipartStream;
+use GuzzleHttp\Psr7\Request as BaseRequest;
+use function GuzzleHttp\Psr7\stream_for;
 use Nuxeo\Client\Spi\Http\Message\HeaderFactory;
 use Nuxeo\Client\Spi\Http\Message\MultipartRelatedIterator;
 use Nuxeo\Client\Spi\Http\Message\RelatedFile;
+use Nuxeo\Client\Spi\Http\Message\RelatedPartInterface;
 use Nuxeo\Client\Spi\Http\Message\RelatedString;
+use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\UriInterface;
 use Zend\Uri\Uri;
 
 class Request extends BaseRequest {
@@ -34,83 +37,156 @@ class Request extends BaseRequest {
   const className = __CLASS__;
   const MULTIPART_RELATED = 'multipart/related';
 
+  const GET = 'GET';
+  const POST = 'POST';
+
   protected $relatedParts = array();
 
-  protected $originalBody = '';
+  /**
+   * @var AppendStream
+   */
+  protected $body;
+
+  /**
+   * @var StreamInterface
+   */
+  protected $originalBody;
+
   protected $originalContentType;
 
   protected $boundary;
 
+  protected $options = [
+    'http_errors' => true
+  ];
+
   /**
-   * Request constructor.
-   * @param string $method
-   * @param Uri|string $url
-   * @param array $headers
+   * @param string                               $method  HTTP method
+   * @param string|UriInterface                  $uri     URI
+   * @param array                                $headers Request headers
+   * @param string|null|resource|StreamInterface $body    Request body
+   * @param string                               $version Protocol version
    */
-  public function __construct($method, $url, $headers = array()) {
-    if($url instanceof Uri) {
-      list($username, $password) = $url->getUserInfo()?explode(':', $url->getUserInfo()):array(null, null);
-
-      $guzzle_url = new Url(
-        $url->getScheme(),
-        $url->getHost(),
-        $username,
-        $password,
-        $url->getPort(),
-        $url->getPath(),
-        new QueryString($url->getQueryAsArray()),
-        $url->getFragment()
-      );
-    } else {
-      $guzzle_url = $url;
-    }
-
-    parent::__construct($method, $guzzle_url, $headers);
+  public function __construct($method, $uri, array $headers = [], $body = null, $version = '1.1') {
+    parent::__construct($method, $uri, $headers);
 
     $this->boundary = uniqid('NXPHP-', true);
+    $this->body = new AppendStream();
   }
 
-  public function addRelatedFile($filename, $contentType = null) {
-    $this->relatedParts[] = new RelatedFile($filename, $contentType);
-  }
+  /**
+   * @param RelatedFile $file
+   * @param string $contentType
+   * @return \GuzzleHttp\Psr7\MessageTrait
+   */
+  public function addRelatedFile($file, $contentType = null) {
+    $new = clone $this;
 
-  public function startResponse(BaseResponse $response) {
-    $response->setHeaderFactory(new HeaderFactory());
-
-    return parent::startResponse($response);
+    $new->relatedParts[] = [
+      'name' => 'ignored',
+      'contents' => $file->getContent(),
+      'headers' => [
+        'content-disposition' => $file->getContentDisposition(),
+        'content-type' => $contentType
+      ],
+      'filename' => $file->getFilename()
+    ];
+    return $new->withHeader('content-type', sprintf('%s;boundary=%s', self::MULTIPART_RELATED, $this->boundary));
   }
 
   public function setBody($body, $contentType = null) {
-    $this->originalBody = $body;
-    $this->originalContentType = $contentType;
+    $new = $this->withBody(stream_for($body));
+    $new->originalContentType = $contentType;
+
+    return $new;
   }
 
   /**
-   * @return \Guzzle\Http\EntityBody|\Guzzle\Http\EntityBodyInterface|null
+   * @return StreamInterface
    */
   public function getBody() {
-    if(!$this->body) {
-      $body = '';
-      $contentType = $this->originalContentType ?: $this->getHeader('Content-Type');
+    if($this->relatedParts) {
+      $this->relatedParts[] = [
+        'name' => 'ignored',
+        'contents' => parent::getBody(),
+        'headers' => [
+          'content-disposition' => RelatedPartInterface::DISPOSITION_INLINE
+        ],
+      ];
+      $this->body->addStream(stream_for(new MultipartStream($this->relatedParts, $this->boundary)));
 
-      if($this->relatedParts) {
-        $parts = array_merge(array(new RelatedString(
-          $this->originalBody,
-          $contentType)), $this->relatedParts);
-
-        foreach(new MultipartRelatedIterator($parts, '--'.$this->boundary) as $part) {
-          $body .= $part;
-        }
-
-        $contentType = sprintf('%s;boundary=%s', self::MULTIPART_RELATED, $this->boundary);
-      } else {
-        $body = $this->originalBody;
-      }
-
-      parent::setBody($body, $contentType);
+      return $this->body;
     }
 
     return parent::getBody();
   }
+
+  /**
+   * @param $name
+   * @param $value
+   * @return Request
+   */
+  protected function setOption($name, $value) {
+    $new = clone $this;
+    if(is_array($value)) {
+      $new->options[$name] = $value + $this->getOption($name, []);
+    } else {
+      $new->options[$name] = $value;
+    }
+    return $new;
+  }
+
+  /**
+   * @param $name
+   * @param null $default
+   * @return mixed|null
+   */
+  protected function getOption($name, $default = null) {
+    return isset($this->options[$name])?$this->options[$name]:$default;
+  }
+
+  /**
+   * @param array $headers
+   * @return Request
+   */
+  public function withHeaders(array $headers) {
+    $new = $this;
+    foreach($headers as $name => $value) {
+      $new = $new->withHeader($name, $value);
+    }
+
+    return $new;
+  }
+
+  /**
+   * @param array $query
+   * @return Request
+   */
+  public function withQuery(array $query = []) {
+    return $this->setOption('query', $query);
+  }
+
+  /**
+   * @return mixed|null
+   */
+  public function getQuery() {
+    return $this->getOption('query');
+  }
+
+  /**
+   * @param array $auth
+   * @return Request
+   */
+  public function withAuth(array $auth = []) {
+    return $this->setOption('auth', $auth);
+  }
+
+  /**
+   * @return mixed|null
+   */
+  public function getAuth() {
+    return $this->getOption('auth');
+  }
+
 
 }

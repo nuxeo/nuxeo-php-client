@@ -19,6 +19,8 @@
 namespace Nuxeo\Client\Spi\Http\Method;
 
 
+use Nuxeo\Client\Spi\Http\Message\RelatedFile;
+
 abstract class AbstractMethod {
 
   /**
@@ -47,7 +49,7 @@ REGEX;
   private $body;
 
   /**
-   * @var array
+   * @var RelatedFile[]
    */
   private $files = array();
 
@@ -129,14 +131,14 @@ REGEX;
   }
 
   /**
-   * @return array
+   * @return RelatedFile[]
    */
   public function getFiles() {
     return $this->files;
   }
 
   /**
-   * @param mixed $files
+   * @param RelatedFile[] $files
    * @return AbstractMethod
    */
   public function setFiles($files) {

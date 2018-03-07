@@ -19,8 +19,12 @@
 namespace Nuxeo\Client;
 
 
-use Guzzle\Http\Message\Response as BaseResponse;
+use GuzzleHttp\Psr7\Response as BaseResponse;
 
 class Response extends BaseResponse {
+
+  public function getContentType() {
+    return $this->getHeaderLine('content-type');
+  }
 
 }

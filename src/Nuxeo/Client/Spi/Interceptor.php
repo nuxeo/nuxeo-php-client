@@ -18,8 +18,8 @@
 
 namespace Nuxeo\Client\Spi;
 
+use GuzzleHttp\Client;
 use Nuxeo\Client\Request;
-use Nuxeo\Client\Spi\Http\Client;
 
 interface Interceptor {
 
@@ -27,8 +27,8 @@ interface Interceptor {
    * @param Client $httpClient
    * @param Request $request
    * @throws NuxeoClientException
-   * @return void
+   * @return Request
    */
-  public function proceed($httpClient, $request);
+  public function proceed(Client $httpClient, Request $request);
 
 }

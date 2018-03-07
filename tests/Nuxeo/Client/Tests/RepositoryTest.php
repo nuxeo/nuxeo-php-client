@@ -274,7 +274,7 @@ class RepositoryTest extends TestCase {
 
     $this->assertEquals(self::IMG_FS_PATH, $blob->getFilename());
     $this->assertEquals(self::IMG_MIME, $blob->getMimeType());
-    $this->assertEquals(md5_file($this->getResource(self::IMG_FS_PATH)), md5_file($blob->getFile()->getRealPath()));
+    $this->assertEquals(md5_file($this->getResource(self::IMG_FS_PATH)), md5($blob->getStream()->getContents()));
   }
 
   public function testDocumentFetchChildren() {

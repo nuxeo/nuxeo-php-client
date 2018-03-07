@@ -75,13 +75,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase {
    * @return Response
    */
   protected function createResponse($code = 200, $headers = array(), $body = '') {
-    $response = new Response($code);
-    $response
-      ->setBody($body)
-      ->setHeaderFactory(new HeaderFactory())
-      ->addHeaders($headers);
-
-    return $response;
+    return new Response($code, $headers, $body);
   }
 
   /**
@@ -102,7 +96,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase {
    * @param integer $requestIndex
    */
   public function assertRequestPathMatches($client, $relativePath, $requestIndex = 0) {
-    self::assertEquals(Uri::merge($client->getApiUrl(), $relativePath)->getPath(), urldecode($client->getRequest($requestIndex)->getPath()));
+    self::assertEquals(Uri::merge($client->getApiUrl(), $relativePath)->getPath(), urldecode($client->getRequest($requestIndex)->getUri()->getPath()));
   }
 
   /**

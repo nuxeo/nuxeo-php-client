@@ -21,14 +21,58 @@
 namespace Nuxeo\Client\Spi\Http\Message;
 
 
-class RelatedFile extends File implements RelatedPartInterface {
+use Psr\Http\Message\StreamInterface;
+
+class RelatedFile implements RelatedPartInterface {
+
+  /**
+   * @var string
+   */
+  protected $filename;
+
+  /**
+   * @var StreamInterface
+   */
+  protected $stream;
+
+  /**
+   * @var string
+   */
+  protected $contentType;
+
+  /**
+   * RelatedFile constructor.
+   * @param $filename
+   * @param $stream
+   * @param $contentType
+   */
+  public function __construct($filename, $stream, $contentType) {
+    $this->filename = $filename;
+    $this->stream = $stream;
+    $this->contentType = $contentType;
+  }
 
   public function getContentDisposition() {
-    return sprintf('%s;filename="%s"', self::DISPOSITION_ATTACHMENT, $this->getFile()->getBasename());
+    return sprintf('%s;filename="%s"', self::DISPOSITION_ATTACHMENT, $this->filename);
   }
 
   public function getContent() {
-    return file_get_contents($this->getFilename());
+    return $this->stream->getContents();
+  }
+
+  public function getContentType() {
+    return $this->contentType;
+  }
+
+  public function getContentLength() {
+    return $this->stream->getSize();
+  }
+
+  /**
+   * @return string
+   */
+  public function getFilename() {
+    return $this->filename;
   }
 
 }

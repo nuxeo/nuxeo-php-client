@@ -18,11 +18,18 @@
 
 namespace Nuxeo\Client;
 
+use Doctrine\Common\Annotations\AnnotationException;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\Reader;
-use Guzzle\Common\Exception\GuzzleException;
-use Guzzle\Plugin\Log\LogPlugin;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\MessageFormatter;
+use GuzzleHttp\Middleware;
+use GuzzleHttp\Psr7\MessageTrait;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use Nuxeo\Client\Auth\BasicAuthentication;
 use Nuxeo\Client\Marshaller;
 use Nuxeo\Client\Objects\Blob\Blob;
@@ -30,12 +37,13 @@ use Nuxeo\Client\Objects\Blob\Blobs;
 use Nuxeo\Client\Objects\Operation;
 use Nuxeo\Client\Objects\Repository;
 use Nuxeo\Client\Spi\Auth\AuthenticationInterceptor;
-use Nuxeo\Client\Spi\Http\Client;
 use Nuxeo\Client\Spi\Interceptor;
 use Nuxeo\Client\Spi\NuxeoClientException;
 use Nuxeo\Client\Spi\NuxeoException;
 use Nuxeo\Client\Spi\SimpleInterceptor;
 use Nuxeo\Client\Util\HttpUtils;
+use Psr\Http\Message\RequestInterface;
+use Psr\Log\LoggerInterface;
 use Zend\Uri\Exception\InvalidUriPartException;
 use Zend\Uri\Http as HttpUri;
 
@@ -73,14 +81,9 @@ class NuxeoClient {
   private $annotationReader;
 
   /**
-   * @var bool
+   * @var LoggerInterface
    */
-  private $debug = false;
-
-  /**
-   * @var resource
-   */
-  private $debugStream;
+  private $logger;
 
   /**
    * @param string $url
@@ -89,6 +92,7 @@ class NuxeoClient {
    * @throws NuxeoClientException
    */
   public function __construct($url = 'http://localhost:8080/nuxeo', $username = 'Administrator', $password = 'Administrator') {
+    $this->logger = new Logger('nxPHPClientLogger', [new StreamHandler('php://stdout', Logger::INFO)]);
     try {
       $this->setBaseUrl($url);
     } catch(\InvalidArgumentException $e) {
@@ -122,6 +126,13 @@ class NuxeoClient {
   }
 
   /**
+   * @param LoggerInterface $logger
+   */
+  public function setLogger($logger) {
+    $this->logger = $logger;
+  }
+
+  /**
    * @return \Zend\Uri\Uri
    */
   public function getBaseUrl() {
@@ -150,17 +161,6 @@ class NuxeoClient {
    */
   public function voidOperation($value) {
     $this->header(Constants::HEADER_VOID_OPERATION, $value ? 'true' : 'false');
-    return $this;
-  }
-
-  /**
-   * @param string $outputFile
-   * @return NuxeoClient
-   * @throws NuxeoClientException
-   */
-  public function debug($outputFile = null) {
-    $this->debugStream = $outputFile ? fopen($outputFile, 'w+b') : null;
-    $this->debug = true;
     return $this;
   }
 
@@ -197,11 +197,9 @@ class NuxeoClient {
    * @return NuxeoClient
    */
   public function header($name, $value) {
-    $self = $this;
-
     $this->interceptors[] = new SimpleInterceptor(
-      function(Request $request) use ($self, $name, $value) {
-        $request->addHeader($name, $value);
+      function(Request $request) use ($name, $value) {
+        return $request->withHeader($name, $value);
       }
     );
 
@@ -215,14 +213,11 @@ class NuxeoClient {
    * @throws NuxeoClientException
    */
   public function get($url, $query = array()) {
-    $request = new Request(Request::GET, $url);
+    $request = $this->createRequest(Request::GET, $url)
+      ->withQuery($query);
 
     try {
-      $request->getQuery()->replace($query);
-
-      $this->interceptors($request);
-
-      return $this->getHttpClient()->send($request);
+      return $this->perform($request);
     } catch(GuzzleException $e) {
       throw NuxeoClientException::fromPrevious($e);
     }
@@ -236,34 +231,38 @@ class NuxeoClient {
    * @throws NuxeoClientException
    */
   public function post($url, $body = null, $files = array()) {
-    $request = new Request(Request::POST, $url);
+    $request = $this->createRequest(Request::POST, $url);
 
     try {
-      $request->setBody($body);
+      $request = $request->setBody($body);
 
       foreach($files as $file) {
-        $request->addRelatedFile($file);
+        $request = $request->addRelatedFile($file);
       }
 
-      $this->interceptors($request);
-      return $this->getHttpClient()->send($request);
+      return $this->perform($request);
     } catch(GuzzleException $e) {
       throw NuxeoClientException::fromPrevious($e);
     }
   }
 
   /**
-   * @param $request
+   * @param $request Request
    * @return Response
    * @throws NuxeoClientException
    */
   public function perform($request) {
-    $this->interceptors($request);
-    return $this->getHttpClient()->send($request);
+    $new = $this->interceptors($request);
+
+    return $this->getHttpClient()->send($new, [
+      'query' => $new->getQuery(),
+      'auth' => $new->getAuth()
+    ]);
   }
 
   /**
    * @return Marshaller\NuxeoConverter
+   * @throws AnnotationException
    */
   public function getConverter() {
     if(null === $this->converter) {
@@ -297,6 +296,8 @@ class NuxeoClient {
 
   /**
    * @return NuxeoClient
+   *
+   * @throws AnnotationException
    */
   protected function setupDefaultMarshallers() {
     $this->getConverter()->registerMarshaller(Blob::className, new Marshaller\BlobMarshaller());
@@ -318,25 +319,37 @@ class NuxeoClient {
    */
   protected function getHttpClient() {
     if(null === $this->httpClient) {
-      $this->httpClient = new Client();
+      $stack = HandlerStack::create();
+      $stack->push(Middleware::log($this->logger, new MessageFormatter()), 'log');
+
+      $this->httpClient = new Client([
+        'base_uri' => $this->baseUrl,
+        'handler' => $stack,
+        'headers' => [
+          'content-type' => Constants::CONTENT_TYPE_JSON,
+          'accept' => Constants::CONTENT_TYPE_JSON
+        ]
+      ]);
     }
     return $this->httpClient;
   }
 
   /**
-   * @param \Nuxeo\Client\Request $request
-   * @return NuxeoClient
+   * @param Request $request
+   * @return Request
    * @throws NuxeoClientException
    */
-  protected function interceptors($request) {
+  protected function interceptors(Request $request) {
+    $new = $request;
     foreach($this->interceptors as $interceptor) {
-      $interceptor->proceed($this->getHttpClient(), $request);
+      $new = $interceptor->proceed($this->getHttpClient(), $new);
     }
-    return $this;
+    return $new;
   }
 
   /**
    * @return Reader
+   * @throws AnnotationException
    */
   public function getAnnotationReader() {
     if(null === $this->annotationReader) {
@@ -346,26 +359,12 @@ class NuxeoClient {
   }
 
   /**
-   * @return bool
-   */
-  public function isDebug() {
-    return $this->debug;
-  }
-
-  /**
-   * @return resource
-   */
-  public function getDebugStream() {
-    return $this->debugStream;
-  }
-
-  /**
    * @param string $method
    * @param string $url
    * @return Request
    */
   public function createRequest($method, $url) {
-    return $this->getHttpClient()->createRequest($method, $url);
+    return new Request($method, $url);
   }
 
 }

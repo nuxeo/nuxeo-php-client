@@ -19,18 +19,18 @@
 namespace Nuxeo\Client\Util;
 
 
-use Guzzle\Http\Message\AbstractMessage;
+use Psr\Http\Message\ResponseInterface;
 
 class HttpUtils {
 
   /**
-   * @param AbstractMessage $message
+   * @param ResponseInterface $message
    * @param string $type
    * @return bool
    */
   public static function isContentType($message, $type) {
     if($message->hasHeader('Content-Type')) {
-      return stripos($message->getHeader('Content-Type'), $type) !== false;
+      return stripos($message->getHeaderLine('Content-Type'), $type) !== false;
     }
     return false;
   }
