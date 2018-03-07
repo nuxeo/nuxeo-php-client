@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.distribution</groupId>
     <artifactId>nuxeo-distribution</artifactId>
-    <version>9.1-SNAPSHOT</version>
+    <version>9.10</version>
   </parent>
 
   <artifactId>nuxeo-php-client-ftest</artifactId>
@@ -13,6 +13,7 @@
   <properties>
     <nuxeo.tested.version>${nuxeo.distribution.version}</nuxeo.tested.version>
     <phpReportsDir>php-reports</phpReportsDir>
+    <itests.basepath>${basedir}/..</itests.basepath>
   </properties>
 
   <dependencies>
@@ -83,9 +84,9 @@
       </plugin>
 
       <plugin>
-        <groupId>org.nuxeo.build</groupId>
-        <artifactId>php-maven-plugin</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <groupId>com.github.eirslett</groupId>
+        <artifactId>frontend-maven-plugin</artifactId>
+        <version>1.6.1-SNAPSHOT</version>
         <executions>
           <execution>
             <id>phpunit</id>
@@ -94,6 +95,8 @@
             </goals>
             <phase>integration-test</phase>
             <configuration>
+              <installDirectory>${basedir}/../bin</installDirectory>
+              <phpunitPath>${itests.basepath}/vendor/phpunit/phpunit/phpunit</phpunitPath>
               <workingDirectory>${basedir}/..</workingDirectory>
             </configuration>
           </execution>
@@ -106,7 +109,7 @@
         <configuration>
           <rules>
             <requirePluginVersions>
-               <unCheckedPluginList>org.nuxeo.build:php-maven-plugin</unCheckedPluginList>
+               <unCheckedPluginList>com.github.eirslett:frontend-maven-plugin</unCheckedPluginList>
             </requirePluginVersions>
           </rules>
         </configuration>
