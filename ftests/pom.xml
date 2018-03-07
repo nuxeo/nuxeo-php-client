@@ -14,6 +14,8 @@
     <nuxeo.tested.version>${nuxeo.distribution.version}</nuxeo.tested.version>
     <phpReportsDir>php-reports</phpReportsDir>
     <itests.basepath>${basedir}/..</itests.basepath>
+    <phpunit.path>${itests.basepath}/vendor/phpunit/phpunit/phpunit</phpunit.path>
+    <phpunit.args>--group server</phpunit.args>
   </properties>
 
   <dependencies>
@@ -86,7 +88,7 @@
       <plugin>
         <groupId>com.github.eirslett</groupId>
         <artifactId>frontend-maven-plugin</artifactId>
-        <version>1.6.1-SNAPSHOT</version>
+        <version>1.6.1-PHP-SNAPSHOT</version>
         <executions>
           <execution>
             <id>phpunit</id>
@@ -96,7 +98,8 @@
             <phase>integration-test</phase>
             <configuration>
               <installDirectory>${basedir}/../bin</installDirectory>
-              <phpunitPath>${itests.basepath}/vendor/phpunit/phpunit/phpunit</phpunitPath>
+              <phpunitPath>${phpunit.path}</phpunitPath>
+              <arguments>${phpunit.args}</arguments>
               <workingDirectory>${basedir}/..</workingDirectory>
             </configuration>
           </execution>

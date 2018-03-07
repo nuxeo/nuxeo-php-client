@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -ex
+
+PROJECT_PATH="$( cd "$(dirname "$0")"/.. ; pwd -P)"
+
+docker run --rm -v "${PROJECT_PATH}":"${PROJECT_PATH}" -w "${PROJECT_PATH}" \
+  --add-host nuxeo:$(ip -br -4 addr show docker0 | awk '{ gsub(/\/[0-9]+/,"",$3); print $3 }') \
+  dockerpriv.nuxeo.com:443/nuxeo/automation-php-client/php:5.3.3-cli php $@
