@@ -21,7 +21,7 @@
     }
   },
   "require": {
-    "guzzlehttp/guzzle": "3.8.*",
+    "guzzlehttp/guzzle": "~6.0",
     "jms/serializer": "0.16.*",
     "zendframework/zend-http": "2.2.*",
     "paragonie/random_compat": "2.0.*"
