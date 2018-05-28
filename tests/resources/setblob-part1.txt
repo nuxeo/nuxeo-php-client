@@ -1,5 +1,0 @@
-Content-Type: application/json+nxrequest
-Content-Length: 104
-Content-Disposition: inline
-
-{"params":{"document":{"entity-type":"string","value":"/default-domain/workspaces/MyWorkspace/MyFile"}}}

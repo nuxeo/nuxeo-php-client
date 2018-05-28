@@ -22,6 +22,7 @@ namespace Nuxeo\Client\Tests;
 use Guzzle\Http\Message\EntityEnclosingRequest;
 use Guzzle\Http\Message\EntityEnclosingRequestInterface;
 use JMS\Serializer\Annotation as Serializer;
+use Nuxeo\Client\NuxeoClient;
 use Nuxeo\Client\Objects\Audit\LogEntry;
 use Nuxeo\Client\Objects\Blob\Blob;
 use Nuxeo\Client\Objects\Document;
@@ -150,14 +151,18 @@ class OperationTest extends TestCase {
 
     $client->automation('Blob.AttachOnDocument')
       ->param('document', self::DOC_PATH)
-      ->input(Blob::fromFile($this->getResource('user.json'), null))
+      ->input(Blob::fromFile($this->getResource('myfile.txt'), null))
       ->execute(Blob::className);
 
     $this->assertRequestPathMatches($client, 'automation/Blob.AttachOnDocument');
     $this->assertArrayHasKey('content-type', $client->getRequest()->getHeaders());
+
     $this->assertStringMatchesFormat(
       'multipart/related;boundary=%s',
       $client->getRequest()->getHeader('content-type')[0]);
+
+    $this->assertStringMatchesFormatFile($this->getResource('setblob.txt'),
+      preg_replace('/\r\n/', "\n", (string) $client->getRequest()->getBody()));
 
   }
 

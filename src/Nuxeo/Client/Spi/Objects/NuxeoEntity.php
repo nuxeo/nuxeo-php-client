@@ -20,7 +20,9 @@ namespace Nuxeo\Client\Spi\Objects;
 
 
 use GuzzleHttp\Exception\BadResponseException;
-use Guzzle\Plugin\Log\LogPlugin;
+use function GuzzleHttp\Psr7\stream_for;
+use GuzzleHttp\Psr7\Uri;
+use GuzzleHttp\Psr7\UriResolver;
 use JMS\Serializer\Annotation as Serializer;
 use Nuxeo\Client\Constants;
 use Nuxeo\Client\NuxeoClient;
@@ -31,8 +33,7 @@ use Nuxeo\Client\Spi\Http\Method\AbstractMethod;
 use Nuxeo\Client\Spi\NuxeoClientException;
 use Nuxeo\Client\Spi\NuxeoException;
 use Nuxeo\Client\Util\HttpUtils;
-use Zend\Uri\Http as HttpUri;
-use Zend\Uri\Uri;
+use Psr\Http\Message\UriInterface;
 
 abstract class NuxeoEntity {
 
@@ -69,10 +70,10 @@ abstract class NuxeoEntity {
 
   /**
    * @param string $path
-   * @return Uri
+   * @return UriInterface
    */
   protected function computeRequestUrl($path) {
-    return HttpUri::merge($this->getNuxeoClient()->getApiUrl(), $path);
+    return UriResolver::resolve($this->getNuxeoClient()->getApiUrl(), new Uri($path));
   }
 
   /**
@@ -128,7 +129,7 @@ abstract class NuxeoEntity {
       if(!is_string($body)) {
         $body = $this->nuxeoClient->getConverter()->writeJSON($body);
       }
-      $request = $request->setBody($body);
+      $request = $request->withBody(stream_for($body));
     }
 
     try {
@@ -145,24 +146,26 @@ abstract class NuxeoEntity {
 
           return Blob::fromHttpResponse($response);
         }
-        $body = $this->nuxeoClient->getConverter()->readJSON($response->getBody()->getContents(), $type);
+        $body = $this->nuxeoClient->getConverter()->readJSON((string) $response->getBody(), $type);
 
         return $this->reconnectObject($body, $this->getNuxeoClient());
       }
     } catch(BadResponseException $e) {
       $response = $e->getResponse();
-      $responseBody = $response->getBody()->getContents();
+      $responseBody = (string) $response->getBody();
       if(empty($responseBody)) {
         throw new NuxeoClientException($response->getReasonPhrase(), $response->getStatusCode());
-      } elseif(!HttpUtils::isContentType($response, Constants::CONTENT_TYPE_JSON)) {
-        throw new NuxeoClientException($responseBody, $response->getStatusCode());
-      } else {
-        throw NuxeoClientException::fromPrevious(
-          $this->getNuxeoClient()->getConverter()->readJSON($responseBody, NuxeoException::className),
-          $response->getReasonPhrase(),
-          $response->getStatusCode()
-        );
       }
+
+      if(!HttpUtils::isContentType($response, Constants::CONTENT_TYPE_JSON)) {
+        throw new NuxeoClientException($responseBody, $response->getStatusCode());
+      }
+
+      throw NuxeoClientException::fromPrevious(
+        $this->getNuxeoClient()->getConverter()->readJSON($responseBody, NuxeoException::className),
+        $response->getReasonPhrase(),
+        $response->getStatusCode()
+      );
     }
     return null;
   }
@@ -192,7 +195,7 @@ abstract class NuxeoEntity {
    * @return mixed
    */
   protected function reconnectObject($object, $nuxeoClient) {
-    if($object instanceof NuxeoEntity) {
+    if($object instanceof self) {
       $object->nuxeoClient = $nuxeoClient;
     }
     return $object;

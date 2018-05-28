@@ -27,7 +27,10 @@ use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\MessageFormatter;
 use GuzzleHttp\Middleware;
-use GuzzleHttp\Psr7\MessageTrait;
+use function GuzzleHttp\Psr7\stream_for;
+use GuzzleHttp\Psr7\Uri;
+use GuzzleHttp\Psr7\UriResolver;
+use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Nuxeo\Client\Auth\BasicAuthentication;
@@ -41,11 +44,9 @@ use Nuxeo\Client\Spi\Interceptor;
 use Nuxeo\Client\Spi\NuxeoClientException;
 use Nuxeo\Client\Spi\NuxeoException;
 use Nuxeo\Client\Spi\SimpleInterceptor;
-use Nuxeo\Client\Util\HttpUtils;
-use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\UriInterface;
 use Psr\Log\LoggerInterface;
-use Zend\Uri\Exception\InvalidUriPartException;
-use Zend\Uri\Http as HttpUri;
+use Psr\Log\LogLevel;
 
 AnnotationRegistry::registerLoader('class_exists');
 
@@ -56,7 +57,7 @@ AnnotationRegistry::registerLoader('class_exists');
 class NuxeoClient {
 
   /**
-   * @var HttpUri
+   * @var UriInterface
    */
   private $baseUrl;
 
@@ -86,13 +87,22 @@ class NuxeoClient {
   private $logger;
 
   /**
+   * @var MessageFormatter
+   */
+  private $logFormatter;
+
+  /**
    * @param string $url
    * @param string $username
    * @param string $password
    * @throws NuxeoClientException
    */
   public function __construct($url = 'http://localhost:8080/nuxeo', $username = 'Administrator', $password = 'Administrator') {
-    $this->logger = new Logger('nxPHPClientLogger', [new StreamHandler('php://stdout', Logger::INFO)]);
+    $logHandler = new StreamHandler('php://stdout', Logger::INFO);
+    $this->logger = new Logger('nxPHPClientLogger', [$logHandler]);
+    $this->logFormatter = new MessageFormatter();
+
+    $logHandler->setFormatter(new LineFormatter(null, null, true));
     try {
       $this->setBaseUrl($url);
     } catch(\InvalidArgumentException $e) {
@@ -103,25 +113,21 @@ class NuxeoClient {
   }
 
   /**
-   * @param string|\Zend\Uri\Uri $baseUrl
+   * @param string|Uri $baseUrl
    * @throws \InvalidArgumentException
    */
   public function setBaseUrl($baseUrl) {
     if (is_string($baseUrl)) {
-      try {
-        $baseUrl = new HttpUri($baseUrl);
-      } catch (InvalidUriPartException $e) {
-        throw new \InvalidArgumentException(
-          sprintf('Invalid URI passed as string (%s)', (string) $baseUrl),
-          $e->getCode(),
-          $e
-        );
-      }
-    } elseif (!($baseUrl instanceof HttpUri)) {
+      $baseUrl = new Uri($baseUrl);
+    } elseif (!($baseUrl instanceof UriInterface)) {
       throw new \InvalidArgumentException(
-        'URI must be an instance of Zend\Uri\Http or a string'
+        'URI must be an instance of \Psr\Http\Message\UriInterface or a string'
       );
     }
+    if('/' !== substr($baseUrl->getPath(), -1)) {
+      $baseUrl = $baseUrl->withPath($baseUrl->getPath().'/');
+    }
+
     $this->baseUrl = $baseUrl;
   }
 
@@ -133,17 +139,17 @@ class NuxeoClient {
   }
 
   /**
-   * @return \Zend\Uri\Uri
+   * @return UriInterface
    */
   public function getBaseUrl() {
     return $this->baseUrl;
   }
 
   /**
-   * @return \Zend\Uri\Uri
+   * @return UriInterface
    */
   public function getApiUrl() {
-    return HttpUri::merge($this->getBaseUrl(), Constants::API_PATH);
+    return UriResolver::resolve($this->getBaseUrl(), new Uri(Constants::API_PATH));
   }
 
   /**
@@ -212,7 +218,7 @@ class NuxeoClient {
    * @return Response
    * @throws NuxeoClientException
    */
-  public function get($url, $query = array()) {
+  public function get($url, array $query = array()) {
     $request = $this->createRequest(Request::GET, $url)
       ->withQuery($query);
 
@@ -230,11 +236,11 @@ class NuxeoClient {
    * @return Response
    * @throws NuxeoClientException
    */
-  public function post($url, $body = null, $files = array()) {
+  public function post($url, $body = null, array $files = array()) {
     $request = $this->createRequest(Request::POST, $url);
 
     try {
-      $request = $request->setBody($body);
+      $request = $request->withBody(stream_for($body));
 
       foreach($files as $file) {
         $request = $request->addRelatedFile($file);
@@ -250,6 +256,7 @@ class NuxeoClient {
    * @param $request Request
    * @return Response
    * @throws NuxeoClientException
+   * @throws GuzzleException
    */
   public function perform($request) {
     $new = $this->interceptors($request);
@@ -270,6 +277,19 @@ class NuxeoClient {
       $this->setupDefaultMarshallers();
     }
     return $this->converter;
+  }
+
+  /**
+   * @return self
+   */
+  public function debug() {
+    /** @var HandlerStack $stack */
+    $stack = $this->getHttpClient()->getConfig('handler');
+
+    $stack->remove('log');
+    $stack->push(Middleware::log($this->logger, new MessageFormatter(MessageFormatter::DEBUG), LogLevel::INFO), 'log');
+
+    return $this;
   }
 
   /**
@@ -364,7 +384,8 @@ class NuxeoClient {
    * @return Request
    */
   public function createRequest($method, $url) {
-    return new Request($method, $url);
+    return (new Request($method, $url))
+      ->withHeader('content-type', 'application/json');
   }
 
 }

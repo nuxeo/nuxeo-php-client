@@ -101,7 +101,7 @@ class Blob extends NuxeoEntity {
     return new Blob(
       $filename,
       $response->getBody(),
-      $response->getContentType());
+      $response->getHeaderLine('content-type'));
   }
 
   /**

@@ -19,11 +19,11 @@
 namespace Nuxeo\Client\Tests\Framework;
 
 
+use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Psr7\Uri;
+use GuzzleHttp\Psr7\UriResolver;
 use Nuxeo\Client\Constants;
-use Nuxeo\Client\Response;
-use Nuxeo\Client\Spi\Http\Message\HeaderFactory;
 use Nuxeo\Client\Tests\Client;
-use Zend\Uri\Uri;
 
 abstract class TestCase extends \PHPUnit_Framework_TestCase {
   const LOGIN = 'Administrator';
@@ -44,7 +44,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase {
   /**
    * @var Client
    */
-  private $client;
+  protected $client;
 
   public function readPartFromFile($path) {
     $part = file_get_contents($this->getResource($path));
@@ -74,7 +74,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase {
    * @param string $body
    * @return Response
    */
-  protected function createResponse($code = 200, $headers = array(), $body = '') {
+  protected function createResponse($code = 200, array $headers = array(), $body = '') {
     return new Response($code, $headers, $body);
   }
 
@@ -96,7 +96,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase {
    * @param integer $requestIndex
    */
   public function assertRequestPathMatches($client, $relativePath, $requestIndex = 0) {
-    self::assertEquals(Uri::merge($client->getApiUrl(), $relativePath)->getPath(), urldecode($client->getRequest($requestIndex)->getUri()->getPath()));
+    self::assertEquals(UriResolver::resolve($client->getApiUrl(), new Uri($relativePath))->getPath(), urldecode($client->getRequest($requestIndex)->getUri()->getPath()));
   }
 
   /**

@@ -1,0 +1,13 @@
+--NXPHP-%s.%d
+Content-Disposition: inline
+Content-Type: application/json
+Content-Length: 71
+
+{"params":{"document":"/default-domain/workspaces/MyWorkspace/MyFile"}}
+--NXPHP-%s.%d
+Content-Disposition: attachment;filename="myfile.txt"
+Content-Type: text/plain
+Content-Length: 30
+
+All your base are belong to us
+--NXPHP-%s.%d--

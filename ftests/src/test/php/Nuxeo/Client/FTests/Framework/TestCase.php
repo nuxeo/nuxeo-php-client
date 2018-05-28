@@ -18,21 +18,19 @@
 
 namespace Nuxeo\Client\FTests\Framework;
 
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use Nuxeo\Client\NuxeoClient;
 use Nuxeo\Client\Tests\Framework\TestCase as BaseCase;
 
 class TestCase extends BaseCase {
 
   /**
-   * @var NuxeoClient
-   */
-  private $client;
-
-  /**
    * @param string $url
    * @param string $username
    * @param string $password
    * @return NuxeoClient
+   * @throws \Nuxeo\Client\Spi\NuxeoClientException
    */
   protected function getClient($url = self::URL, $username = self::LOGIN, $password = self::PASSWORD) {
     if(null === $this->client) {

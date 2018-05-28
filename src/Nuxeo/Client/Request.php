@@ -23,11 +23,8 @@ use GuzzleHttp\Psr7\AppendStream;
 use GuzzleHttp\Psr7\MultipartStream;
 use GuzzleHttp\Psr7\Request as BaseRequest;
 use function GuzzleHttp\Psr7\stream_for;
-use Nuxeo\Client\Spi\Http\Message\HeaderFactory;
-use Nuxeo\Client\Spi\Http\Message\MultipartRelatedIterator;
 use Nuxeo\Client\Spi\Http\Message\RelatedFile;
 use Nuxeo\Client\Spi\Http\Message\RelatedPartInterface;
-use Nuxeo\Client\Spi\Http\Message\RelatedString;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
 use Zend\Uri\Uri;
@@ -40,7 +37,7 @@ class Request extends BaseRequest {
   const GET = 'GET';
   const POST = 'POST';
 
-  protected $relatedParts = array();
+  protected $relatedFiles = array();
 
   /**
    * @var AppendStream
@@ -82,40 +79,37 @@ class Request extends BaseRequest {
   public function addRelatedFile($file, $contentType = null) {
     $new = clone $this;
 
-    $new->relatedParts[] = [
+    $new->relatedFiles[] = [
       'name' => 'ignored',
       'contents' => $file->getContent(),
       'headers' => [
-        'content-disposition' => $file->getContentDisposition(),
-        'content-type' => $contentType
+        'Content-Disposition' => $file->getContentDisposition(),
+        'Content-Type' => $contentType
       ],
       'filename' => $file->getFilename()
     ];
+
+    $new->originalContentType = $this->getHeader('content-type')[0];
+
     return $new->withHeader('content-type', sprintf('%s;boundary=%s', self::MULTIPART_RELATED, $this->boundary));
-  }
-
-  public function setBody($body, $contentType = null) {
-    $new = $this->withBody(stream_for($body));
-    $new->originalContentType = $contentType;
-
-    return $new;
   }
 
   /**
    * @return StreamInterface
+   * @throws \InvalidArgumentException
    */
   public function getBody() {
-    if($this->relatedParts) {
-      $this->relatedParts[] = [
+    if($this->relatedFiles) {
+      $body = new MultipartStream(array_merge( [[
         'name' => 'ignored',
         'contents' => parent::getBody(),
         'headers' => [
-          'content-disposition' => RelatedPartInterface::DISPOSITION_INLINE
+          'Content-Disposition' => RelatedPartInterface::DISPOSITION_INLINE,
+          'Content-Type' => $this->originalContentType
         ],
-      ];
-      $this->body->addStream(stream_for(new MultipartStream($this->relatedParts, $this->boundary)));
+      ]], $this->relatedFiles), $this->boundary);
 
-      return $this->body;
+      return $body;
     }
 
     return parent::getBody();
