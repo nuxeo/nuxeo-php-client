@@ -18,62 +18,65 @@
  */
 
 node('SLAVE') {
-    timeout(60) {
-        timestamps {
-            try {
-                tool type: 'hudson.model.JDK', name: 'java-8-openjdk'
-                tool type: 'hudson.tasks.Maven$MavenInstallation', name: 'maven-3'
+  timeout(60) {
+    timestamps {
+      try {
+        tool type: 'hudson.model.JDK', name: 'java-8-openjdk'
+        def mvn = tool type: 'hudson.tasks.Maven$MavenInstallation', name: 'maven-3'
+        def composer = 'php composer.phar'
+        def phpunit = 'php vendor/bin/phpunit'
 
-                def dockerImage = docker.image('dockerin.nuxeo.com/nuxeo/nuxeo-qaimage-php:php53-cli')
-                String ctnrId = sh(script:"cat /proc/self/cgroup | cut -d : -f3 | grep -oe '[0-9a-fA-F]\\{12,\\}' | head -1 || true", returnStdout: true).trim()
+        def dockerImage = docker.image('php:cli')
+        String ctnrId = sh(script:"cat /proc/self/cgroup | cut -d : -f3 | grep -oe '[0-9a-fA-F]\\{12,\\}' | head -1 || true", returnStdout: true).trim()
 
-                dockerImage.pull()
+        dockerImage.pull()
 
-                stage('checkout') {
-                    checkout scm
-                }
-                dockerImage.inside {
-                    stage('install dependencies') {
-                        sh """#!/bin/bash -ex
-                            curl -sS https://getcomposer.org/installer | php
-                            php composer.phar install
-                        """
-                    }
-                    stage('dependencies vulnerability check') {
-                        sh 'php vendor/bin/security-checker security:check --end-point=http://security.sensiolabs.org/check_lock'
-                    }
-                    stage('dependencies outdated check') {
-                        try {
-                            echo """
+        stage('checkout') {
+          checkout scm
+          sh 'curl -sS https://getcomposer.org/installer | php'
+        }
+        dockerImage.withRun("-v ${env.WORKSPACE}:${env.WORKSPACE} -w ${env.WORKSPACE} --link ${ctnrId}:nuxeo", 'tail -f /dev/null') { c ->
+          withEnv(["PATH+BIN=${env.WORKSPACE}/bin"]) {
+            writeFile file: 'bin/php', text: """#!/usr/bin/env bash
+                set -ex
+                docker exec -u 1001:1001 ${c.id} php \$@
+            """
+
+            sh """
+              chmod +x bin/php
+              docker exec ${c.id} bash -c 'apt-get update && apt-get install -y zlib1g-dev && docker-php-ext-install zip'"""
+
+            stage('install dependencies') {
+              sh "${composer} install"
+            }
+            stage('dependencies vulnerability check') {
+              sh 'php vendor/bin/security-checker security:check'
+            }
+            stage('dependencies outdated check') {
+              try {
+                echo """
 Outdated dependencies Report
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~"""
-                            sh 'php composer.phar outdated -D --strict'
-                        } catch (ignore) {
-                            echo 'There are outdated dependencies, marking the build as Unstable.'
-                            currentBuild.result = 'UNSTABLE'
-                        }
-                    }
-                    stage('unit tests') {
-                        sh 'php vendor/bin/phpunit --exclude-group server'
-                    }
-                }
-                dockerImage.withRun("-v ${env.WORKSPACE}:${env.WORKSPACE} -w ${env.WORKSPACE} --link ${ctnrId}:nuxeo", 'tail -f /dev/null') { c ->
-                    stage('ftests') {
-                        writeFile file: 'bin/php', text: """#!/usr/bin/env bash
-                            set -ex
-                            docker exec -u jenkins ${c.id} php \$@
-                        """
-                        sh """#!/usr/bin/env bash
-                            chmod +x bin/php
-                            mvn -f ftests/pom.xml clean verify
-                        """
-                    }
-
-                }
-            } finally {
-//                claimPublisher()
+                sh "${composer} outdated -D --strict"
+              } catch (ignore) {
+                echo 'There are outdated dependencies, marking the build as Unstable.'
+                currentBuild.result = 'UNSTABLE'
+              }
+            }
+            stage('unit tests') {
+              sh "${phpunit} --exclude-group server"
+            }
+            stage('ftests') {
+              sh "${mvn} -f ftests/pom.xml clean verify"
             }
 
+          }
         }
+
+      } finally {
+//                claimPublisher()
+      }
+
     }
+  }
 }

@@ -98,7 +98,7 @@
             </goals>
             <phase>integration-test</phase>
             <configuration>
-              <installDirectory>/usr/bin</installDirectory>
+              <installDirectory>${basedir}/../bin</installDirectory>
               <phpunitPath>${phpunit.path}</phpunitPath>
               <arguments>${phpunit.args}</arguments>
               <workingDirectory>${basedir}/..</workingDirectory>
