@@ -36,7 +36,7 @@ class OperationTest extends TestCase {
       ->schemas('*')
       ->automation('Repository.Query')
       ->param('query', 'SELECT * FROM Document')
-      ->execute(Documents::className);
+      ->execute(Documents::class);
 
     $this->assertGreaterThan(5, $documents->size());
   }
@@ -53,7 +53,7 @@ class OperationTest extends TestCase {
         'type' => 'File',
         'name' => 'Some file',
         'properties' => 'dc:title=Some file'
-      ))->execute(Document::className);
+      ))->execute(Document::class);
 
     $this->assertNotNull($doc->getUid());
 
@@ -67,9 +67,9 @@ class OperationTest extends TestCase {
       ->voidOperation(false)
       ->automation('Blob.Get')
       ->input($doc->getPath())
-      ->execute(Blob::className);
+      ->execute(Blob::class);
 
-    $this->assertInstanceOf(Blob::className, $blob);
+    $this->assertInstanceOf(Blob::class, $blob);
   }
 
   /**
@@ -80,7 +80,7 @@ class OperationTest extends TestCase {
     $continents = $this->getClient()
       ->automation('Directory.Entries')
       ->param('directoryName', 'continent')
-      ->execute(DirectoryEntries::className);
+      ->execute(DirectoryEntries::class);
 
     $this->assertCount(7, $continents);
   }

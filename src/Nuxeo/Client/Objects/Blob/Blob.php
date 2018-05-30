@@ -18,10 +18,9 @@
 
 namespace Nuxeo\Client\Objects\Blob;
 
-use GuzzleHttp\Psr7\Stream;
+
 use function GuzzleHttp\Psr7\stream_for;
 use Nuxeo\Client\Response;
-use Nuxeo\Client\Spi\Http\Header\ContentDisposition;
 use Nuxeo\Client\Spi\NoSuchFileException;
 use Nuxeo\Client\Spi\NuxeoClientException;
 use Nuxeo\Client\Spi\Objects\NuxeoEntity;
@@ -29,8 +28,6 @@ use Psr\Http\Message\StreamInterface;
 
 
 class Blob extends NuxeoEntity {
-
-  const className = __CLASS__;
 
   /**
    * @var string
@@ -81,13 +78,12 @@ class Blob extends NuxeoEntity {
    * @return Blob
    */
   public static function fromHttpResponse($response) {
-    /** @var ContentDisposition $disposition */
     $disposition = $response->getHeader('Content-Disposition')[0];
     $filename = null;
 
     foreach(explode(';', $disposition) as $part) {
       if(preg_match('/^filename\*?=/', trim($part))) {
-        list($field, $value) = explode('=', $part);
+        [$field, $value] = explode('=', $part);
         if(null === $filename || strpos($field, '*') !== false) {
           $filename = $value;
         }
@@ -95,7 +91,7 @@ class Blob extends NuxeoEntity {
     }
 
     if(preg_match('/^[^\']+\'\'/', $filename)) {
-      list(, $filename) = explode('\'\'', $filename);
+      [, $filename] = explode('\'\'', $filename);
     }
 
     return new Blob(

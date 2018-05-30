@@ -22,12 +22,11 @@ namespace Nuxeo\Client;
 use GuzzleHttp\Psr7\AppendStream;
 use GuzzleHttp\Psr7\MultipartStream;
 use GuzzleHttp\Psr7\Request as BaseRequest;
-use function GuzzleHttp\Psr7\stream_for;
 use Nuxeo\Client\Spi\Http\Message\RelatedFile;
 use Nuxeo\Client\Spi\Http\Message\RelatedPartInterface;
+use Nuxeo\Client\Spi\NuxeoClientException;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
-use Zend\Uri\Uri;
 
 class Request extends BaseRequest {
 
@@ -75,19 +74,24 @@ class Request extends BaseRequest {
    * @param RelatedFile $file
    * @param string $contentType
    * @return \GuzzleHttp\Psr7\MessageTrait
+   * @throws \Nuxeo\Client\Spi\NuxeoClientException
    */
   public function addRelatedFile($file, $contentType = null) {
     $new = clone $this;
 
-    $new->relatedFiles[] = [
-      'name' => 'ignored',
-      'contents' => $file->getContent(),
-      'headers' => [
-        'Content-Disposition' => $file->getContentDisposition(),
-        'Content-Type' => $contentType
-      ],
-      'filename' => $file->getFilename()
-    ];
+    try {
+      $new->relatedFiles[] = [
+        'name' => 'ignored',
+        'contents' => $file->getContent(),
+        'headers' => [
+          'Content-Disposition' => $file->getContentDisposition(),
+          'Content-Type' => $contentType
+        ],
+        'filename' => $file->getFilename()
+      ];
+    } catch(\RuntimeException $e) {
+      throw NuxeoClientException::fromPrevious($e);
+    }
 
     $new->originalContentType = $this->getHeader('content-type')[0];
 
@@ -136,7 +140,7 @@ class Request extends BaseRequest {
    * @return mixed|null
    */
   protected function getOption($name, $default = null) {
-    return isset($this->options[$name])?$this->options[$name]:$default;
+    return $this->options[$name] ?? $default;
   }
 
   /**

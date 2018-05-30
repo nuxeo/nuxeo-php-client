@@ -19,11 +19,9 @@
 namespace Nuxeo\Client\Objects\Operation;
 
 
-use JMS\Serializer\Annotation as Serializer;
+
 
 class CounterTimestampedValue {
-
-  const className = __CLASS__;
 
   /**
    * @var integer
@@ -40,7 +38,7 @@ class CounterTimestampedValue {
    * @param integer[] $data
    */
   public function __construct(array $data = array()) {
-    list($this->timestamp, $this->value) = $data;
+    [$this->timestamp, $this->value] = $data;
   }
 
   /**

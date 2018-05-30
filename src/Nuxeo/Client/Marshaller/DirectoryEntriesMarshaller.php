@@ -30,14 +30,14 @@ class DirectoryEntriesMarshaller extends AbstractJsonObjectMarshaller {
    * @return array
    */
   protected function getType() {
-    return array('name' => 'array', 'params' => array(array('name' => DirectoryEntry::className)));
+    return array('name' => 'array', 'params' => array(array('name' => DirectoryEntry::class)));
   }
 
   /**
    * @return string
    */
   protected function getClassname() {
-    return DirectoryEntries::className;
+    return DirectoryEntries::class;
   }
 
 }

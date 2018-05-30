@@ -28,8 +28,6 @@ use Nuxeo\Client\Spi\NuxeoClientException;
 
 class DocRef {
 
-  const className = __CLASS__;
-
   /**
    * @var string
    * @Serializer\Type("string")
@@ -64,14 +62,14 @@ class DocRef {
    * @throws NuxeoClientException
    * @return Document
    */
-  public function getDocument($type = Document::className) {
+  public function getDocument($type = Document::class) {
     if(null !== $this->nuxeoClient) {
       try {
         return $this->nuxeoClient
           ->automation('Document.Fetch')
           ->param('value', $this->getRef())
           ->execute($type);
-      } catch(NoSuchOperationException $e) {
+      } catch(NoSuchOperationException|\RuntimeException $e) {
         throw NuxeoClientException::fromPrevious($e, 'Could not fetch linked document');
       }
     }

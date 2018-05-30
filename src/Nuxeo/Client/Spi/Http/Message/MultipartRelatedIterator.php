@@ -20,7 +20,7 @@
 
 namespace Nuxeo\Client\Spi\Http\Message;
 
-
+use function \get_class;
 use Nuxeo\Client\Spi\ClassCastException;
 
 class MultipartRelatedIterator extends \ArrayIterator {
@@ -36,6 +36,9 @@ class MultipartRelatedIterator extends \ArrayIterator {
     $this->boundary = $boundary;
   }
 
+  /**
+   * @throws \Nuxeo\Client\Spi\ClassCastException
+   */
   public function current() {
     $part = parent::current();
 
@@ -46,9 +49,8 @@ class MultipartRelatedIterator extends \ArrayIterator {
         $part->getContentLength(),
         $part->getContentDisposition(),
         $part->getContent()) . ($this->count() - 1 === $this->key() ? $this->boundary . '--' . "\r\n" : '');
-    } else {
-      throw new ClassCastException(sprintf('Cannot cast %s as %s', get_class($part), RelatedPartInterface::className));
     }
+    throw new ClassCastException(sprintf('Cannot cast %s as %s', get_class($part), RelatedPartInterface::class));
 
   }
 

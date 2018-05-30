@@ -31,6 +31,4 @@ interface NuxeoMarshaller {
 
   public function write($object, VisitorInterface $visitor, SerializationContext $context);
 
-  const className = __CLASS__;
-
 }

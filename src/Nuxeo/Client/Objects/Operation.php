@@ -21,11 +21,11 @@
 namespace Nuxeo\Client\Objects;
 
 
+use Doctrine\Common\Annotations\AnnotationException;
 use Nuxeo\Client\Constants;
 use Nuxeo\Client\NuxeoClient;
 use Nuxeo\Client\Objects\Blob\Blob;
 use Nuxeo\Client\Objects\Blob\Blobs;
-use Nuxeo\Client\Spi\ClassCastException;
 use Nuxeo\Client\Spi\Http\Message\RelatedFile;
 use Nuxeo\Client\Spi\Http\Method\POST;
 use Nuxeo\Client\Spi\NoSuchOperationException;
@@ -101,8 +101,10 @@ class Operation extends NuxeoEntity {
    * @param string $type
    * @param string $operationId
    * @return mixed
-   * @throws NuxeoClientException
-   * @throws ClassCastException
+   * @throws \RuntimeException
+   * @throws \Nuxeo\Client\Spi\NoSuchOperationException
+   * @throws \Nuxeo\Client\Spi\NuxeoClientException
+   * @throws \Nuxeo\Client\Spi\ClassCastException
    */
   public function execute($type = null, $operationId = null) {
     if(null === $operationId) {
@@ -128,10 +130,14 @@ class Operation extends NuxeoEntity {
       }
     }
 
-    return $this->getResponseNew(POST::create('automation/{operationId}')
-      ->setBody($client->getConverter()->writeJSON($this->body))
-      ->setFiles($files),
-      $type);
+    try {
+      return $this->getResponseNew(POST::create('automation/{operationId}')
+        ->setBody($client->getConverter()->writeJSON($this->body))
+        ->setFiles($files),
+        $type);
+    } catch(AnnotationException $e) {
+      throw NuxeoClientException::fromPrevious($e);
+    }
   }
 
 }

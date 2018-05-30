@@ -82,6 +82,7 @@ REGEX;
     $offset = 0;
     $url = '';
 
+    /** @var string[] $matches */
     foreach ($matches as $set) {
       if ($set[0][1] > $offset) {
         $url .= substr($route, $offset, $set[0][1] - $offset);

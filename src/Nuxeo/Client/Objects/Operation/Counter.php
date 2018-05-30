@@ -23,8 +23,6 @@ use JMS\Serializer\Annotation as Serializer;
 
 class Counter {
 
-  const className = __CLASS__;
-
   /**
    * @var CounterTimestampedValue[]
    * @Serializer\Type("array<Nuxeo\Client\Objects\Operation\CounterTimestampedValue>")

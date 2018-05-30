@@ -19,11 +19,9 @@
 namespace Nuxeo\Client\Spi;
 
 use Exception;
-use JMS\Serializer\Annotation as Serializer;
+
 
 class NuxeoException extends \Exception {
-
-  const className = __CLASS__;
 
   public function __construct($message = '', $code = 0, Exception $previous = null) {
     parent::__construct($message, $code, $previous);

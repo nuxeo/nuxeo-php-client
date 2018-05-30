@@ -23,13 +23,12 @@ namespace Nuxeo\Client\Objects;
 
 use JMS\Serializer\Annotation as Serializer;
 use Nuxeo\Client\Constants;
+use Nuxeo\Client\NuxeoClient;
 use Nuxeo\Client\Spi\ClassCastException;
 use Nuxeo\Client\Spi\NuxeoClientException;
 use Nuxeo\Client\Spi\Objects\NuxeoEntity;
 
 class Document extends NuxeoEntity {
-
-  const className = __CLASS__;
 
   /**
    * @var string
@@ -123,12 +122,14 @@ class Document extends NuxeoEntity {
 
   /**
    * Document constructor.
+   * @param NuxeoClient $nuxeoClient
    */
   public function __construct($nuxeoClient = null) {
     parent::__construct(Constants::ENTITY_TYPE_DOCUMENT, $nuxeoClient);
   }
 
   /**
+   * @param NuxeoClient $nuxeoClient
    * @return self
    */
   public static function create($nuxeoClient = null) {
@@ -139,17 +140,16 @@ class Document extends NuxeoEntity {
    * @param $name
    * @param $type
    * @return string|mixed
+   * @throws \Doctrine\Common\Annotations\AnnotationException
    */
   public function getProperty($name, $type = null) {
     if(array_key_exists($name, $this->properties)) {
       if(null !== $type && $this->getNuxeoClient()) {
         return $this->getNuxeoClient()->getConverter()->readData($this->properties[$name], $type);
-      } else {
-        return $this->properties[$name];
       }
-    } else {
-      return null;
+      return $this->properties[$name];
     }
+    return null;
   }
 
   /**
@@ -170,9 +170,8 @@ class Document extends NuxeoEntity {
   public function fetchBlob() {
     if($this->getNuxeoClient()) {
       return $this->getNuxeoClient()->repository()->fetchBlobById($this->getUid(), Constants::DEFAULT_FILE_CONTENT);
-    } else {
-      throw new NuxeoClientException('You should pass to your Nuxeo object the client instance');
     }
+    throw new NuxeoClientException('You should pass to your Nuxeo object the client instance');
   }
 
   /**
@@ -183,9 +182,8 @@ class Document extends NuxeoEntity {
   public function fetchChildren() {
     if($this->getNuxeoClient()) {
       return $this->getNuxeoClient()->repository()->fetchChildrenById($this->getUid());
-    } else {
-      throw new NuxeoClientException('You should pass to your Nuxeo object the client instance');
     }
+    throw new NuxeoClientException('You should pass to your Nuxeo object the client instance');
   }
 
   /**

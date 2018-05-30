@@ -18,6 +18,7 @@
 
 namespace Nuxeo\Client;
 
+use function \is_string;
 use Doctrine\Common\Annotations\AnnotationException;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
@@ -87,23 +88,18 @@ class NuxeoClient {
   private $logger;
 
   /**
-   * @var MessageFormatter
-   */
-  private $logFormatter;
-
-  /**
    * @param string $url
    * @param string $username
    * @param string $password
    * @throws NuxeoClientException
    */
   public function __construct($url = 'http://localhost:8080/nuxeo', $username = 'Administrator', $password = 'Administrator') {
-    $logHandler = new StreamHandler('php://stdout', Logger::INFO);
-    $this->logger = new Logger('nxPHPClientLogger', [$logHandler]);
-    $this->logFormatter = new MessageFormatter();
-
-    $logHandler->setFormatter(new LineFormatter(null, null, true));
     try {
+      $logHandler = new StreamHandler('php://stdout', Logger::INFO);
+      $this->logger = new Logger('nxPHPClientLogger', [$logHandler]);
+
+      $logHandler->setFormatter(new LineFormatter(null, null, true));
+
       $this->setBaseUrl($url);
     } catch(\InvalidArgumentException $e) {
       NuxeoClientException::fromPrevious($e);
@@ -320,22 +316,21 @@ class NuxeoClient {
    * @throws AnnotationException
    */
   protected function setupDefaultMarshallers() {
-    $this->getConverter()->registerMarshaller(Blob::className, new Marshaller\BlobMarshaller());
-    $this->getConverter()->registerMarshaller(Blobs::className, new Marshaller\BlobsMarshaller());
-    $this->getConverter()->registerMarshaller(Operation\ActionList::className, new Marshaller\ActionListMarshaller());
-    $this->getConverter()->registerMarshaller(Operation\CounterList::className, new Marshaller\CounterListMarshaller());
-    $this->getConverter()->registerMarshaller(Operation\CounterTimestampedValue::className, new Marshaller\CounterTimestampedValueMarshaller());
-    $this->getConverter()->registerMarshaller(Operation\DirectoryEntries::className, new Marshaller\DirectoryEntriesMarshaller());
-    $this->getConverter()->registerMarshaller(Operation\DocRef::className, new Marshaller\DocRefMarshaller($this));
-    $this->getConverter()->registerMarshaller(Operation\LogEntries::className, new Marshaller\LogEntriesMarshaller());
-    $this->getConverter()->registerMarshaller(Operation\UserGroupList::className, new Marshaller\UserGroupListMarshaller());
-    $this->getConverter()->registerMarshaller(NuxeoException::className, new Marshaller\NuxeoExceptionMarshaller());
+    $this->getConverter()->registerMarshaller(Blob::class, new Marshaller\BlobMarshaller());
+    $this->getConverter()->registerMarshaller(Blobs::class, new Marshaller\BlobsMarshaller());
+    $this->getConverter()->registerMarshaller(Operation\ActionList::class, new Marshaller\ActionListMarshaller());
+    $this->getConverter()->registerMarshaller(Operation\CounterList::class, new Marshaller\CounterListMarshaller());
+    $this->getConverter()->registerMarshaller(Operation\CounterTimestampedValue::class, new Marshaller\CounterTimestampedValueMarshaller());
+    $this->getConverter()->registerMarshaller(Operation\DirectoryEntries::class, new Marshaller\DirectoryEntriesMarshaller());
+    $this->getConverter()->registerMarshaller(Operation\DocRef::class, new Marshaller\DocRefMarshaller($this));
+    $this->getConverter()->registerMarshaller(Operation\LogEntries::class, new Marshaller\LogEntriesMarshaller());
+    $this->getConverter()->registerMarshaller(Operation\UserGroupList::class, new Marshaller\UserGroupListMarshaller());
+    $this->getConverter()->registerMarshaller(NuxeoException::class, new Marshaller\NuxeoExceptionMarshaller());
     return $this;
   }
 
   /**
    * @return Client
-   * @throws NuxeoClientException
    */
   protected function getHttpClient() {
     if(null === $this->httpClient) {

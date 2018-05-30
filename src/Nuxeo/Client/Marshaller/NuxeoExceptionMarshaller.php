@@ -23,11 +23,18 @@ use JMS\Serializer\DeserializationContext;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\VisitorInterface;
 use Nuxeo\Client\Spi\NotImplementedException;
-use Nuxeo\Client\Spi\NuxeoClientException;
+
 use Nuxeo\Client\Spi\NuxeoException;
 
 class NuxeoExceptionMarshaller implements NuxeoMarshaller {
 
+  /**
+   * @param $in
+   * @param VisitorInterface $visitor
+   * @param DeserializationContext $context
+   * @return NuxeoException
+   * @throws \ReflectionException
+   */
   public function read($in, VisitorInterface $visitor, DeserializationContext $context) {
     $exception = new NuxeoException($in['message']);
 
@@ -50,6 +57,12 @@ class NuxeoExceptionMarshaller implements NuxeoMarshaller {
     return $exception;
   }
 
+  /**
+   * @param $object
+   * @param VisitorInterface $visitor
+   * @param SerializationContext $context
+   * @throws \Nuxeo\Client\Spi\NotImplementedException
+   */
   public function write($object, VisitorInterface $visitor, SerializationContext $context) {
     throw new NotImplementedException();
   }

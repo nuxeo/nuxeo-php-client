@@ -28,14 +28,14 @@ class LogEntriesMarshaller extends AbstractJsonObjectMarshaller {
    * @return array
    */
   protected function getType() {
-    return array('name' => 'array', 'params' => array(array('name' => LogEntry::className)));
+    return array('name' => 'array', 'params' => array(array('name' => LogEntry::class)));
   }
 
   /**
    * @return string
    */
   protected function getClassname() {
-    return LogEntries::className;
+    return LogEntries::class;
   }
 
 }

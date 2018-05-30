@@ -28,7 +28,7 @@ class CounterTimestampedValueMarshaller extends AbstractJsonObjectMarshaller {
   }
 
   protected function getClassName() {
-    return CounterTimestampedValue::className;
+    return CounterTimestampedValue::class;
   }
 
 }

@@ -23,8 +23,6 @@ use Nuxeo\Client\Objects\Document;
 
 class MyDocType extends Document {
 
-  const className = __CLASS__;
-
   public function getCreatedAt() {
     return $this->getProperty('dc:created');
   }

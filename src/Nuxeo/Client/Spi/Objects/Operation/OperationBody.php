@@ -113,9 +113,8 @@ class OperationBody {
   public function serializeParams() {
     if(empty($this->parameters)) {
       return new \stdClass();
-    } else {
-      return $this->parameters;
     }
+    return $this->parameters;
   }
 
 }

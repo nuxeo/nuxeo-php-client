@@ -23,8 +23,6 @@ namespace Nuxeo\Client\Spi\Http\Message;
 
 interface RelatedPartInterface {
 
-  const className = __CLASS__;
-
   const DISPOSITION_INLINE = 'inline';
   const DISPOSITION_ATTACHMENT = 'attachment';
 

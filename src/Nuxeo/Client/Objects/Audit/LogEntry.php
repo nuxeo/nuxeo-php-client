@@ -25,8 +25,6 @@ use Nuxeo\Client\Spi\Objects\NuxeoEntity;
 
 class LogEntry extends NuxeoEntity {
 
-  const className = __CLASS__;
-
   /**
    * @var integer
    * @Serializer\Type("integer")

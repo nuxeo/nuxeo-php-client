@@ -27,8 +27,6 @@ use Nuxeo\Client\Spi\Objects\NuxeoEntity;
 
 class Documents extends NuxeoEntity {
 
-  const className = __CLASS__;
-
   /**
    * @var Document[]
    * @Serializer\Type("array<Nuxeo\Client\Objects\Document>")

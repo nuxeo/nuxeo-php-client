@@ -22,8 +22,6 @@ use JMS\Serializer\Annotation as Serializer;
 
 class Character {
 
-  const className = __CLASS__;
-
   /**
    * @var string
    * @Serializer\Type("string")

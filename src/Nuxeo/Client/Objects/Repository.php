@@ -322,7 +322,7 @@ class Repository extends NuxeoEntity {
    * @throws ClassCastException
    */
   public function fetchChildrenById($parentId) {
-    return $this->getResponseNew(GET::create('id/{parentId}/@children'),Documents::className);
+    return $this->getResponseNew(GET::create('id/{parentId}/@children'),Documents::class);
   }
 
   //endregion
@@ -337,7 +337,7 @@ class Repository extends NuxeoEntity {
    * @throws ClassCastException
    */
   public function fetchBlobById($documentId, $fieldPath) {
-    return $this->getResponseNew(GET::create('id/{documentId}/@blob/{fieldPath}'), Blob::className);
+    return $this->getResponseNew(GET::create('id/{documentId}/@blob/{fieldPath}'), Blob::class);
   }
 
   //endregion

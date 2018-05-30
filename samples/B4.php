@@ -33,7 +33,7 @@ if(!@mkdir($blobTempStorage) && !is_dir($blobTempStorage)) {
 $availablePaths = $client
   ->automation('Document.Query')
   ->param('query', 'SELECT * FROM Workspace')
-  ->execute(\Nuxeo\Client\Objects\Documents::className);
+  ->execute(\Nuxeo\Client\Objects\Documents::class);
 
 $httpRequest = \Symfony\Component\HttpFoundation\Request::createFromGlobals();
 $document = null;
@@ -54,7 +54,7 @@ if($httpRequest->files->has('blob') && $httpRequest->request->has('path')) {
             'name' => $blob->getFilename(),
             'properties' => 'dc:title=' . $blob->getFilename()
           ))
-          ->execute(\Nuxeo\Client\Objects\Document::className);
+          ->execute(\Nuxeo\Client\Objects\Document::class);
     } catch(\Nuxeo\Client\Spi\NuxeoClientException $ex) {
         throw new RuntimeException(sprintf('Could not create Document %s: ' . $ex->getMessage(), $blob->getFilename()));
     }
@@ -64,7 +64,7 @@ if($httpRequest->files->has('blob') && $httpRequest->request->has('path')) {
             $client->automation('Blob.Attach')
               ->input(\Nuxeo\Client\Objects\Blob\Blob::fromFile($blob->getPathname(), $blob->getMimeType()))
               ->param('document', $document->getPath())
-              ->execute(\Nuxeo\Client\Objects\Blob\Blob::className);
+              ->execute(\Nuxeo\Client\Objects\Blob\Blob::class);
         }
     } catch(\Nuxeo\Client\Spi\NuxeoClientException $ex) {
         throw new RuntimeException('Could not attach blob to document: ' . $ex->getMessage());

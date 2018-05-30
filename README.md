@@ -114,28 +114,26 @@ use Nuxeo\Client\Objects\Blob\Blobs;
 // To upload|download blob(s)
 
 $fileBlob = Blob::fromFile('/local/file.txt', 'text/plain');
-$blob = $client->automation('Blob.AttachOnDocument')->param('document', '/folder/file')->input($fileBlob)->execute(Blob::className);
+$blob = $client->automation('Blob.AttachOnDocument')->param('document', '/folder/file')->input($fileBlob)->execute(Blob::class);
 
 $inputBlobs = new Blobs();
 $inputBlobs->add('/local/file1.txt', 'text/plain');
 $inputBlobs->add('/local/file2.txt', 'text/plain');
-$blobs = $client->automation('Blob.AttachOnDocument')->param('xpath', 'files:files')->param('document', '/folder/file')->input($inputBlobs)->execute(Blobs::className);
+$blobs = $client->automation('Blob.AttachOnDocument')->param('xpath', 'files:files')->param('document', '/folder/file')->input($inputBlobs)->execute(Blobs::class);
 
-$resultBlob = $client->automation('Document.GetBlob')->input('folder/file')->execute(Blob::className);
+$resultBlob = $client->automation('Document.GetBlob')->input('folder/file')->execute(Blob::class);
 ```
 
 ```php
 use Nuxeo\Client\Objects\Document;
 
 class MyBusinessClass extends Nuxeo\Client\Objects\Document {
-    const className = __CLASS__;
-
-    ...
+      ...
 }
 
 // Unserialize document in a custom class
 $operation = $client->automation('Document.Fetch')->param('value', '0fa9d2a0-e69f-452d-87ff-0c5bd3b30d7d');
-$result = $operation->execute(MyBusinessClass::className);
+$result = $operation->execute(MyBusinessClass::class);
 ```
 
 ```php
@@ -143,8 +141,8 @@ use Nuxeo\Client\Objects\Document;
 use Nuxeo\Client\Objects\Operation\DocRef;
 
 // Enforce type of a property
-$doc = $client->automation('Document.Fetch')->param('value', '0fa9d2a0-e69f-452d-87ff-0c5bd3b30d7d')->execute(Document::className);
-$property = $doc->getProperty('custom:related', DocRef::className);
+$doc = $client->automation('Document.Fetch')->param('value', '0fa9d2a0-e69f-452d-87ff-0c5bd3b30d7d')->execute(Document::class);
+$property = $doc->getProperty('custom:related', DocRef::class);
 ```
 
 #### Errors/Exceptions

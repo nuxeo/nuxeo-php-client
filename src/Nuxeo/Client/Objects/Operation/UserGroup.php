@@ -23,8 +23,6 @@ use JMS\Serializer\Annotation as Serializer;
 
 class UserGroup {
 
-  const className = __CLASS__;
-
   const USER_TYPE = 'USER_TYPE';
 
   const GROUP_TYPE = 'GROUP_TYPE';

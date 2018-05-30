@@ -30,7 +30,7 @@ if(!empty($_POST['q'])) {
     $documents = $client
       ->automation('Document.Query')
       ->param('query', sprintf('SELECT * FROM Document WHERE ecm:fulltext = "%s"', $query))
-      ->execute(\Nuxeo\Client\Objects\Documents::className);
+      ->execute(\Nuxeo\Client\Objects\Documents::class);
 }
 ?>
 <!DOCTYPE html>

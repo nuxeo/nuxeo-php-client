@@ -21,6 +21,4 @@ namespace Nuxeo\Client\Objects\Operation;
 
 class LogEntries extends \ArrayObject {
 
-  const className = __CLASS__;
-
 }

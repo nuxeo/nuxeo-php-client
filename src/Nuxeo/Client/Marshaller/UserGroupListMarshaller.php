@@ -28,14 +28,14 @@ class UserGroupListMarshaller extends AbstractJsonObjectMarshaller {
    * @return array
    */
   protected function getType() {
-    return array('name' => 'array', 'params' => array(array('name' => UserGroup::className)));
+    return array('name' => 'array', 'params' => array(array('name' => UserGroup::class)));
   }
 
   /**
    * @return string
    */
   protected function getClassname() {
-    return UserGroupList::className;
+    return UserGroupList::class;
   }
 
 }

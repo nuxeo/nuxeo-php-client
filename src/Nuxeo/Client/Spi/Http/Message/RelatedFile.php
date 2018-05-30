@@ -56,14 +56,24 @@ class RelatedFile implements RelatedPartInterface {
     return sprintf('%s;filename="%s"', self::DISPOSITION_ATTACHMENT, $this->filename);
   }
 
+  /**
+   * @return string
+   * @throws \RuntimeException
+   */
   public function getContent() {
     return $this->stream->getContents();
   }
 
+  /**
+   * @return string
+   */
   public function getContentType() {
     return $this->contentType;
   }
 
+  /**
+   * @return int|null
+   */
   public function getContentLength() {
     return $this->stream->getSize();
   }

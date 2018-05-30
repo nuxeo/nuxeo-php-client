@@ -151,8 +151,8 @@ class NuxeoConverter {
       if(array_key_exists('entity-type', $array_data)) {
         $entityType = $array_data['entity-type'];
         $typeMap = array(
-          'document' => Document::className,
-          'documents' => Documents::className,
+          'document' => Document::class,
+          'documents' => Documents::class,
         );
 
         if(array_key_exists($entityType, $typeMap)) {
@@ -161,13 +161,7 @@ class NuxeoConverter {
       }
     }
 
-    try {
-      $result = $this->readData($array_data, $type);
-    } catch(\ReflectionException $e) {
-      throw NuxeoClientException::fromPrevious($e);
-    }
-
-    return $result;
+    return $this->readData($array_data, $type);
   }
 
   /**

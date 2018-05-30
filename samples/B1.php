@@ -32,7 +32,7 @@ if(!empty($_POST['path'])) {
     ->schemas($schema)
     ->automation('Document.Query')
     ->param('query', sprintf('SELECT * FROM Document WHERE ecm:path = "%s"', $path))
-    ->execute(\Nuxeo\Client\Objects\Documents::className);
+    ->execute(\Nuxeo\Client\Objects\Documents::class);
 }
 ?>
 <!DOCTYPE html>

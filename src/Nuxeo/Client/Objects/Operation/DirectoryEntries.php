@@ -23,11 +23,9 @@ use Nuxeo\Client\Objects\Directory\DirectoryEntry;
 
 class DirectoryEntries extends \ArrayObject {
 
-  const className = __CLASS__;
-
   /**
    * @param array $entries
-   * @return DirectoryEntries
+   * @return self
    * @throws \InvalidArgumentException
    */
   public static function fromArray($entries) {

@@ -38,7 +38,7 @@ class RepositoryTest extends TestCase {
    */
   protected function assertFetched($client, $path, $document, $type, $entityType, $requestIndex = 0) {
     $this->assertRequestPathMatches($client, $path, $requestIndex);
-    $this->assertInstanceOf(Objects\Document::className, $document);
+    $this->assertInstanceOf(Objects\Document::class, $document);
     $this->assertEquals($type, $document->getType());
     $this->assertEquals($entityType, $document->getEntityType());
   }
@@ -201,12 +201,12 @@ class RepositoryTest extends TestCase {
     $this->assertEquals('GET', $client->getRequest()->getMethod());
 
     $this->assertEquals('documents', $documents->getEntityType());
-    $this->assertInstanceOf(Objects\Documents::className, $documents);
+    $this->assertInstanceOf(Objects\Documents::class, $documents);
     $this->assertCount(5, $documents->getDocuments());
     $this->assertEquals(34, $documents->getTotalSize());
 
     /** @var Objects\Document $document */
-    $this->assertInstanceOf(Objects\Document::className, $document = $documents->getDocument());
+    $this->assertInstanceOf(Objects\Document::class, $document = $documents->getDocument());
 
     $this->assertEquals(self::DOC_UID, $document->getUid());
     $this->assertEquals(self::DOC_TYPE, $document->getType());
@@ -217,8 +217,8 @@ class RepositoryTest extends TestCase {
       ->addResponse($this->createJsonResponseFromFile('document.json'));
 
     /** @var MyDocType $document */
-    $document = $client->repository()->fetchDocumentById(self::DOC_UID, null, MyDocType::className);
-    $this->assertInstanceOf(MyDocType::className, $document);
+    $document = $client->repository()->fetchDocumentById(self::DOC_UID, null, MyDocType::class);
+    $this->assertInstanceOf(MyDocType::class, $document);
     $this->assertNotNull($document->getCreatedAt());
   }
 
@@ -248,7 +248,7 @@ class RepositoryTest extends TestCase {
       $this->assertEquals(500, $e->getCode());
 
       /** @var NuxeoException $previous */
-      $this->assertInstanceOf(NuxeoException::className, $previous = $e->getPrevious());
+      $this->assertInstanceOf(NuxeoException::class, $previous = $e->getPrevious());
       $this->assertCount(119, $previous->getTrace());
       throw $e;
     }

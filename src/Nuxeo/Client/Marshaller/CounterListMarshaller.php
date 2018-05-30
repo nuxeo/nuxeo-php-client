@@ -25,11 +25,11 @@ use Nuxeo\Client\Objects\Operation\CounterList;
 class CounterListMarshaller extends AbstractJsonObjectMarshaller {
 
   protected function getType() {
-    return array('name' => 'array', 'params' => array(array('name' => 'string'), array('name' => Counter::className)));
+    return array('name' => 'array', 'params' => array(array('name' => 'string'), array('name' => Counter::class)));
   }
 
   protected function getClassName() {
-    return CounterList::className;
+    return CounterList::class;
   }
 
 }

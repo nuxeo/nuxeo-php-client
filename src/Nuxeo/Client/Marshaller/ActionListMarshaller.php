@@ -28,14 +28,14 @@ class ActionListMarshaller extends AbstractJsonObjectMarshaller {
    * @return array
    */
   protected function getType() {
-    return array('name' => 'array', 'params' => array(array('name' => Action::className)));
+    return array('name' => 'array', 'params' => array(array('name' => Action::class)));
   }
 
   /**
    * @return string
    */
   protected function getClassname() {
-    return ActionList::className;
+    return ActionList::class;
   }
 
 }

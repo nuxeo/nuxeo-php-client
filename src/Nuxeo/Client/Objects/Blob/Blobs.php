@@ -24,8 +24,6 @@ use Nuxeo\Client\Spi\Objects\NuxeoEntity;
 
 class Blobs extends NuxeoEntity implements \Countable {
 
-  const className = __CLASS__;
-
   /**
    * @var Blob[]
    * @Serializer\Exclude()

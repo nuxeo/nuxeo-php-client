@@ -23,8 +23,6 @@ use JMS\Serializer\Annotation as Serializer;
 
 class DirectoryEntry {
 
-  const className = __CLASS__;
-
   const MSG_ID_LABEL_MANDATORY = 'A DirectoryEntry must contain both an id and a label';
 
   /**

@@ -19,10 +19,8 @@
 namespace Nuxeo\Client\Objects\Operation;
 
 
-use JMS\Serializer\Annotation as Serializer;
+
 
 class ActionList extends \ArrayObject {
-
-  const className = __CLASS__;
 
 }

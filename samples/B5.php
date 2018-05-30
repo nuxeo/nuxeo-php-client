@@ -30,7 +30,7 @@ if(!empty($_POST['path'])) {
         $blob = $client
           ->automation('Blob.Get')
           ->input('doc:' . $path)
-          ->execute(\Nuxeo\Client\Objects\Blob\Blob::className);
+          ->execute(\Nuxeo\Client\Objects\Blob\Blob::class);
 
         $response = new \Symfony\Component\HttpFoundation\BinaryFileResponse($blob->getFile());
         $response->setContentDisposition(

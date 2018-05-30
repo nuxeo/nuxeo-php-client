@@ -30,7 +30,7 @@ if(!empty($_POST['date'])) {
     $documents = $client
       ->automation('Document.Query')
       ->param('query', sprintf('SELECT * FROM Document WHERE dc:created >= DATE "%s"', date_format($date, 'Y-m-d')))
-      ->execute(\Nuxeo\Client\Objects\Documents::className);
+      ->execute(\Nuxeo\Client\Objects\Documents::class);
 }
 ?>
 <!DOCTYPE html>

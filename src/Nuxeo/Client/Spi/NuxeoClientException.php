@@ -21,13 +21,11 @@
 namespace Nuxeo\Client\Spi;
 
 use Exception;
-use JMS\Serializer\Annotation as Serializer;
+
 
 class NuxeoClientException extends \RuntimeException {
 
   const INTERNAL_ERROR_STATUS = 666;
-
-  const className = __CLASS__;
 
   public function __construct($message = '', $code = self::INTERNAL_ERROR_STATUS, Exception $previous = null) {
     if(null !== $previous && '' === $message) {
