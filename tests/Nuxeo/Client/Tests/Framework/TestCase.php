@@ -25,7 +25,7 @@ use GuzzleHttp\Psr7\UriResolver;
 use Nuxeo\Client\Constants;
 use Nuxeo\Client\Tests\Client;
 
-abstract class TestCase extends \PHPUnit_Framework_TestCase {
+abstract class TestCase extends \PHPUnit\Framework\TestCase {
   const LOGIN = 'Administrator';
   const PASSWORD = 'Administrator';
   const DOC_TITLE = 'myfile.txt';

@@ -18,8 +18,6 @@
 
 namespace Nuxeo\Client\FTests\Framework;
 
-use Monolog\Handler\StreamHandler;
-use Monolog\Logger;
 use Nuxeo\Client\NuxeoClient;
 use Nuxeo\Client\Tests\Framework\TestCase as BaseCase;
 
