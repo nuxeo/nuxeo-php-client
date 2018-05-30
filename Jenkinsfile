@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2018 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,10 +12,13 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
- * Contributors:
- *     Pierre-Gildas MILLON <pgmillon@nuxeo.com>
  */
+
+properties([
+    [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', daysToKeepStr: '60', numToKeepStr: '60', artifactNumToKeepStr: '1']],
+    disableConcurrentBuilds(),
+    [$class: 'RebuildSettings', autoRebuild: false, rebuildDisabled: false],
+])
 
 node('SLAVE') {
   timeout(60) {
@@ -72,11 +75,13 @@ Outdated dependencies Report
 
           }
         }
-
+      } catch (e) {
+        currentBuild.result = "FAILURE"
+        step([$class: 'ClaimPublisher'])
+        throw e
       } finally {
-//                claimPublisher()
+        step([$class: 'JiraIssueUpdater', issueSelector: [$class: 'DefaultIssueSelector'], scm: scm])
       }
-
     }
   }
 }
