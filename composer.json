@@ -3,7 +3,7 @@
   "description": "PHP Client Library for the Nuxeo Automation API",
   "keywords": ["nuxeo", "automation", "client"],
   "homepage": "http://www.nuxeo.com",
-  "license": "AL2",
+  "license": "Apache-2.0",
   "authors": [
     {
       "name": "Pierre-Gildas MILLON",
