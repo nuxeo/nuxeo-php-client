@@ -25,6 +25,8 @@ use Nuxeo\Client\Tests\Framework\TestCase as BaseCase;
 
 class TestCase extends BaseCase {
 
+  const URL = 'http://nuxeo:8080/nuxeo/';
+
   /**
    * @param string $url
    * @param string $username

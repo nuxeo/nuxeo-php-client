@@ -22,7 +22,7 @@ node('SLAVE') {
     timestamps {
       try {
         tool type: 'hudson.model.JDK', name: 'java-8-openjdk'
-        def mvn = tool type: 'hudson.tasks.Maven$MavenInstallation', name: 'maven-3'
+        tool type: 'hudson.tasks.Maven$MavenInstallation', name: 'maven-3'
         def composer = 'php composer.phar'
         def phpunit = 'php vendor/bin/phpunit'
 
@@ -44,7 +44,7 @@ node('SLAVE') {
 
             sh """
               chmod +x bin/php
-              docker exec ${c.id} bash -c 'apt-get update && apt-get install -y zlib1g-dev && docker-php-ext-install zip'"""
+              docker exec ${c.id} bash -c 'apt-get update && apt-get install -y unzip'"""
 
             stage('install dependencies') {
               sh "${composer} install"
@@ -67,7 +67,7 @@ Outdated dependencies Report
               sh "${phpunit} --exclude-group server"
             }
             stage('ftests') {
-              sh "${mvn} -f ftests/pom.xml clean verify"
+              sh "mvn -f ftests/pom.xml clean verify"
             }
 
           }

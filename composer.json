@@ -22,7 +22,7 @@
   },
   "require": {
     "guzzlehttp/guzzle": "6.3.*",
-    "monolog/monolog": "1.9.*",
+    "monolog/monolog": "1.12.*",
     "jms/serializer": "0.16.*",
     "zendframework/zend-http": "2.2.*",
     "paragonie/random_compat": "2.0.*"
