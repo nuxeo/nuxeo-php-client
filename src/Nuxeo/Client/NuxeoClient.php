@@ -37,6 +37,7 @@ use Nuxeo\Client\Auth\BasicAuthentication;
 use Nuxeo\Client\Marshaller;
 use Nuxeo\Client\Objects\Blob\Blob;
 use Nuxeo\Client\Objects\Blob\Blobs;
+use Nuxeo\Client\Objects\NuxeoVersion;
 use Nuxeo\Client\Objects\Operation;
 use Nuxeo\Client\Objects\Repository;
 use Nuxeo\Client\Spi\Auth\AuthenticationInterceptor;
@@ -85,6 +86,11 @@ class NuxeoClient {
    * @var LoggerInterface
    */
   private $logger;
+
+  /**
+   * @var NuxeoVersion
+   */
+  private $serverVersion;
 
   /**
    * @param string $url
@@ -166,6 +172,16 @@ class NuxeoClient {
   }
 
   /**
+   * @return NuxeoVersion
+   */
+  public function getServerVersion() {
+    if(null === $this->serverVersion) {
+      $this->serverVersion = NuxeoVersion::fromServer($this);
+    }
+    return $this->serverVersion;
+  }
+
+  /**
    * @see http://explorer.nuxeo.com/nuxeo/site/distribution/current/listOperations List of available operations
    * @param string $operationId
    * @return Operation
@@ -174,6 +190,9 @@ class NuxeoClient {
     return new Operation($this, $operationId);
   }
 
+  /**
+   * @return Repository
+   */
   public function repository() {
     return new Repository($this);
   }

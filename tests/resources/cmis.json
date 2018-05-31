@@ -1,0 +1,307 @@
+{
+  "default": {
+    "repositoryId": "default",
+    "repositoryName": "Nuxeo Repository default",
+    "repositoryDescription": "Nuxeo Repository default",
+    "vendorName": "Nuxeo",
+    "productName": "Nuxeo OpenCMIS Connector",
+    "productVersion": "9.10",
+    "rootFolderId": "c4c80994-ffc1-4f34-994c-8c45061306ff",
+    "capabilities": {
+      "capabilityContentStreamUpdatability": "pwconly",
+      "capabilityChanges": "objectidsonly",
+      "capabilityRenditions": "read",
+      "capabilityGetDescendants": true,
+      "capabilityGetFolderTree": true,
+      "capabilityMultifiling": false,
+      "capabilityUnfiling": false,
+      "capabilityVersionSpecificFiling": false,
+      "capabilityPWCSearchable": true,
+      "capabilityPWCUpdatable": true,
+      "capabilityAllVersionsSearchable": true,
+      "capabilityOrderBy": null,
+      "capabilityQuery": "bothcombined",
+      "capabilityJoin": "none",
+      "capabilityACL": "manage",
+      "capabilityCreatablePropertyTypes": {
+        "canCreate": []
+      },
+      "capabilityNewTypeSettableAttributes": {
+        "id": null,
+        "localName": null,
+        "localNamespace": null,
+        "displayName": null,
+        "queryName": null,
+        "description": null,
+        "creatable": null,
+        "fileable": null,
+        "queryable": null,
+        "fulltextIndexed": null,
+        "includedInSupertypeQuery": null,
+        "controllablePolicy": null,
+        "controllableACL": null
+      }
+    },
+    "aclCapabilities": {
+      "supportedPermissions": "repository",
+      "propagation": "propagate",
+      "permissions": [
+        {
+          "permission": "cmis:read",
+          "description": "Read"
+        },
+        {
+          "permission": "cmis:write",
+          "description": "Write"
+        },
+        {
+          "permission": "cmis:all",
+          "description": "All"
+        },
+        {
+          "permission": "ReadRemove",
+          "description": "Remove"
+        },
+        {
+          "permission": "ReadCanCollect",
+          "description": "ReadCanCollect"
+        },
+        {
+          "permission": "DataVisualization",
+          "description": "DataVisualization"
+        },
+        {
+          "permission": "CanAskForPublishing",
+          "description": "CanAskForPublishing"
+        }
+      ],
+      "permissionMapping": [
+        {
+          "key": "canUpdateProperties.Object",
+          "permission": [
+            "cmis:write"
+          ]
+        },
+        {
+          "key": "canGetProperties.Object",
+          "permission": [
+            "cmis:read"
+          ]
+        },
+        {
+          "key": "canRemoveFromFolder.Folder",
+          "permission": [
+            "cmis:write"
+          ]
+        },
+        {
+          "key": "canAddToFolder.Folder",
+          "permission": [
+            "cmis:write"
+          ]
+        },
+        {
+          "key": "canCreateDocument.Folder",
+          "permission": [
+            "cmis:write"
+          ]
+        },
+        {
+          "key": "canCheckout.Document",
+          "permission": [
+            "cmis:write"
+          ]
+        },
+        {
+          "key": "canGetAllVersions.VersionSeries",
+          "permission": [
+            "cmis:read"
+          ]
+        },
+        {
+          "key": "canRemovePolicy.Object",
+          "permission": [
+            "cmis:write"
+          ]
+        },
+        {
+          "key": "canRemovePolicy.Policy",
+          "permission": [
+            "cmis:write"
+          ]
+        },
+        {
+          "key": "canViewContent.Object",
+          "permission": [
+            "cmis:read"
+          ]
+        },
+        {
+          "key": "canCheckin.Document",
+          "permission": [
+            "cmis:write"
+          ]
+        },
+        {
+          "key": "canGetParents.Folder",
+          "permission": [
+            "cmis:read"
+          ]
+        },
+        {
+          "key": "canRemoveFromFolder.Object",
+          "permission": [
+            "cmis:write"
+          ]
+        },
+        {
+          "key": "canCreateRelationship.Source",
+          "permission": [
+            "cmis:read"
+          ]
+        },
+        {
+          "key": "canGetACL.Object",
+          "permission": [
+            "cmis:read"
+          ]
+        },
+        {
+          "key": "canDelete.Object",
+          "permission": [
+            "cmis:write"
+          ]
+        },
+        {
+          "key": "canApplyACL.Object",
+          "permission": [
+            "cmis:all"
+          ]
+        },
+        {
+          "key": "canMove.Source",
+          "permission": [
+            "cmis:write"
+          ]
+        },
+        {
+          "key": "canCreateFolder.Folder",
+          "permission": [
+            "cmis:write"
+          ]
+        },
+        {
+          "key": "canMove.Object",
+          "permission": [
+            "cmis:write"
+          ]
+        },
+        {
+          "key": "canAddPolicy.Object",
+          "permission": [
+            "cmis:write"
+          ]
+        },
+        {
+          "key": "canAddPolicy.Policy",
+          "permission": [
+            "cmis:write"
+          ]
+        },
+        {
+          "key": "canGetAppliedPolicies.Object",
+          "permission": [
+            "cmis:read"
+          ]
+        },
+        {
+          "key": "canGetDescendents.Folder",
+          "permission": [
+            "cmis:read"
+          ]
+        },
+        {
+          "key": "canGetChildren.Folder",
+          "permission": [
+            "cmis:read"
+          ]
+        },
+        {
+          "key": "canCreateRelationship.Target",
+          "permission": [
+            "cmis:read"
+          ]
+        },
+        {
+          "key": "canSetContent.Document",
+          "permission": [
+            "cmis:write"
+          ]
+        },
+        {
+          "key": "canDeleteContent.Document",
+          "permission": [
+            "cmis:write"
+          ]
+        },
+        {
+          "key": "canMove.Target",
+          "permission": [
+            "cmis:write"
+          ]
+        },
+        {
+          "key": "canAddToFolder.Object",
+          "permission": [
+            "cmis:write"
+          ]
+        },
+        {
+          "key": "canGetObjectRelationships.Object",
+          "permission": [
+            "cmis:read"
+          ]
+        },
+        {
+          "key": "canCancelCheckout.Document",
+          "permission": [
+            "cmis:write"
+          ]
+        },
+        {
+          "key": "canGetFolderParent.Object",
+          "permission": [
+            "cmis:read"
+          ]
+        },
+        {
+          "key": "canDeleteTree.Folder",
+          "permission": [
+            "cmis:write"
+          ]
+        }
+      ]
+    },
+    "latestChangeLogToken": "419",
+    "cmisVersionSupported": "1.1",
+    "thinClientURI": "http://localhost:8080/nuxeo/",
+    "changesIncomplete": false,
+    "changesOnType": [
+      "cmis:document",
+      "cmis:folder"
+    ],
+    "principalIdAnonymous": "Guest",
+    "principalIdAnyone": "Everyone",
+    "extendedFeatures": [
+      {
+        "id": "http://docs.oasis-open.org/ns/cmis/extension/datetimeformat",
+        "url": "https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=cmis",
+        "commonName": "Browser Binding DateTime Format",
+        "versionLabel": "1.0",
+        "description": "Adds an additional DateTime format for the Browser Binding."
+      }
+    ],
+    "repositoryUrl": "http://localhost:8080/nuxeo/json/cmis/default/",
+    "rootFolderUrl": "http://localhost:8080/nuxeo/json/cmis/default/root"
+  }
+}

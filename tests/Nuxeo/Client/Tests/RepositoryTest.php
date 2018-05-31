@@ -179,15 +179,15 @@ class RepositoryTest extends TestCase {
       ->setPath($path);
 
     $client->repository()->deleteDocument($document);
+    $this->assertRequestPathMatches($client, "id/${uid}");
+
     $client->repository()->deleteDocumentByPath($path);
+    $this->assertRequestPathMatches($client, "path${path}");
 
     /** @var Request $request */
     foreach($client->getRequests() as $request) {
       $this->assertEquals('DELETE', $request->getMethod());
     }
-
-    $this->assertRequestPathMatches($client, "id/${uid}");
-    $this->assertRequestPathMatches($client, "path${path}", 1);
   }
 
   public function testQuery() {

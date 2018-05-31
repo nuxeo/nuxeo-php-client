@@ -23,6 +23,7 @@ use GuzzleHttp\Exception\ClientException;
 use Nuxeo\Client\Auth\PortalSSOAuthentication;
 use Nuxeo\Client\Auth\TokenAuthentication;
 use Nuxeo\Client\Constants;
+use Nuxeo\Client\Objects\NuxeoVersion;
 use Nuxeo\Client\Request;
 use Nuxeo\Client\Spi\NuxeoClientException;
 use Nuxeo\Client\Tests\Framework\TestCase;
@@ -32,6 +33,15 @@ class BaseTest extends TestCase {
 
   const TOKEN_APP_NAME = 'myApplication';
   const TOKEN_DEVICE = 'myDevice';
+
+  public function testFetchNuxeoVersion() {
+    $this->getClient()->addResponse($this->createJsonResponseFromFile($this->getResource('cmis.json')));
+
+    $version = $this->getClient()->getServerVersion();
+
+    $this->assertNotNull($version);
+    $this->assertTrue($version->gte(NuxeoVersion::$LTS_2015));
+  }
 
   public function testGetRequest() {
     $client = $this->getClient()

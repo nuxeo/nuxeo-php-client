@@ -18,11 +18,11 @@
 
 namespace Nuxeo\Client\Tests;
 
+use function \count;
 use Nuxeo\Client\NuxeoClient as BaseClient;
 use Nuxeo\Client\Request;
 use Nuxeo\Client\Response;
 use Nuxeo\Client\Tests\Http\Client as HttpClient;
-use Nuxeo\Client\Tests\Util\ArrayIterator;
 
 class Client extends BaseClient {
 
@@ -55,8 +55,11 @@ class Client extends BaseClient {
    * @param int $index
    * @return Request
    */
-  public function getRequest($index = 0) {
-    return ArrayIterator::fromArray($this->getHttpClient()->getRequests())->offsetGet($index);
+  public function getRequest($index = -1) {
+    if($index < 0) {
+      $index = count($this->getHttpClient()->getRequests()) + $index;
+    }
+    return $this->getHttpClient()->getRequests()[$index];
   }
 
 }

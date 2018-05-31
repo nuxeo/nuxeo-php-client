@@ -95,7 +95,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase {
    * @param string $relativePath
    * @param integer $requestIndex
    */
-  public function assertRequestPathMatches($client, $relativePath, $requestIndex = 0) {
+  public function assertRequestPathMatches($client, $relativePath, $requestIndex = -1) {
     self::assertEquals(UriResolver::resolve($client->getApiUrl(), new Uri($relativePath))->getPath(), urldecode($client->getRequest($requestIndex)->getUri()->getPath()));
   }
 
