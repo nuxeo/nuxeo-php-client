@@ -19,9 +19,9 @@
 namespace Nuxeo\Client\Tests;
 
 use function \count;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
 use Nuxeo\Client\NuxeoClient as BaseClient;
-use Nuxeo\Client\Request;
-use Nuxeo\Client\Response;
 use Nuxeo\Client\Tests\Http\Client as HttpClient;
 
 class Client extends BaseClient {

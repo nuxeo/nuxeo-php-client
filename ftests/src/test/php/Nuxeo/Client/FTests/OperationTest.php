@@ -37,7 +37,7 @@ class OperationTest extends TestCase {
       ->param('query', 'SELECT * FROM Document')
       ->execute(Documents::class);
 
-    $this->assertGreaterThan(5, $documents->size());
+    $this->assertGreaterThan(5, count($documents));
   }
 
   /**

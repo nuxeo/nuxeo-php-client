@@ -123,7 +123,7 @@ REGEX;
 
   /**
    * @param mixed $body
-   * @return AbstractMethod
+   * @return self
    */
   public function setBody($body) {
     $this->body = $body;
@@ -139,7 +139,7 @@ REGEX;
 
   /**
    * @param RelatedFile[] $files
-   * @return AbstractMethod
+   * @return self
    */
   public function setFiles($files) {
     $this->files = $files;

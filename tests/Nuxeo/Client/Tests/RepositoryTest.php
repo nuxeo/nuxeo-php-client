@@ -202,11 +202,11 @@ class RepositoryTest extends TestCase {
 
     $this->assertEquals('documents', $documents->getEntityType());
     $this->assertInstanceOf(Objects\Documents::class, $documents);
-    $this->assertCount(5, $documents->getDocuments());
+    $this->assertCount(5, $documents);
     $this->assertEquals(34, $documents->getTotalSize());
 
     /** @var Objects\Document $document */
-    $this->assertInstanceOf(Objects\Document::class, $document = $documents->getDocument());
+    $this->assertInstanceOf(Objects\Document::class, $document = $documents[0]);
 
     $this->assertEquals(self::DOC_UID, $document->getUid());
     $this->assertEquals(self::DOC_TYPE, $document->getType());
@@ -284,7 +284,7 @@ class RepositoryTest extends TestCase {
     $parent = Objects\Document::create($client)
       ->setUid(self::DOC_UID);
     $children = $parent->fetchChildren();
-    $this->assertEquals(5, $children->size());
+    $this->assertEquals(5, $children->getCurrentPageSize());
   }
 
 }

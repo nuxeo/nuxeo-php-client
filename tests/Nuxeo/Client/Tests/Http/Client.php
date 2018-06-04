@@ -20,10 +20,9 @@ namespace Nuxeo\Client\Tests\Http;
 
 
 use GuzzleHttp\HandlerStack;
-use Nuxeo\Client\Response;
 use GuzzleHttp\Client as BaseClient;
+use GuzzleHttp\Psr7\Response;
 use Nuxeo\Client\Tests\Http\Handler\MockHandler;
-use Psr\Http\Message\RequestInterface;
 
 class Client extends BaseClient {
 

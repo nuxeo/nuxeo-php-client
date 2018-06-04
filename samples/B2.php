@@ -68,7 +68,7 @@ if(!empty($_POST['q'])) {
         <th>State</th>
         <th>Title</th>
       </tr>
-      <?php foreach($documents->getDocuments() as $document): /** @var \Nuxeo\Client\Objects\Document */ ?>
+      <?php foreach($documents as $document): /** @var \Nuxeo\Client\Objects\Document */ ?>
         <tr>
           <td><?php echo $document->getUid() ?></td>
           <td><?php echo $document->getPath() ?></td>

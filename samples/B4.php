@@ -98,7 +98,7 @@ if($httpRequest->files->has('blob') && $httpRequest->request->has('path')) {
       <div class="form-group">
         <label for="path">Path</label>
         <select name="path" class="form-control">
-          <?php foreach($availablePaths->getDocuments() as $path) {
+          <?php foreach($availablePaths as $path) {
             /** @var \Nuxeo\Client\Objects\Document $path */
             printf('<option value="%s">%s</option>', $path->getPath(), $path->getTitle());
           }

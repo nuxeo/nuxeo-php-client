@@ -47,9 +47,9 @@ class OperationTest extends TestCase {
 
     $this->assertRequestPathMatches($client, 'automation/Document.Query');
     $this->assertInstanceOf(Documents::class, $documents);
-    $this->assertEquals(5, $documents->size());
+    $this->assertEquals(5, $documents->getCurrentPageSize());
 
-    foreach ($documents->getDocuments() as $document) {
+    foreach ($documents as $document) {
       $this->assertNotEmpty($document->getUid());
       $this->assertNotEmpty($document->getPath());
       $this->assertNotEmpty($document->getType());
@@ -58,7 +58,7 @@ class OperationTest extends TestCase {
       $this->assertNotEmpty($document->getProperty('dc:created'));
     }
 
-    $note = $documents->getDocument(0);
+    $note = $documents[0];
     $this->assertNotNull($note);
     $this->assertEquals(self::DOC_TYPE, $note->getType());
     $this->assertEquals(self::DOC_TITLE, $note->getProperty('dc:title'));
