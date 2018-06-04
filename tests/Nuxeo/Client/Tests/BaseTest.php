@@ -43,6 +43,12 @@ class BaseTest extends TestCase {
     $this->assertTrue($version->gte(NuxeoVersion::$LTS_2015));
   }
 
+  public function testFetchCurrentUser() {
+    $this->getClient()->addResponse($this->createJsonResponseFromFile($this->getResource('login.json')));
+
+    $this->assertEquals('Administrator', $this->getClient()->connect()->getUsername());
+  }
+
   public function testGetRequest() {
     $client = $this->getClient()
       ->addResponse($this->createResponse());

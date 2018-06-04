@@ -1,0 +1,82 @@
+{
+  "entity-type": "groups",
+  "isPaginable": true,
+  "resultsCount": 5,
+  "pageSize": 50,
+  "maxPageSize": 1000,
+  "resultsCountLimit": 0,
+  "currentPageSize": 5,
+  "currentPageIndex": 0,
+  "currentPageOffset": 0,
+  "numberOfPages": 1,
+  "isPreviousPageAvailable": false,
+  "isNextPageAvailable": false,
+  "isLastPageAvailable": false,
+  "isSortable": false,
+  "hasError": false,
+  "errorMessage": null,
+  "pageIndex": 0,
+  "pageCount": 1,
+  "entries": [
+    {
+      "entity-type": "group",
+      "groupname": "administrators",
+      "grouplabel": "Administrators group",
+      "id": "administrators",
+      "properties": {
+        "tenantId": null,
+        "description": "Group of users with adminstrative rights",
+        "grouplabel": "Administrators group",
+        "groupname": "administrators"
+      }
+    },
+    {
+      "entity-type": "group",
+      "groupname": "members",
+      "grouplabel": "Members group",
+      "id": "members",
+      "properties": {
+        "tenantId": null,
+        "description": "Group of users with read access rights",
+        "grouplabel": "Members group",
+        "groupname": "members"
+      }
+    },
+    {
+      "entity-type": "group",
+      "groupname": "MobilityDepartment",
+      "grouplabel": "Mobility Department",
+      "id": "MobilityDepartment",
+      "properties": {
+        "tenantId": null,
+        "description": null,
+        "grouplabel": "Mobility Department",
+        "groupname": "MobilityDepartment"
+      }
+    },
+    {
+      "entity-type": "group",
+      "groupname": "mobilityExperts",
+      "grouplabel": "Mobility Experts",
+      "id": "mobilityExperts",
+      "properties": {
+        "tenantId": null,
+        "description": null,
+        "grouplabel": "Mobility Experts",
+        "groupname": "mobilityExperts"
+      }
+    },
+    {
+      "entity-type": "group",
+      "groupname": "powerusers",
+      "grouplabel": "Power users group",
+      "id": "powerusers",
+      "properties": {
+        "tenantId": null,
+        "description": "Group of users with limited administrative rights",
+        "grouplabel": "Power users group",
+        "groupname": "powerusers"
+      }
+    }
+  ]
+}

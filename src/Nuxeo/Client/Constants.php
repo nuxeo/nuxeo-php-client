@@ -42,6 +42,14 @@ class Constants {
 
   const ENTITY_TYPE_OPERATION = 'operation';
 
+  const ENTITY_TYPE_USER = 'user';
+
+  const ENTITY_TYPE_USERS = 'users';
+
+  const ENTITY_TYPE_GROUP = 'group';
+
+  const ENTITY_TYPE_GROUPS = 'groups';
+
   const SECURITY_EVERYTHING = 'Everything';
 
   const SECURITY_RESTRICTED_READ = 'RestrictedRead';

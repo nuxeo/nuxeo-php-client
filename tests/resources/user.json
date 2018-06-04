@@ -1,13 +1,35 @@
 {
-  "entity-type": "document",
-  "repository": null,
-  "uid": "Administrator",
-  "path": null,
-  "type": "user",
-  "state": null,
-  "parentRef": null,
-  "isCheckedOut": true,
-  "changeToken": null,
-  "title": "Administrator",
-  "facets": []
+  "entity-type": "user",
+  "id": "Administrator",
+  "properties": {
+    "firstName": "Magnus",
+    "lastName": "Pontificus",
+    "tenantId": null,
+    "groups": [
+      "administrators",
+      "mobilityExperts"
+    ],
+    "company": "Skynet",
+    "email": "Administrator@example.com",
+    "username": "Administrator"
+  },
+  "extendedGroups": [
+    {
+      "name": "administrators",
+      "label": "Administrators group",
+      "url": "group/administrators"
+    },
+    {
+      "name": "mobilityExperts",
+      "label": "Mobility Experts",
+      "url": "group/mobilityExperts"
+    },
+    {
+      "name": "MobilityDepartment",
+      "label": "Mobility Department",
+      "url": "group/MobilityDepartment"
+    }
+  ],
+  "isAdministrator": true,
+  "isAnonymous": false
 }

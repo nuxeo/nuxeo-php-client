@@ -17,7 +17,6 @@
 
 namespace Nuxeo\Client;
 
-use function \is_string;
 use Doctrine\Common\Annotations\AnnotationException;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
@@ -27,7 +26,6 @@ use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\MessageFormatter;
 use GuzzleHttp\Middleware;
-use function GuzzleHttp\Psr7\stream_for;
 use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\Psr7\UriResolver;
 use Monolog\Formatter\LineFormatter;
@@ -40,6 +38,8 @@ use Nuxeo\Client\Objects\Blob\Blobs;
 use Nuxeo\Client\Objects\NuxeoVersion;
 use Nuxeo\Client\Objects\Operation;
 use Nuxeo\Client\Objects\Repository;
+use Nuxeo\Client\Objects\User\User;
+use Nuxeo\Client\Objects\UserManager;
 use Nuxeo\Client\Spi\Auth\AuthenticationInterceptor;
 use Nuxeo\Client\Spi\Interceptor;
 use Nuxeo\Client\Spi\NuxeoClientException;
@@ -48,6 +48,8 @@ use Nuxeo\Client\Spi\SimpleInterceptor;
 use Psr\Http\Message\UriInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
+use function GuzzleHttp\Psr7\stream_for;
+use function is_string;
 
 AnnotationRegistry::registerLoader('class_exists');
 
@@ -86,6 +88,11 @@ class NuxeoClient {
    * @var LoggerInterface
    */
   private $logger;
+
+  /**
+   * @var User
+   */
+  private $currentUser;
 
   /**
    * @var NuxeoVersion
@@ -172,6 +179,16 @@ class NuxeoClient {
   }
 
   /**
+   * @return \Nuxeo\Client\Objects\User\User
+   */
+  public function connect() {
+    if(null === $this->currentUser) {
+      $this->currentUser = $this->userManager()->fetchCurrentUser();
+    }
+    return $this->currentUser;
+  }
+
+  /**
    * @return NuxeoVersion
    */
   public function getServerVersion() {
@@ -195,6 +212,13 @@ class NuxeoClient {
    */
   public function repository() {
     return new Repository($this);
+  }
+
+  /**
+   * @return UserManager
+   */
+  public function userManager() {
+    return new UserManager($this);
   }
 
   /**

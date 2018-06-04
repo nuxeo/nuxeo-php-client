@@ -1,0 +1,12 @@
+{
+  "entity-type": "group",
+  "groupname": "administrators",
+  "grouplabel": "Administrators group",
+  "id": "administrators",
+  "properties": {
+    "tenantId": null,
+    "description": "Group of users with adminstrative rights",
+    "grouplabel": "Administrators group",
+    "groupname": "administrators"
+  }
+}

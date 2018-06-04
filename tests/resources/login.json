@@ -1,0 +1,8 @@
+{
+  "entity-type": "login",
+  "username": "Administrator",
+  "isAdministrator": true,
+  "groups": [
+    "administrators"
+  ]
+}
