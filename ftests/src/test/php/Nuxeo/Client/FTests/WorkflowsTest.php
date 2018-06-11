@@ -23,13 +23,13 @@ use Nuxeo\Client\Objects\Workflow\Task;
 use Nuxeo\Client\Objects\Workflow\TaskCompletionRequest;
 use Nuxeo\Client\Spi\NuxeoClientException;
 
+/**
+ * @group server
+ */
 class WorkflowsTest extends TestCase {
 
   const SERIAL_WORKFLOW_NAME = 'SerialDocumentReview';
 
-  /**
-   * @group server
-   */
   public function testWorkflows() {
     // Create a note
     $document = $this->getClient()

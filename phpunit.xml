@@ -14,16 +14,29 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<phpunit bootstrap="vendor/autoload.php"
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.1/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
          verbose="true">
+
   <testsuites>
-    <testsuite name="nuxeo-automation-php-client-suite">
-      <directory suffix="Test.php">tests/Nuxeo/Client/Tests</directory>
-      <directory suffix="Test.php">ftests/src/test/php/Nuxeo/Client/FTests</directory>
+    <testsuite name="nuxeo-php-client unit tests">
+      <directory suffix="Test.php">tests</directory>
+    </testsuite>
+
+    <testsuite name="nuxeo-php-client integration tests">
+      <directory suffix="Test.php">integration/drupal8/web/modules/nuxeo/tests</directory>
+    </testsuite>
+
+    <testsuite name="nuxeo-php-client ftests">
+      <directory suffix="Test.php">ftests/src/test/php</directory>
     </testsuite>
   </testsuites>
 
   <php>
     <includePath>tests/resources</includePath>
+    <env name="SIMPLETEST_BASE_URL" value="http://127.0.0.1:8888"/>
+    <env name="SIMPLETEST_DB" value="sqlite://sites/default/files/test.sqlite"/>
+    <env name="BROWSERTEST_OUTPUT_DIRECTORY" value="sites/default/files/simpletest"/>
   </php>
 </phpunit>

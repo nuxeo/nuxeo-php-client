@@ -1,0 +1,6 @@
+name: Nuxeo Module
+description: Nuxeo Drupal 8 Integration Module
+package: Custom
+type: module
+version: 1.0
+core: 8.x

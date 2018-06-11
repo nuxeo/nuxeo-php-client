@@ -223,7 +223,22 @@ class Repository extends NuxeoEntity {
    * @throws ClassCastException
    */
   public function query($query, $pageSize = 0, $currentPageIndex = 0, $maxResults = 200, $sortBy = '', $sortOrder = '', $queryParams = '') {
-    return $this->getResponseNew(GET::create('query?query={query}&pageSize={pageSize}&currentPageIndex={currentPageIndex}&maxResults={maxResults}&sortBy={sortBy}&sortOrder={sortOrder}&queryParams={queryParams}'));
+    $params = [
+      'query={query}',
+      'pageSize={pageSize}',
+      'currentPageIndex={currentPageIndex}',
+      'maxResults={maxResults}'
+    ];
+    if($sortBy) {
+      $params[] = 'sortBy={sortBy}';
+    }
+    if($sortOrder) {
+      $params[] = 'sortOrder={sortOrder}';
+    }
+    if($queryParams) {
+      $params[] = 'queryParams={queryParams}';
+    }
+    return $this->getResponseNew(GET::create('query?' . implode('&', $params)));
   }
 
   //endregion

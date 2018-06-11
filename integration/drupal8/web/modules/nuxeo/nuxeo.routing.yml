@@ -1,0 +1,7 @@
+nuxeo.content:
+  path: '/nuxeo'
+  defaults:
+    _controller: '\Drupal\Nuxeo\Controller\NuxeoController::content'
+    _title: 'Nuxeo'
+  requirements:
+    _permission: 'access content'
