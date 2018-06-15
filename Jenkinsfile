@@ -36,6 +36,8 @@ node('SLAVE') {
 
         stage('checkout') {
           checkout scm
+          sh 'git clean -fdx' // JENKINS-31924 fixed with git-plugin v2+
+
           sh 'curl -sS https://getcomposer.org/installer | php'
         }
         dockerImage.withRun("-v ${env.WORKSPACE}:${env.WORKSPACE} -w ${env.WORKSPACE} --link ${ctnrId}:nuxeo", 'tail -f /dev/null') { c ->

@@ -1,0 +1,80 @@
+{
+  "name": "nuxeo/nuxeo-php-client-drupal-integration",
+  "description": "Nuxeo PHP Client Drupal 8 Integration test",
+  "keywords": ["nuxeo", "drupal"],
+  "homepage": "http://www.nuxeo.com",
+  "license": "Apache-2.0",
+  "authors": [
+    {
+      "name": "Pierre-Gildas MILLON",
+      "email": "pgmillon@nuxeo.com"
+    }
+  ],
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://packages.drupal.org/8"
+    }
+  ],
+  "extra": {
+    "merge-plugin": {
+      "require": [
+        "../../composer.json"
+      ],
+      "recurse": false,
+      "merge-dev": false,
+      "merge-extra": false,
+      "merge-extra-deep": false,
+      "merge-scripts": false
+    },
+    "installer-paths": {
+      "web/core": ["type:drupal-core"],
+      "web/libraries/{$name}": ["type:drupal-library"],
+      "web/modules/contrib/{$name}": ["type:drupal-module"],
+      "web/profiles/contrib/{$name}": ["type:drupal-profile"],
+      "web/themes/contrib/{$name}": ["type:drupal-theme"],
+      "drush/Commands/{$name}": ["type:drupal-drush"]
+    }
+  },
+  "require": {
+    "wikimedia/composer-merge-plugin": "~1.4.1",
+    "drupal-composer/drupal-project": "8.x-dev",
+    "webflo/drupal-core-require-dev": "~8.5.3",
+    "symfony/web-server-bundle": "~3.4.0"
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "autoload-dev" : {
+    "psr-0": {
+      "Drupal\\Tests\\": "web/core/tests",
+      "Drupal\\KernelTests\\": "web/core/tests",
+      "Drupal\\FunctionalTests\\": "web/core/tests",
+      "Drupal\\FunctionalJavascriptTests\\": "web/core/tests"
+    },
+    "psr-4": {
+      "Drupal\\Nuxeo\\": "web/modules/nuxeo/src",
+      "Drupal\\Tests\\block\\": "web/core/modules/block/tests/src",
+      "Drupal\\Tests\\node\\": "web/core/modules/node/tests/src",
+      "Drupal\\Tests\\user\\": "web/core/modules/user/tests/src",
+      "Nuxeo\\Client\\Tests\\": "../../tests/Nuxeo/Client/Tests",
+      "Nuxeo\\Client\\FTests\\": "../../ftests/src/test/php/Nuxeo/Client/FTests"
+    },
+    "files": [
+      "load.environment.php"
+    ]
+  },
+  "scripts": {
+    "pre-install-cmd": [
+      "DrupalProject\\composer\\ScriptHandler::checkComposerVersion"
+    ],
+    "pre-update-cmd": [
+      "DrupalProject\\composer\\ScriptHandler::checkComposerVersion"
+    ],
+    "post-install-cmd": [
+      "DrupalProject\\composer\\ScriptHandler::createRequiredFiles"
+    ],
+    "post-update-cmd": [
+      "DrupalProject\\composer\\ScriptHandler::createRequiredFiles"
+    ]
+  }
+}

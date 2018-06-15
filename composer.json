@@ -25,6 +25,8 @@
     "phpunit/phpunit": "~7.1, <7.6",
     "symfony/http-foundation": "4.1.*"
   },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
   "autoload": {
     "psr-4": { "Nuxeo\\": "src/Nuxeo" }
   },

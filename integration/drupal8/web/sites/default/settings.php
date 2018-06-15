@@ -297,7 +297,7 @@ $config_directories = array();
  *   $settings['hash_salt'] = file_get_contents('/home/example/salt.txt');
  * @endcode
  */
-$settings['hash_salt'] = '';
+$settings['hash_salt'] = '941ZDn68F-89FA2SHNyqc8BDgf1ndkZ5mqCvcYiPcSqwLaM0hTloZRsSLLcMUqXdSqfMt--DPQ';
 
 /**
  * Deployment identifier.
@@ -785,3 +785,11 @@ $settings['entity_update_batch_size'] = 50;
 # if (file_exists($app_root . '/' . $site_path . '/settings.local.php')) {
 #   include $app_root . '/' . $site_path . '/settings.local.php';
 # }
+$config_directories['sync'] = '../config/sync';
+$databases['default']['default'] = array (
+  'database' => getenv('SQLITE_DATABASE'),
+  'prefix' => '',
+  'namespace' => 'Drupal\\Core\\Database\\Driver\\sqlite',
+  'driver' => 'sqlite',
+);
+$settings['install_profile'] = 'standard';
