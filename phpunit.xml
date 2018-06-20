@@ -24,10 +24,6 @@
       <directory suffix="Test.php">tests</directory>
     </testsuite>
 
-    <testsuite name="nuxeo-php-client integration tests">
-      <directory suffix="Test.php">integration/drupal8/web/modules/nuxeo/tests</directory>
-    </testsuite>
-
     <testsuite name="nuxeo-php-client ftests">
       <directory suffix="Test.php">ftests/src/test/php</directory>
     </testsuite>
@@ -35,8 +31,5 @@
 
   <php>
     <includePath>tests/resources</includePath>
-    <env name="SIMPLETEST_BASE_URL" value="http://127.0.0.1:8888"/>
-    <env name="SIMPLETEST_DB" value="sqlite://sites/default/files/test.sqlite"/>
-    <env name="BROWSERTEST_OUTPUT_DIRECTORY" value="sites/default/files/simpletest"/>
   </php>
 </phpunit>

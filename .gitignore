@@ -11,15 +11,28 @@ integration/drupal8/web/themes/contrib/
 integration/drupal8/web/profiles/contrib/
 integration/drupal8/web/libraries/
 
-# Ignore sensitive information
-integration/drupal8/web/sites/*/settings.php
-integration/drupal8/web/sites/*/settings.local.php
-
 # Ignore Drupal's file directory
 integration/drupal8/web/sites/*/files/
 
 # Ignore SimpleTest multi-site environment.
 integration/drupal8/web/sites/simpletest
 
-# Ignore .env files as they are personal
-integration/drupal8/.env
+integration/drupal8/web/.csslintrc
+integration/drupal8/web/.editorconfig
+integration/drupal8/web/.eslintignore
+integration/drupal8/web/.eslintrc.json
+integration/drupal8/web/.gitattributes
+integration/drupal8/web/.ht.router.php
+integration/drupal8/web/.htaccess
+integration/drupal8/web/autoload.php
+integration/drupal8/web/index.php
+integration/drupal8/web/profiles/
+integration/drupal8/web/robots.txt
+integration/drupal8/web/sites/default/default.services.yml
+integration/drupal8/web/sites/default/default.settings.php
+integration/drupal8/web/sites/development.services.yml
+integration/drupal8/web/sites/example.settings.local.php
+integration/drupal8/web/sites/example.sites.php
+integration/drupal8/web/themes/
+integration/drupal8/web/update.php
+integration/drupal8/web/web.config

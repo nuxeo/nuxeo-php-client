@@ -49,7 +49,8 @@ node('SLAVE') {
 
             sh """
               chmod +x bin/php
-              docker exec ${c.id} bash -c 'apt-get update && apt-get install -y unzip'"""
+              docker exec ${c.id} bash -c 'apt-get update && apt-get install -y unzip'
+              docker exec ${c.id} docker-php-ext-install gd"""
 
             stage('install dependencies') {
               sh "${composer} install"

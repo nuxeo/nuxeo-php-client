@@ -21,7 +21,7 @@
 
   <testsuites>
     <testsuite name="nuxeo-php-client integration tests">
-      <directory suffix="Test.php">web/modules/nuxeo/tests</directory>
+      <directory>web/modules/nuxeo/tests</directory>
     </testsuite>
   </testsuites>
 
