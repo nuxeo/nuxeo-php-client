@@ -121,8 +121,7 @@ class AbstractConnectable {
 
       if($response->getBody()->getSize() > 0) {
         if(false === (
-            HttpUtils::isContentType($response, Constants::CONTENT_TYPE_JSON) ||
-            HttpUtils::isContentType($response, Constants::CONTENT_TYPE_JSON_NXENTITY))) {
+            HttpUtils::isContentType($response, Constants::CONTENT_TYPE_JSON))) {
 
           if(Blob::class !== $type) {
             throw new ClassCastException(sprintf('Cannot cast %s as %s', Blob::class, $type));
