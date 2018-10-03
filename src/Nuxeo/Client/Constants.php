@@ -30,8 +30,6 @@ class Constants {
 
   const CONTENT_TYPE_JSON = 'application/json';
 
-  const CONTENT_TYPE_JSON_NXENTITY = 'application/json+nxentity';
-
   const DEFAULT_FILE_CONTENT = 'file:content';
 
   const ENTITY_TYPE_LOG_ENTRY = 'logEntry';
