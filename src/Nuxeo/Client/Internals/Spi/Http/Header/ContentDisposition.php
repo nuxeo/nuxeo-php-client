@@ -21,9 +21,12 @@
 namespace Nuxeo\Client\Internals\Spi\Http\Header;
 
 
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Nuxeo\Client\Internals\Spi\InvalidArgumentException;
 
-class ContentDisposition extends \Zend\Http\Header\ContentDisposition {
+class ContentDisposition {
+
+  const DISPOSITION_ATTACHMENT = 'attachment';
+  const DISPOSITION_INLINE = 'inline';
 
   /**
    * @var string
@@ -35,13 +38,18 @@ class ContentDisposition extends \Zend\Http\Header\ContentDisposition {
    */
   protected $filename;
 
-  public function __construct($value) {
+  /**
+   * @var string
+   */
+  protected $value;
+
+  public function __construct($value = '') {
     $value = urldecode($value);
 
     foreach(explode(';', $value) as $part) {
       $part = trim($part);
 
-      if(in_array($part, array(ResponseHeaderBag::DISPOSITION_ATTACHMENT, ResponseHeaderBag::DISPOSITION_INLINE), true)) {
+      if(in_array($part, array(self::DISPOSITION_ATTACHMENT, self::DISPOSITION_INLINE), true)) {
         $this->disposition = $part;
       } elseif(preg_match('/^filename\*?=/', $part)) {
         list($field, $filename) = explode('=', $part);
@@ -66,6 +74,52 @@ class ContentDisposition extends \Zend\Http\Header\ContentDisposition {
    */
   public function getFilename() {
     return $this->filename;
+  }
+
+  public static function fromString($headerLine) {
+    $header = new static();
+
+    list($name, $value) = static::splitHeaderLine($headerLine);
+
+    // check to ensure proper header type for this factory
+    if (strtolower($name) !== 'content-disposition') {
+      throw new InvalidArgumentException('Invalid header line for Content-Disposition string: "' . $name . '"');
+    }
+
+    $header->value = $value;
+
+    return $header;
+  }
+
+  public function getFieldName() {
+    return 'Content-Disposition';
+  }
+
+  public function getFieldValue() {
+    return $this->value;
+  }
+
+  public function toString() {
+    return 'Content-Disposition: ' . $this->getFieldValue();
+  }
+
+  /**
+   * Splits the header line in `name` and `value` parts.
+   *
+   * @param string $headerLine
+   * @return string[] `name` in the first index and `value` in the second.
+   * @throws InvalidArgumentException If header does not match with the format ``name:value``
+   */
+  public static function splitHeaderLine($headerLine)
+  {
+    $parts = explode(':', $headerLine, 2);
+    if (count($parts) !== 2) {
+      throw new InvalidArgumentException('Header must match with the format "name:value"');
+    }
+
+    $parts[1] = ltrim($parts[1]);
+
+    return $parts;
   }
 
 }
