@@ -30,6 +30,12 @@ class TestCase extends BaseCase {
 
   const URL = 'http://nuxeo:8080/nuxeo/';
 
+  protected function setUp() {
+  }
+
+  protected function tearDown() {
+  }
+
   /**
    * @param string $url
    * @param string $username

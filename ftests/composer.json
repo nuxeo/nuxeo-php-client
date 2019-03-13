@@ -3,18 +3,13 @@
   "description": "PHP Client Library for the Nuxeo Automation API",
   "keywords": ["nuxeo", "automation"],
   "homepage": "http://www.nuxeo.com",
-  "license": "AL2",
+  "license": "Apache-2.0",
   "authors": [
     {
       "name": "Pierre-Gildas MILLON",
       "email": "pgmillon@nuxeo.com"
     }
   ],
-  "extra": {
-    "branch-alias": {
-      "dev-master": "2.0-dev"
-    }
-  },
   "config": {
     "platform": {
       "php": "5.3.3"
@@ -26,15 +21,15 @@
     "paragonie/random_compat": "~2.0.17"
   },
   "require-dev": {
-    "phpunit/phpunit": "~4.8.36",
-    "sensiolabs/security-checker": "~3.0.7"
+    "phpunit/phpunit": "~4.8.36"
   },
   "autoload": {
-    "psr-4": { "Nuxeo\\": "src/Nuxeo" }
+    "psr-4": { "Nuxeo\\": "../src/Nuxeo" }
   },
   "autoload-dev" : {
     "psr-4": {
-      "Nuxeo\\Client\\Tests\\" : "tests/Nuxeo/Client/Tests"
+      "Nuxeo\\Client\\FTests\\" : "src/test/php/Nuxeo/Client/FTests",
+      "Nuxeo\\Client\\Tests\\" : "../tests/Nuxeo/Client/Tests"
     }
   }
 }

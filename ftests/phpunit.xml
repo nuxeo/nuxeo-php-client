@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and contributors.
+  ~ (C) Copyright 2019 Nuxeo SA (http://nuxeo.com/) and contributors.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -18,11 +18,11 @@
          verbose="true">
   <testsuites>
     <testsuite name="nuxeo-automation-php-client-suite">
-      <directory suffix="Test.php">tests/Nuxeo/Client/Tests</directory>
+      <directory suffix="Test.php">src/test/php/Nuxeo/Client/FTests</directory>
     </testsuite>
   </testsuites>
 
   <php>
-    <includePath>tests/resources</includePath>
+    <includePath>../tests/resources</includePath>
   </php>
 </phpunit>

@@ -14,7 +14,7 @@
   <properties>
     <nuxeo.tested.version>[9.10,10.0)</nuxeo.tested.version>
     <phpReportsDir>php-reports</phpReportsDir>
-    <itests.basepath>${basedir}/..</itests.basepath>
+    <itests.basepath>${basedir}</itests.basepath>
     <phpunit.path>${itests.basepath}/vendor/phpunit/phpunit/phpunit</phpunit.path>
     <phpunit.args>--group server</phpunit.args>
   </properties>
@@ -98,10 +98,10 @@
             </goals>
             <phase>integration-test</phase>
             <configuration>
-              <installDirectory>${basedir}/../bin</installDirectory>
+              <installDirectory>${basedir}/bin</installDirectory>
               <phpunitPath>${phpunit.path}</phpunitPath>
               <arguments>${phpunit.args}</arguments>
-              <workingDirectory>${basedir}/..</workingDirectory>
+              <workingDirectory>${basedir}</workingDirectory>
             </configuration>
           </execution>
         </executions>

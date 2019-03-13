@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -ex
 
-PROJECT_PATH="$( cd "$(dirname "$0")"/.. ; pwd -P)"
+PROJECT_PATH="$( cd "$(dirname "$0")"/../.. ; pwd -P)"
 
-docker run --rm -v "${PROJECT_PATH}":"${PROJECT_PATH}" -w "${PROJECT_PATH}" \
+docker run --rm -v "${PROJECT_PATH}":"${PROJECT_PATH}" -w "${PROJECT_PATH}/ftests" \
   --add-host nuxeo:$(ip -br -4 addr show docker0 | awk '{ gsub(/\/[0-9]+/,"",$3); print $3 }') \
   nuxeo-qaimage-php-client php $@
