@@ -14,10 +14,25 @@
   <properties>
     <nuxeo.tested.version>[9.10,10.0)</nuxeo.tested.version>
     <phpReportsDir>php-reports</phpReportsDir>
-    <itests.basepath>${basedir}/..</itests.basepath>
+    <itests.basepath>${basedir}</itests.basepath>
+    <php.path>/usr/bin</php.path>
     <phpunit.path>${itests.basepath}/vendor/phpunit/phpunit/phpunit</phpunit.path>
     <phpunit.args>--group server</phpunit.args>
   </properties>
+
+  <profiles>
+    <profile>
+      <id>phpbrew</id>
+      <activation>
+        <property>
+          <name>env.PHPBREW_PATH</name>
+        </property>
+      </activation>
+      <properties>
+        <php.path>${env.PHPBREW_PATH}</php.path>
+      </properties>
+    </profile>
+  </profiles>
 
   <dependencies>
     <dependency>
@@ -98,10 +113,10 @@
             </goals>
             <phase>integration-test</phase>
             <configuration>
-              <installDirectory>${basedir}/../bin</installDirectory>
+              <installDirectory>${php.path}</installDirectory>
               <phpunitPath>${phpunit.path}</phpunitPath>
               <arguments>${phpunit.args}</arguments>
-              <workingDirectory>${basedir}/..</workingDirectory>
+              <workingDirectory>${basedir}</workingDirectory>
             </configuration>
           </execution>
         </executions>
