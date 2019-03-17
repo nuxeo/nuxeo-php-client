@@ -37,13 +37,13 @@ This is supported by Nuxeo and compatible with Nuxeo LTS 2015 and latest Fast Tr
 
 ### Library import
 
-Download the latest stable release [Nuxeo Automation PHP Client 1.5.0](https://github.com/nuxeo/nuxeo-automation-php-client/archive/1.5.0.tar.gz).
+Download the latest stable release [Nuxeo Automation PHP Client 1.5.1](https://github.com/nuxeo/nuxeo-automation-php-client/archive/1.5.1.tar.gz).
 
 Composer:
 
 ```
   "require": {
-    "nuxeo/nuxeo-automation-php-client": "~1.5.0"
+    "nuxeo/nuxeo-automation-php-client": "~1.5.1"
   }
 ```
 
