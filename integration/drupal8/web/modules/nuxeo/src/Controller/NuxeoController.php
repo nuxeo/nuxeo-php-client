@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-namespace Drupal\Nuxeo\Controller;
+namespace Drupal\nuxeo\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use GuzzleHttp\Psr7\Response;

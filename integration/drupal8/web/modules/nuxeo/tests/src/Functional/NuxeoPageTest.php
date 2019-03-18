@@ -26,6 +26,8 @@ class NuxeoPageTest extends BrowserTestBase {
 
   protected static $modules = ['nuxeo'];
 
+  protected $defaultTheme = 'stark';
+
   private $pidFile;
 
   protected function setUp() {
@@ -45,11 +47,6 @@ class NuxeoPageTest extends BrowserTestBase {
     parent::tearDown();
   }
 
-
-  /**
-   * @throws \Behat\Mink\Exception\ExpectationException
-   * @throws \Behat\Mink\Exception\ResponseTextException
-   */
   public function testNuxeoPage() {
     $this->drupalLogin($this->drupalCreateUser([], 'Toto', true));
     $this->drupalGet('nuxeo');

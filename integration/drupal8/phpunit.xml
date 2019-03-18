@@ -14,21 +14,31 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.1/phpunit.xsd"
-         bootstrap="vendor/autoload.php"
-         verbose="true">
+<phpunit bootstrap="web/core/tests/bootstrap.php" colors="true"
+         beStrictAboutTestsThatDoNotTestAnything="true"
+         beStrictAboutOutputDuringTests="true"
+         beStrictAboutChangesToGlobalState="true"
+         printerClass="\Drupal\Tests\Listeners\HtmlOutputPrinter">
 
   <testsuites>
     <testsuite name="nuxeo-php-client integration tests">
-      <directory>web/modules/nuxeo/tests</directory>
+      <directory>web/modules/nuxeo/</directory>
     </testsuite>
   </testsuites>
 
+  <listeners>
+    <listener class="\Drupal\Tests\Listeners\DrupalListener">
+    </listener>
+    <!-- The Symfony deprecation listener has to come after the Drupal listener -->
+    <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener">
+    </listener>
+  </listeners>
+
   <php>
-    <includePath>tests/resources</includePath>
     <env name="SIMPLETEST_BASE_URL" value="http://127.0.0.1:8888"/>
-    <env name="SIMPLETEST_DB" value="sqlite://sites/default/files/test.sqlite"/>
-    <env name="BROWSERTEST_OUTPUT_DIRECTORY" value="sites/default/files/simpletest"/>
+    <env name="SIMPLETEST_DB" value="sqlite://localhost/sites/simpletest/.ht.sqlite"/>
+
+    <ini name="error_reporting" value="32767"/>
+    <ini name="memory_limit" value="-1"/>
   </php>
 </phpunit>
