@@ -79,13 +79,15 @@ class Request extends BaseRequest {
     $new = clone $this;
 
     try {
+      $headers = ['Content-Disposition' => $file->getContentDisposition()];
+      $contentType = $contentType ?? $file->getContentType();
+      if ($contentType) {
+        $headers['Content-Type'] = $contentType;
+      }
       $new->relatedFiles[] = [
         'name' => 'ignored',
         'contents' => $file->getContent(),
-        'headers' => [
-          'Content-Disposition' => $file->getContentDisposition(),
-          'Content-Type' => $contentType
-        ],
+        'headers' => $headers,
         'filename' => $file->getFilename()
       ];
     } catch(\RuntimeException $e) {
