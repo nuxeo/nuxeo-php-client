@@ -22,11 +22,11 @@ use Nuxeo\Client\Objects\Blob\Blob;
 use Nuxeo\Client\Objects\Document;
 use Nuxeo\Client\FTests\Framework\TestCase;
 
+/**
+ * @group server
+ */
 class RepositoryTest extends TestCase {
 
-  /**
-   * @group server
-   */
   public function testFetchDocument() {
     $repository = $this->getClient()->repository();
 

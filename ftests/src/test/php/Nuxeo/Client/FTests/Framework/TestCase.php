@@ -22,7 +22,7 @@ use Nuxeo\Client\Tests\Framework\TestCase as BaseCase;
 
 class TestCase extends BaseCase {
 
-  const URL = 'http://nuxeo:8080/nuxeo/';
+  const URL = 'http://localhost:8080/nuxeo/';
 
   /**
    * @param string $url

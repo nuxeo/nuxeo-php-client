@@ -106,7 +106,7 @@ class WorkflowTest extends TestCase {
     $this->getClient()->addResponse($this->createJsonResponseFromFile('documentWorkflow.json'));
     $this->document->startWorkflow(self::WORKFLOW_MODEL);
 
-    $this->assertStringMatchesFormat('{"entity-type":"workflow","workflowModelName":"%s"}', $this->getClient()
+    $this->assertStringMatchesFormat('{"entity-type":"workflow","workflowModelName":"%s"}', (string) $this->getClient()
       ->getRequest(1)
       ->getBody());
   }

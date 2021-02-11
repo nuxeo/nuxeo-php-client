@@ -24,11 +24,11 @@ use Nuxeo\Client\Objects\Documents;
 use Nuxeo\Client\Objects\Operation\DirectoryEntries;
 use Nuxeo\Client\FTests\Framework\TestCase;
 
+/**
+ * @group server
+ */
 class OperationTest extends TestCase {
 
-  /**
-   * @group server
-   */
   public function testListDocuments() {
     /** @var Documents $documents */
     $documents = $this->getClient()
@@ -40,9 +40,6 @@ class OperationTest extends TestCase {
     $this->assertGreaterThan(5, count($documents));
   }
 
-  /**
-   * @group server
-   */
   public function testCreateDocument() {
     /** @var Document $doc */
     $doc = $this->getClient()
@@ -71,9 +68,6 @@ class OperationTest extends TestCase {
     $this->assertInstanceOf(Blob::class, $blob);
   }
 
-  /**
-   * @group server
-   */
   public function testDirectories() {
     /** @var DirectoryEntries $continents */
     $continents = $this->getClient()

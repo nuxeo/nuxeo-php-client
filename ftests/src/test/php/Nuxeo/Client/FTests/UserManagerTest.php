@@ -22,11 +22,11 @@ use Nuxeo\Client\FTests\Framework\TestCase;
 use Nuxeo\Client\Objects\User\Group;
 use Nuxeo\Client\Objects\User\User;
 
+/**
+ * @group server
+ */
 class UserManagerTest extends TestCase {
 
-  /**
-   * @group server
-   */
   public function testUsersAndGroups() {
     $userManager = $this->getClient()
       ->userManager();

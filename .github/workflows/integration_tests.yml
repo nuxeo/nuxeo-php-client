@@ -1,0 +1,35 @@
+name: Integration tests
+
+on:
+  pull_request:
+    paths:
+      - src/**
+      - tests/**
+      - ftests/src/**
+      - integration/**
+
+jobs:
+  drupal8:
+    defaults:
+      run:
+        working-directory: integration/drupal8
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "7.1"
+          tools: composer
+      - run: composer install
+      - run: |
+          php vendor/bin/drush site:install \
+            --db-url=sqlite://sites/default/files/.ht.sqlite \
+            --site-name="Nuxeo Drupal Integration" \
+            --account-name=admin \
+            --account-pass=admin \
+            --site-mail=void@null.com \
+            --yes \
+            minimal
+      - run: php vendor/bin/drush en nuxeo
+      - run: php vendor/bin/drush cr
+      - run: vendor/bin/phpunit

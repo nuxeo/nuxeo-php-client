@@ -23,6 +23,7 @@ properties([
 node('SLAVE') {
   timeout(60) {
     timestamps {
+      deleteDir()
       try {
         tool type: 'hudson.model.JDK', name: 'java-8-openjdk'
         tool type: 'hudson.tasks.Maven$MavenInstallation', name: 'maven-3'
@@ -47,7 +48,8 @@ node('SLAVE') {
 
             sh """
               chmod +x bin/php
-              docker exec ${c.id} bash -c 'apt-get update && apt-get install -y unzip'"""
+              docker exec ${c.id} bash -c 'apt-get update && apt-get install -y unzip libpng-dev'
+              docker exec ${c.id} docker-php-ext-install gd"""
 
             stage('install dependencies') {
               sh "${composer} install"
