@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f9e35fd66c924be8cb7d7b69b661de0f",
+    "content-hash": "fd86acae3563ab565f09cd12fbd1958b",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -2644,16 +2644,16 @@
         },
         {
             "name": "symfony/http-foundation",
-            "version": "v4.1.12",
+            "version": "v4.2.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/http-foundation.git",
-                "reference": "b08bbec147e1d2dc01b6bb2e65f6718c0821f507"
+                "reference": "2ae778ff4a1f8baba7724db1ca977ada3b796749"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/http-foundation/zipball/b08bbec147e1d2dc01b6bb2e65f6718c0821f507",
-                "reference": "b08bbec147e1d2dc01b6bb2e65f6718c0821f507",
+                "url": "https://api.github.com/repos/symfony/http-foundation/zipball/2ae778ff4a1f8baba7724db1ca977ada3b796749",
+                "reference": "2ae778ff4a1f8baba7724db1ca977ada3b796749",
                 "shasum": ""
             },
             "require": {
@@ -2667,7 +2667,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "4.1-dev"
+                    "dev-master": "4.2-dev"
                 }
             },
             "autoload": {
@@ -2695,9 +2695,9 @@
             "description": "Symfony HttpFoundation Component",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/http-foundation/tree/4.1"
+                "source": "https://github.com/symfony/http-foundation/tree/v4.2.12"
             },
-            "time": "2019-04-16T06:39:32+00:00"
+            "time": "2019-11-11T12:54:47+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
