@@ -1,0 +1,20 @@
+name: Unit tests
+
+on:
+  pull_request:
+    paths:
+      - src/**
+      - tests/**
+      - ftests/src/**
+
+jobs:
+  phpunit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "7.1"
+          tools: composer
+      - run: composer install
+      - run: vendor/bin/phpunit --exclude-group server
