@@ -129,7 +129,7 @@ class Operation extends NuxeoEntity {
 
     try {
       return $this->getResponseNew(POST::create('automation/{operationId}')
-        ->setBody($client->getConverter()->writeJSON($this->body))
+        ->setBody($this->getConverter()->writeJSON($this->body))
         ->setFiles($files),
         $type);
     } catch(AnnotationException $e) {

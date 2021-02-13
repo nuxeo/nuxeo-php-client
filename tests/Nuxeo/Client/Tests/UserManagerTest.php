@@ -36,9 +36,8 @@ class UserManagerTest extends TestCase {
     $this->getClient()->addResponse($this->createJsonResponseFromFile($this->getResource('user.json')));
     $inputUser = $this->createUser();
 
-    $this->getClient()
-      ->userManager()
-      ->createUser($inputUser);
+    $userManager = $this->getClient()->userManager();
+    $userManager->createUser($inputUser);
 
     $request = $this->getClient()->getRequest();
 
@@ -46,7 +45,7 @@ class UserManagerTest extends TestCase {
     $this->assertRequestPathMatches($this->getClient(), 'user');
 
     /** @var User $user */
-    $user = $this->getClient()->getConverter()->readJSON($request->getBody(), User::class);
+    $user = $userManager->getConverter()->readJSON($request->getBody(), User::class);
     $this->assertEquals($inputUser->getUsername(), $user->getUsername());
   }
 
@@ -72,9 +71,8 @@ class UserManagerTest extends TestCase {
     $this->getClient()->addResponse($this->createJsonResponseFromFile($this->getResource('users.json')));
 
     /** @var User $user */
-    $user = $this->getClient()
-      ->userManager()
-      ->searchUser('*')[0];
+    $userManager = $this->getClient()->userManager();
+    $user = $userManager->searchUser('*')[0];
 
     $this->assertEquals('Skynet', $user->getCompany());
 
@@ -85,7 +83,7 @@ class UserManagerTest extends TestCase {
     $this->assertEquals('Nuxeo', $user->getCompany());
 
     $request = $this->getClient()->getRequest();
-    $user = $this->getClient()->getConverter()->readJSON($request->getBody(), User::class);
+    $user = $userManager->getConverter()->readJSON($request->getBody(), User::class);
 
     $this->assertEquals('PUT', $request->getMethod());
     $this->assertEquals('Nuxeo', $user->getCompany());
@@ -98,9 +96,8 @@ class UserManagerTest extends TestCase {
     $this->getClient()->addResponse($this->createJsonResponseFromFile($this->getResource('group.json')));
     $inputGroup = $this->createGroup();
 
-    $this->getClient()
-      ->userManager()
-      ->createGroup($inputGroup);
+    $userManager = $this->getClient()->userManager();
+    $userManager->createGroup($inputGroup);
 
     $request = $this->getClient()->getRequest();
 
@@ -108,7 +105,7 @@ class UserManagerTest extends TestCase {
     $this->assertRequestPathMatches($this->getClient(), 'group');
 
     /** @var Group $group */
-    $group = $this->getClient()->getConverter()->readJSON($request->getBody(), Group::class);
+    $group = $userManager->getConverter()->readJSON($request->getBody(), Group::class);
     $this->assertEquals($inputGroup->getGroupName(), $group->getGroupName());
   }
 
@@ -134,9 +131,8 @@ class UserManagerTest extends TestCase {
     $this->getClient()->addResponse($this->createJsonResponseFromFile($this->getResource('groups.json')));
 
     /** @var Group $group */
-    $group = $this->getClient()
-      ->userManager()
-      ->searchGroup('*')[0];
+    $userManager = $this->getClient()->userManager();
+    $group = $userManager->searchGroup('*')[0];
 
     $this->assertEquals('Administrators group', $group->getGroupLabel());
 
@@ -147,7 +143,7 @@ class UserManagerTest extends TestCase {
     $this->assertEquals('Admin group', $group->getGroupLabel());
 
     $request = $this->getClient()->getRequest();
-    $group = $this->getClient()->getConverter()->readJSON($request->getBody(), Group::class);
+    $group = $userManager->getConverter()->readJSON($request->getBody(), Group::class);
 
     $this->assertEquals('PUT', $request->getMethod());
     $this->assertEquals('Admin group', $group->getGroupLabel());

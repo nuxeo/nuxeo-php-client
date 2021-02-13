@@ -178,7 +178,8 @@ class OperationTest extends TestCase {
     $client = $this->getClient()
       ->addResponse($this->createJsonResponse(file_get_contents($this->getResource('directory-entries.json'))));
 
-    $continents = $client->automation('Directory.Entries')
+    $automation = $client->automation('Directory.Entries');
+    $continents = $automation
       ->param('directoryName', 'continent')
       ->execute(Operation\DirectoryEntries::class);
 
@@ -192,7 +193,7 @@ class OperationTest extends TestCase {
 
     $continents = $client->automation('Directory.CreateEntries')
       ->param('directoryName', 'continent')
-      ->param('entries', $client->getConverter()->writeJSON(Operation\DirectoryEntries::fromArray(array(
+      ->param('entries', $automation->getConverter()->writeJSON(Operation\DirectoryEntries::fromArray(array(
         array('id' => 'id001', 'label' => 'label.continent.one'),
         array('id' => 'id002', 'label' => 'label.continent.two', 'ordering' => 42),
         array('id' => 'id003', 'label' => 'label.continent.three', 'obsolete' => 1),

@@ -18,13 +18,13 @@
 namespace Nuxeo\Client\Objects;
 
 
+use Nuxeo\Client\Spi\Objects\NuxeoEntity;
 use function \is_string;
 use Nuxeo\Client\NuxeoClient;
 use Nuxeo\Client\Spi\Http\Method\GET;
 use Nuxeo\Client\Spi\NuxeoClientException;
-use Nuxeo\Client\Spi\Objects\AbstractConnectable;
 
-class NuxeoVersion extends AbstractConnectable {
+class NuxeoVersion extends NuxeoEntity {
 
   public const NUXEO_VERSION_PATTERN = '/(\d+)\.(\d+)(?:HF-(\d+))?(?:-I\d{8}_\d{4})?/';
 
@@ -59,7 +59,7 @@ class NuxeoVersion extends AbstractConnectable {
    * @param bool $snapshot
    */
   public function __construct($major = 0, $minor = 0, $hotfix = 0, $snapshot = false) {
-    parent::__construct();
+    parent::__construct(null);
 
     $this->major = $major;
     $this->minor = $minor;

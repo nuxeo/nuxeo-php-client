@@ -18,6 +18,7 @@
 namespace Nuxeo\Client\Objects;
 
 
+use Nuxeo\Client\Spi\Objects\NuxeoEntity;
 use function \count;
 use Nuxeo\Client\Objects\Workflow\Task;
 use Nuxeo\Client\Objects\Workflow\TaskCompletionRequest;
@@ -30,9 +31,12 @@ use Nuxeo\Client\Spi\Http\Method\GET;
 use Nuxeo\Client\Spi\Http\Method\POST;
 use Nuxeo\Client\Spi\Http\Method\PUT;
 use Nuxeo\Client\Spi\NuxeoClientException;
-use Nuxeo\Client\Spi\Objects\AbstractConnectable;
 
-class WorkflowManager extends AbstractConnectable {
+class WorkflowManager extends NuxeoEntity {
+
+  public function __construct($nuxeoClient) {
+    parent::__construct(null, $nuxeoClient);
+  }
 
   /**
    * @return Workflows

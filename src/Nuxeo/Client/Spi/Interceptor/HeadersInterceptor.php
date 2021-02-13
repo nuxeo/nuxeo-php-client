@@ -1,6 +1,6 @@
 <?php
 /**
- * (C) Copyright 2018 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2021 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-namespace Nuxeo\Client\Spi\Auth;
+namespace Nuxeo\Client\Spi\Interceptor;
 
+use Nuxeo\Client\Spi\Interceptor;
 
-use Nuxeo\Client\Spi\Interceptor\HeadersInterceptor;
-
-interface AuthenticationInterceptor extends HeadersInterceptor {
+interface HeadersInterceptor extends Interceptor {
 
 }
+

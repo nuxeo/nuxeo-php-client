@@ -25,9 +25,13 @@ use Nuxeo\Client\Objects\User\Users;
 use Nuxeo\Client\Spi\Http\Method\GET;
 use Nuxeo\Client\Spi\Http\Method\POST;
 use Nuxeo\Client\Spi\Http\Method\PUT;
-use Nuxeo\Client\Spi\Objects\AbstractConnectable;
+use Nuxeo\Client\Spi\Objects\NuxeoEntity;
 
-class UserManager extends AbstractConnectable {
+class UserManager extends NuxeoEntity {
+
+  public function __construct($nuxeoClient) {
+    parent::__construct(null, $nuxeoClient);
+  }
 
   /**
    * @return User

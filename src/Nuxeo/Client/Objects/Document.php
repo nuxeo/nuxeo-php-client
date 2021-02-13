@@ -154,7 +154,7 @@ class Document extends NuxeoEntity {
   public function getProperty($name, $type = null) {
     if(array_key_exists($name, $this->properties)) {
       if(null !== $type && $this->getNuxeoClient()) {
-        return $this->getNuxeoClient()->getConverter()->readData($this->properties[$name], $type);
+        return $this->getConverter()->readData($this->properties[$name], $type);
       }
       return $this->properties[$name];
     }
