@@ -43,6 +43,15 @@ class RepositoryTest extends TestCase {
     self::assertEquals($entityType, $document->getEntityType());
   }
 
+  public function testConnectableRepository() {
+    $client = $this->getClient();
+    $repository = $client->repository();
+
+    self::assertEquals($client->getBaseUrl(), $repository->getBaseUrl());
+    self::assertEquals($client->getHttpClient(), $repository->getHttpClient());
+    self::assertEquals($client->getInterceptors(), $repository->getInterceptors());
+  }
+
   public function testFetchDocumentRoot() {
     $client = $this->getClient()
       ->addResponse($this->createJsonResponseFromFile('documentRoot.json'))
@@ -283,6 +292,28 @@ class RepositoryTest extends TestCase {
       ->setUid(self::DOC_UID);
     $children = $parent->fetchChildren();
     self::assertEquals(5, $children->getCurrentPageSize());
+  }
+
+  public function testDocumentEnrichers() {
+    $entityType = 'document';
+
+    $client = $this->getClient()
+      ->enrichers($entityType, 'invalid')
+      ->enrichers($entityType, 'acls')
+      ->addResponse($this->createJsonResponseFromFile('document.json'));
+
+    /** @var Objects\Document $document */
+    $document = $client->repository()
+      ->enrichers($entityType, 'breadcrumb', true)
+      ->fetchDocumentById(self::DOC_UID);
+
+    self::assertCount(1, $requests = $client->getRequests());
+
+    /** @var Request $request */
+    [$request] = $requests;
+
+    self::assertEquals('acls, breadcrumb', $request->getHeaderLine(Constants::HEADER_ENRICHERS.$entityType));
+    self::assertCount(1, $document->getContextParameters('acls'));
   }
 
 }

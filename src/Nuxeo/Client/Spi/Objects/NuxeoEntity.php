@@ -28,9 +28,9 @@ use JMS\Serializer\Annotation as Serializer;
 use Nuxeo\Client\Constants;
 use Nuxeo\Client\Marshaller;
 use Nuxeo\Client\NuxeoClient;
-use Nuxeo\Client\Objects\Operation;
 use Nuxeo\Client\Objects\Blob\Blob;
 use Nuxeo\Client\Objects\Blob\Blobs;
+use Nuxeo\Client\Objects\Operation;
 use Nuxeo\Client\Request;
 use Nuxeo\Client\Spi\ClassCastException;
 use Nuxeo\Client\Spi\Http\Method\AbstractMethod;
@@ -40,7 +40,7 @@ use Nuxeo\Client\Util\HttpUtils;
 use Psr\Http\Message\UriInterface;
 use function GuzzleHttp\Psr7\stream_for;
 
-abstract class NuxeoEntity {
+abstract class NuxeoEntity extends AbstractConnectable {
 
   /**
    * @var NuxeoClient
@@ -63,11 +63,13 @@ abstract class NuxeoEntity {
 
   /**
    * @var Marshaller\NuxeoConverter
+   * @Serializer\Exclude()
    */
   private $converter;
 
   /**
    * @var Reader
+   * @Serializer\Exclude()
    */
   private $annotationReader;
 
@@ -77,6 +79,8 @@ abstract class NuxeoEntity {
    * @param NuxeoClient $nuxeoClient
    */
   public function __construct($entityType, $nuxeoClient = null) {
+    parent::__construct($nuxeoClient);
+
     $this->nuxeoClient = $nuxeoClient;
     $this->entityType = $entityType;
   }
@@ -184,7 +188,7 @@ abstract class NuxeoEntity {
         $request = $request->withBody(stream_for($body));
       }
 
-      $response = $this->getNuxeoClient()->perform($request);
+      $response = $this->perform($request);
 
       if($response->getBody()->getSize() > 0) {
         if(false === (
@@ -235,7 +239,9 @@ abstract class NuxeoEntity {
    * @return self
    */
   protected function reconnectWith($nuxeoClient) {
+    parent::reconnectWith($nuxeoClient);
     $this->nuxeoClient = $nuxeoClient;
+
     return $this;
   }
 

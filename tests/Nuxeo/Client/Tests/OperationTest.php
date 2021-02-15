@@ -37,14 +37,18 @@ class OperationTest extends TestCase {
 
     /** @var Documents $documents */
     $documents = $client
-      ->schemas('*')
+      ->schemas('invalid')
+      ->schemas('dublincore')
       ->automation()
+      ->schemas('note', true)
       ->param('query', 'SELECT * FROM Document')
       ->execute(null, 'Document.Query');
 
     self::assertRequestPathMatches($client, 'automation/Document.Query');
     self::assertInstanceOf(Documents::class, $documents);
     self::assertEquals(5, $documents->getCurrentPageSize());
+
+    self::assertEquals('dublincore, note', $client->getRequest()->getHeaderLine(Constants::HEADER_PROPERTIES));
 
     foreach ($documents as $document) {
       self::assertNotEmpty($document->getUid());
@@ -68,11 +72,12 @@ class OperationTest extends TestCase {
 
     /** @var MyDocType $document */
     $document = $client
-      ->schemas('*')
+      ->schemas(['dublincore', 'note'])
       ->automation('Document.Fetch')
       ->param('value', '0fa9d2a0-e69f-452d-87ff-0c5bd3b30d7d')
       ->execute(MyDocType::class);
 
+    self::assertEquals('dublincore, note', $client->getRequest()->getHeaderLine(Constants::HEADER_PROPERTIES));
     self::assertRequestPathMatches($client, 'automation/Document.Fetch');
     self::assertInstanceOf(MyDocType::class, $document);
     self::assertEquals($document->getCreatedAt(), $document->getProperty('dc:created'));

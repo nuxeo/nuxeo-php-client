@@ -47,5 +47,45 @@
     "Folderish",
     "SuperSpace",
     "NotCollectionMember"
-  ]
+  ],
+  "contextParameters": {
+    "acls": [
+      {
+        "name": "inherited",
+        "aces": [
+          {
+            "id": "Administrator:Everything:true:::",
+            "username": "Administrator",
+            "externalUser": false,
+            "permission": "Everything",
+            "granted": true,
+            "creator": null,
+            "begin": null,
+            "end": null,
+            "status": "effective"
+          },
+          {
+            "id": "Everyone:Everything:false:::",
+            "username": "Everyone",
+            "externalUser": false,
+            "permission": "Everything",
+            "granted": false,
+            "creator": null,
+            "begin": null,
+            "end": null,
+            "status": "effective"
+          }
+        ]
+      }
+    ],
+    "permissions": [
+      "Read",
+      "Write",
+      "ReadChildren",
+      "AddChildren",
+      "Everything",
+      "RemoveChildren",
+      "ReadWrite"
+    ]
+  }
 }

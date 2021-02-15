@@ -112,6 +112,12 @@ class Document extends NuxeoEntity {
   private $facets;
 
   /**
+   * @var mixed[]
+   * @Serializer\Type("array")
+   */
+  private $contextParameters;
+
+  /**
    * @var string
    * @Serializer\Type("string")
    */
@@ -464,6 +470,26 @@ class Document extends NuxeoEntity {
    */
   public function setProperties($properties) {
     $this->properties = $properties;
+    return $this;
+  }
+
+  /**
+   * @param string $key
+   * @return string[]
+   */
+  public function getContextParameters($key) {
+    if(array_key_exists($key, $this->contextParameters)) {
+      return $this->contextParameters[$key];
+    }
+    return [];
+  }
+
+  /**
+   * @param mixed[] $contextParameters
+   * @return Document
+   */
+  public function setContextParameters($contextParameters) {
+    $this->contextParameters = $contextParameters;
     return $this;
   }
 

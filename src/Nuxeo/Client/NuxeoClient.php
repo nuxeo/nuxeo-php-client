@@ -72,24 +72,6 @@ class NuxeoClient extends AbstractConnectable {
   }
 
   /**
-   * @param string ...
-   * @return NuxeoClient
-   */
-  public function schemas() {
-    $this->header(Constants::HEADER_PROPERTIES, implode(',', func_get_args()));
-    return $this;
-  }
-
-  /**
-   * @param boolean $value
-   * @return NuxeoClient
-   */
-  public function voidOperation($value) {
-    $this->header(Constants::HEADER_VOID_OPERATION, $value ? 'true' : 'false');
-    return $this;
-  }
-
-  /**
    * @return \Nuxeo\Client\Objects\User\User
    */
   public function connect() {
@@ -196,7 +178,7 @@ class NuxeoClient extends AbstractConnectable {
    * @throws GuzzleException
    */
   public function perform($request) {
-    $new = $this->interceptors($request);
+    $new = $this->applyInterceptors($request);
 
     return $this->getHttpClient()->send($new, [
       'query' => $new->getQuery(),

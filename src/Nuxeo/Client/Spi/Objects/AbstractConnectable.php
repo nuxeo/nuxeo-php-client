@@ -19,28 +19,33 @@ namespace Nuxeo\Client\Spi\Objects;
 
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\MessageFormatter;
 use GuzzleHttp\Middleware;
-use Monolog\Formatter\LineFormatter;
-use Monolog\Handler\StreamHandler;
-use Monolog\Logger;
-use Nuxeo\Client\Response;
-use Nuxeo\Client\Spi\Auth\AuthenticationInterceptor;
-use Nuxeo\Client\Spi\Interceptor;
-use Nuxeo\Client\Spi\SimpleInterceptor;
-use Psr\Log\LoggerInterface;
-use Psr\Log\LogLevel;
-use function \is_string;
-use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\Psr7\UriResolver;
 use JMS\Serializer\Annotation as Serializer;
+use Monolog\Formatter\LineFormatter;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use Nuxeo\Client\Constants;
 use Nuxeo\Client\Request;
+use Nuxeo\Client\Response;
+use Nuxeo\Client\Spi\Auth\AuthenticationInterceptor;
+use Nuxeo\Client\Spi\Interceptor;
 use Nuxeo\Client\Spi\NuxeoClientException;
+use Nuxeo\Client\Spi\SimpleInterceptor;
 use Psr\Http\Message\UriInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
+use function is_string;
 
+/**
+ * Description of AbstractConnectable
+ *
+ * @Serializer\Exclude()
+ */
 class AbstractConnectable {
   /**
    * @var Client
@@ -62,22 +67,43 @@ class AbstractConnectable {
    */
   private $interceptors = array();
 
-  public function __construct() {
-    $logHandler = new StreamHandler('php://stdout', Logger::INFO);
-    $this->logger = new Logger('nxPHPClientLogger', [$logHandler]);
+  public function __construct($connectable = null) {
+    if($connectable instanceof self) {
+      $this->reconnectWith($connectable);
+    } else {
+      $logHandler = new StreamHandler('php://stdout', Logger::INFO);
+      $this->logger = new Logger('nxPHPClientLogger', [$logHandler]);
 
-    $logHandler->setFormatter(new LineFormatter(null, null, true));
+      $logHandler->setFormatter(new LineFormatter(null, null, true));
+    }
+
+  }
+
+  /**
+   * @param AbstractConnectable $connectable
+   * @return self
+   */
+  protected function reconnectWith($connectable) {
+    $this->logger = $connectable->logger;
+    $this->baseUrl = $connectable->getBaseUrl();
+    $this->httpClient = $connectable->getHttpClient();
+    $this->interceptors = $connectable->getInterceptors();
+
+    return $this;
   }
 
   /**
    * @param LoggerInterface $logger
+   * @return self
    */
   public function setLogger($logger) {
     $this->logger = $logger;
+    return $this;
   }
 
   /**
    * @param string|Uri $baseUrl
+   * @return self
    * @throws \InvalidArgumentException
    */
   public function setBaseUrl($baseUrl) {
@@ -93,6 +119,7 @@ class AbstractConnectable {
     }
 
     $this->baseUrl = $baseUrl;
+    return $this;
   }
 
   /**
@@ -143,16 +170,73 @@ class AbstractConnectable {
   }
 
   /**
+   * @param string $class
+   * @return Interceptor[]
+   */
+  protected function getInterceptors($class = null) {
+    $interceptors = [];
+
+    if($class) {
+      foreach($this->interceptors as $interceptor) {
+        if($interceptor instanceof $class) {
+          $interceptors[] = $interceptor;
+        }
+      }
+    } else {
+      $interceptors = $this->interceptors;
+    }
+    return $interceptors;
+  }
+
+  /**
    * @param Request $request
    * @return Request
    * @throws NuxeoClientException
    */
-  protected function interceptors(Request $request) {
+  protected function applyInterceptors(Request $request) {
     $new = $request;
-    foreach($this->interceptors as $interceptor) {
+    foreach($this->getInterceptors() as $interceptor) {
       $new = $interceptor->proceed($this->getHttpClient(), $new);
     }
     return $new;
+  }
+
+  /**
+   * @param boolean $value
+   * @return self
+   */
+  public function voidOperation($value) {
+    $this->header(Constants::HEADER_VOID_OPERATION, $value ? 'true' : 'false');
+    return $this;
+  }
+
+  /**
+   * @param string|string[] $schemas
+   * @param bool $append
+   * @return self
+   */
+  public function schemas($schemas, $append = false) {
+    if(is_string($schemas)) {
+      $schemas = [$schemas];
+    }
+
+    $this->header(Constants::HEADER_PROPERTIES, $schemas, $append);
+    return $this;
+  }
+
+  /**
+   * @param $entityType
+   * @param string|string[] $enrichers
+   * @param bool $append
+   * @return self
+   */
+  public function enrichers($entityType, $enrichers, $append = false) {
+    if(is_string($enrichers)) {
+      $enrichers = [$enrichers];
+    }
+
+    $this->header(Constants::HEADER_ENRICHERS.$entityType, $enrichers, $append);
+    return $this;
   }
 
   /**
@@ -172,11 +256,16 @@ class AbstractConnectable {
   /**
    * @param string $name
    * @param string $value
+   * @param bool $append
    * @return self
    */
-  public function header($name, $value) {
+  public function header($name, $value, $append = false) {
     $this->interceptors[] = new SimpleInterceptor(
-      function(Request $request) use ($name, $value) {
+      function(Request $request) use ($name, $value, $append) {
+        if($append) {
+          return $request->withAddedHeader($name, $value);
+        }
+
         return $request->withHeader($name, $value);
       }
     );
@@ -191,7 +280,7 @@ class AbstractConnectable {
    * @throws GuzzleException
    */
   public function perform($request) {
-    $new = $this->interceptors($request);
+    $new = $this->applyInterceptors($request);
 
     return $this->getHttpClient()->send($new, [
       'query' => $new->getQuery(),
