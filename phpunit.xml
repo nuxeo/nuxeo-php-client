@@ -23,6 +23,9 @@
     <testsuite name="nuxeo-php-client unit tests">
       <directory suffix="Test.php">tests</directory>
     </testsuite>
+    <testsuite name="nuxeo-php-client-ftests">
+      <directory suffix="Test.php">ftests</directory>
+    </testsuite>
   </testsuites>
 
   <php>

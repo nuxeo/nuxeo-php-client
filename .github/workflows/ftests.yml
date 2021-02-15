@@ -1,14 +1,19 @@
-name: Unit tests
+name: Functional tests
 
 on:
   pull_request:
     paths:
       - src/**
-      - tests/**
+      - ftests/**
 
 jobs:
-  phpunit:
+  ftests:
     runs-on: ubuntu-latest
+    services:
+      nuxeo:
+        image: "nuxeo:9.10"
+        ports:
+          - 8080:8080
     steps:
       - uses: actions/checkout@v2
       - uses: shivammathur/setup-php@v2
@@ -16,4 +21,4 @@ jobs:
           php-version: "7.1"
           tools: composer
       - run: composer install
-      - run: vendor/bin/phpunit --exclude-group server
+      - run: php vendor/bin/phpunit --group server
