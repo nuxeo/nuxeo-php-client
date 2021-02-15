@@ -28,4 +28,10 @@
   <php>
     <includePath>tests/resources</includePath>
   </php>
+
+  <filter>
+    <whitelist>
+      <directory suffix=".php">src</directory>
+    </whitelist>
+  </filter>
 </phpunit>
