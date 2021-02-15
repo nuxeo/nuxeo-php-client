@@ -37,10 +37,10 @@ class RepositoryTest extends TestCase {
    * @param int $requestIndex
    */
   protected function assertFetched($client, $path, $document, $type, $entityType, $requestIndex = 0) {
-    $this->assertRequestPathMatches($client, $path, $requestIndex);
-    $this->assertInstanceOf(Objects\Document::class, $document);
-    $this->assertEquals($type, $document->getType());
-    $this->assertEquals($entityType, $document->getEntityType());
+    self::assertRequestPathMatches($client, $path, $requestIndex);
+    self::assertInstanceOf(Objects\Document::class, $document);
+    self::assertEquals($type, $document->getType());
+    self::assertEquals($entityType, $document->getEntityType());
   }
 
   public function testFetchDocumentRoot() {
@@ -54,14 +54,14 @@ class RepositoryTest extends TestCase {
     $document = $client->repository()->fetchDocumentRoot();
 
     $this->assertFetched($client, 'path/', $document, 'Root', 'document');
-    $this->assertEquals('/', $document->getPath());
+    self::assertEquals('/', $document->getPath());
 
     /** @var Objects\Document $document */
     $document = $client->repository()->fetchDocumentRoot(self::DOC_REPOSITORY);
 
     $this->assertFetched($client, "repo/${repositoryName}/path/", $document, 'Root', 'document', 1);
-    $this->assertEquals($repositoryName, $document->getRepositoryName());
-    $this->assertEquals('/', $document->getPath());
+    self::assertEquals($repositoryName, $document->getRepositoryName());
+    self::assertEquals('/', $document->getPath());
   }
 
   public function testFetchDocumentByPath() {
@@ -75,14 +75,14 @@ class RepositoryTest extends TestCase {
     $document = $client->repository()->fetchDocumentByPath(self::DOC_PATH);
 
     $this->assertFetched($client, 'path'.self::DOC_PATH, $document, self::DOC_TYPE, 'document');
-    $this->assertEquals(self::DOC_PATH, $document->getPath());
+    self::assertEquals(self::DOC_PATH, $document->getPath());
 
     /** @var Objects\Document $document */
     $document = $client->repository()->fetchDocumentByPath(self::DOC_PATH, self::DOC_REPOSITORY);
 
     $this->assertFetched($client, "repo/${repositoryName}/path".self::DOC_PATH, $document, self::DOC_TYPE, 'document', 1);
-    $this->assertEquals($repositoryName, $document->getRepositoryName());
-    $this->assertEquals(self::DOC_PATH, $document->getPath());
+    self::assertEquals($repositoryName, $document->getRepositoryName());
+    self::assertEquals(self::DOC_PATH, $document->getPath());
   }
 
   public function testFetchDocument() {
@@ -97,14 +97,14 @@ class RepositoryTest extends TestCase {
     $document = $client->repository()->fetchDocumentById(self::DOC_UID);
 
     $this->assertFetched($client, 'id/'.self::DOC_UID, $document, 'Note', 'document');
-    $this->assertEquals(self::DOC_UID, $document->getUid());
+    self::assertEquals(self::DOC_UID, $document->getUid());
 
     /** @var Objects\Document $document */
     $document = $client->repository()->fetchDocumentById($uid, 'default');
 
     $this->assertFetched($client, "repo/${repositoryName}/id/".$uid, $document, 'Note', 'document', 1);
-    $this->assertEquals($repositoryName, $document->getRepositoryName());
-    $this->assertEquals($uid, $document->getUid());
+    self::assertEquals($repositoryName, $document->getRepositoryName());
+    self::assertEquals($uid, $document->getUid());
   }
 
   public function testCreateDocument() {
@@ -121,9 +121,9 @@ class RepositoryTest extends TestCase {
     /** @var Objects\Document $document */
     $document = $client->repository()->createDocumentByPath($parentPath, $parent);
 
-    $this->assertEquals('POST', $client->getRequest()->getMethod());
-    $this->assertNotNull($decoded = json_decode((string) $client->getRequest()->getBody(), true));
-    $this->assertArraySubset(array(
+    self::assertEquals('POST', $client->getRequest()->getMethod());
+    self::assertNotNull($decoded = json_decode((string) $client->getRequest()->getBody(), true));
+    self::assertArraySubset(array(
       'entity-type' => 'document',
       'type' => self::DOC_TYPE,
       'title' => self::DOC_TITLE,
@@ -133,7 +133,7 @@ class RepositoryTest extends TestCase {
     ), $decoded);
 
     $this->assertFetched($client, "path${parentPath}", $document, self::DOC_TYPE, 'document');
-    $this->assertEquals(self::DOC_TITLE, $document->getProperty('dc:title'));
+    self::assertEquals(self::DOC_TITLE, $document->getProperty('dc:title'));
   }
 
   public function testUpdateDocument() {
@@ -154,16 +154,16 @@ class RepositoryTest extends TestCase {
     /** @var Objects\Document $updated */
     $updated = $client->repository()->updateDocument($document);
 
-    $this->assertEquals('PUT', $client->getRequest()->getMethod());
+    self::assertEquals('PUT', $client->getRequest()->getMethod());
     $this->assertFetched($client, "id/${uid}", $updated, $document->getType(), 'document');
-    $this->assertEquals($document->getProperty('dc:title'), $updated->getProperty('dc:title'));
+    self::assertEquals($document->getProperty('dc:title'), $updated->getProperty('dc:title'));
 
     /** @var Objects\Document $updated */
     $updated = $client->repository()->updateDocumentByPath($path, $document);
 
-    $this->assertEquals('PUT', $client->getRequest()->getMethod());
+    self::assertEquals('PUT', $client->getRequest()->getMethod());
     $this->assertFetched($client, "path${path}", $updated, $document->getType(), 'document', 1);
-    $this->assertEquals($document->getProperty('dc:title'), $updated->getProperty('dc:title'));
+    self::assertEquals($document->getProperty('dc:title'), $updated->getProperty('dc:title'));
   }
 
   public function testDeleteDocument() {
@@ -179,14 +179,14 @@ class RepositoryTest extends TestCase {
       ->setPath($path);
 
     $client->repository()->deleteDocument($document);
-    $this->assertRequestPathMatches($client, "id/${uid}");
+    self::assertRequestPathMatches($client, "id/${uid}");
 
     $client->repository()->deleteDocumentByPath($path);
-    $this->assertRequestPathMatches($client, "path${path}");
+    self::assertRequestPathMatches($client, "path${path}");
 
     /** @var Request $request */
     foreach($client->getRequests() as $request) {
-      $this->assertEquals('DELETE', $request->getMethod());
+      self::assertEquals('DELETE', $request->getMethod());
     }
   }
 
@@ -197,19 +197,19 @@ class RepositoryTest extends TestCase {
     /** @var Objects\Documents $documents */
     $documents = $client->repository()->query('SELECT * FROM Document');
 
-    $this->assertRequestPathMatches($client, 'query');
-    $this->assertEquals('GET', $client->getRequest()->getMethod());
+    self::assertRequestPathMatches($client, 'query');
+    self::assertEquals('GET', $client->getRequest()->getMethod());
 
-    $this->assertEquals('documents', $documents->getEntityType());
-    $this->assertInstanceOf(Objects\Documents::class, $documents);
-    $this->assertCount(5, $documents);
-    $this->assertEquals(34, $documents->getTotalSize());
+    self::assertEquals('documents', $documents->getEntityType());
+    self::assertInstanceOf(Objects\Documents::class, $documents);
+    self::assertCount(5, $documents);
+    self::assertEquals(34, $documents->getTotalSize());
 
     /** @var Objects\Document $document */
-    $this->assertInstanceOf(Objects\Document::class, $document = $documents[0]);
+    self::assertInstanceOf(Objects\Document::class, $document = $documents[0]);
 
-    $this->assertEquals(self::DOC_UID, $document->getUid());
-    $this->assertEquals(self::DOC_TYPE, $document->getType());
+    self::assertEquals(self::DOC_UID, $document->getUid());
+    self::assertEquals(self::DOC_TYPE, $document->getType());
   }
 
   public function testMarshalling() {
@@ -218,24 +218,22 @@ class RepositoryTest extends TestCase {
 
     /** @var MyDocType $document */
     $document = $client->repository()->fetchDocumentById(self::DOC_UID, null, MyDocType::class);
-    $this->assertInstanceOf(MyDocType::class, $document);
-    $this->assertNotNull($document->getCreatedAt());
+    self::assertInstanceOf(MyDocType::class, $document);
+    self::assertNotNull($document->getCreatedAt());
   }
 
-  /**
-   * @expectedException \Nuxeo\Client\Spi\NuxeoClientException
-   */
   public function testFail() {
+    $this->expectException(NuxeoClientException::class);
+
     $client = $this->getClient()->addResponse($this->createResponse(404));
     $client->repository()->fetchDocumentById('404');
-    $this->fail('Should be not found');
+    self::fail('Should be not found');
   }
 
-  /**
-   * @expectedException \Nuxeo\Client\Spi\NuxeoClientException
-   */
   public function testServerError() {
-    $client = $this->getClient(self::URL, self::LOGIN, null)
+    $this->expectException(NuxeoClientException::class);
+
+    $client = $this->getClient()
       ->addResponse($this->createResponse(
         500,
         array('Content-Type' => Constants::CONTENT_TYPE_JSON),
@@ -245,20 +243,20 @@ class RepositoryTest extends TestCase {
     try {
       $client->repository()->fetchDocumentById('404');
     } catch(NuxeoClientException $e) {
-      $this->assertEquals(500, $e->getCode());
+      self::assertEquals(500, $e->getCode());
 
       /** @var NuxeoException $previous */
-      $this->assertInstanceOf(NuxeoException::class, $previous = $e->getPrevious());
-      $this->assertCount(119, $previous->getTrace());
+      self::assertInstanceOf(NuxeoException::class, $previous = $e->getPrevious());
+      self::assertCount(119, $previous->getTrace());
       throw $e;
     }
-    $this->fail('Should be Internal Server Error');
+    self::fail('Should be Internal Server Error');
   }
 
   public function testDocumentFetchBlob() {
     $content = file_get_contents($this->getResource(self::IMG_FS_PATH));
 
-    $client = $this->getClient(self::URL, self::LOGIN, null)
+    $client = $this->getClient()
       ->addResponse($this->createResponse(
         200,
         array(
@@ -272,19 +270,19 @@ class RepositoryTest extends TestCase {
       ->setUid(self::DOC_UID)
       ->fetchBlob();
 
-    $this->assertEquals(self::IMG_FS_PATH, $blob->getFilename());
-    $this->assertEquals(self::IMG_MIME, $blob->getMimeType());
-    $this->assertEquals(md5_file($this->getResource(self::IMG_FS_PATH)), md5($blob->getStream()->getContents()));
+    self::assertEquals(self::IMG_FS_PATH, $blob->getFilename());
+    self::assertEquals(self::IMG_MIME, $blob->getMimeType());
+    self::assertEquals(md5_file($this->getResource(self::IMG_FS_PATH)), md5($blob->getStream()->getContents()));
   }
 
   public function testDocumentFetchChildren() {
-    $client = $this->getClient(self::URL, self::LOGIN, null)
+    $client = $this->getClient()
       ->addResponse($this->createJsonResponseFromFile('document-list.json'));
 
     $parent = Objects\Document::create($client)
       ->setUid(self::DOC_UID);
     $children = $parent->fetchChildren();
-    $this->assertEquals(5, $children->getCurrentPageSize());
+    self::assertEquals(5, $children->getCurrentPageSize());
   }
 
 }

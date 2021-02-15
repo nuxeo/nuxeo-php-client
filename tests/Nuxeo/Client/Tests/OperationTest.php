@@ -19,10 +19,7 @@
 namespace Nuxeo\Client\Tests;
 
 
-use Guzzle\Http\Message\EntityEnclosingRequest;
-use Guzzle\Http\Message\EntityEnclosingRequestInterface;
-use JMS\Serializer\Annotation as Serializer;
-use Nuxeo\Client\NuxeoClient;
+use Nuxeo\Client\Constants;
 use Nuxeo\Client\Objects\Audit\LogEntry;
 use Nuxeo\Client\Objects\Blob\Blob;
 use Nuxeo\Client\Objects\Document;
@@ -45,24 +42,24 @@ class OperationTest extends TestCase {
       ->param('query', 'SELECT * FROM Document')
       ->execute(null, 'Document.Query');
 
-    $this->assertRequestPathMatches($client, 'automation/Document.Query');
-    $this->assertInstanceOf(Documents::class, $documents);
-    $this->assertEquals(5, $documents->getCurrentPageSize());
+    self::assertRequestPathMatches($client, 'automation/Document.Query');
+    self::assertInstanceOf(Documents::class, $documents);
+    self::assertEquals(5, $documents->getCurrentPageSize());
 
     foreach ($documents as $document) {
-      $this->assertNotEmpty($document->getUid());
-      $this->assertNotEmpty($document->getPath());
-      $this->assertNotEmpty($document->getType());
-      $this->assertNotEmpty($document->getState());
-      $this->assertNotEmpty($document->getTitle());
-      $this->assertNotEmpty($document->getProperty('dc:created'));
+      self::assertNotEmpty($document->getUid());
+      self::assertNotEmpty($document->getPath());
+      self::assertNotEmpty($document->getType());
+      self::assertNotEmpty($document->getState());
+      self::assertNotEmpty($document->getTitle());
+      self::assertNotEmpty($document->getProperty('dc:created'));
     }
 
     $note = $documents[0];
-    $this->assertNotNull($note);
-    $this->assertEquals(self::DOC_TYPE, $note->getType());
-    $this->assertEquals(self::DOC_TITLE, $note->getProperty('dc:title'));
-    $this->assertNull($note->getProperty('dc:nonexistent'));
+    self::assertNotNull($note);
+    self::assertEquals(self::DOC_TYPE, $note->getType());
+    self::assertEquals(self::DOC_TITLE, $note->getProperty('dc:title'));
+    self::assertNull($note->getProperty('dc:nonexistent'));
   }
 
   public function testMyDocTypeDeserialize() {
@@ -76,9 +73,9 @@ class OperationTest extends TestCase {
       ->param('value', '0fa9d2a0-e69f-452d-87ff-0c5bd3b30d7d')
       ->execute(MyDocType::class);
 
-    $this->assertRequestPathMatches($client, 'automation/Document.Fetch');
-    $this->assertInstanceOf(MyDocType::class, $document);
-    $this->assertEquals($document->getCreatedAt(), $document->getProperty('dc:created'));
+    self::assertRequestPathMatches($client, 'automation/Document.Fetch');
+    self::assertInstanceOf(MyDocType::class, $document);
+    self::assertEquals($document->getCreatedAt(), $document->getProperty('dc:created'));
   }
 
   public function testComplexProperty() {
@@ -94,7 +91,7 @@ class OperationTest extends TestCase {
 
     /** @var Character $doc */
     $doc = $document->getProperty('custom:complex', Character::class);
-    $this->assertNotEmpty($doc->name);
+    self::assertNotEmpty($doc->name);
   }
 
   public function testRelatedProperty() {
@@ -111,9 +108,9 @@ class OperationTest extends TestCase {
 
     /** @var Operation\DocRef $docRef */
     $docRef = $document->getProperty('custom:related', Operation\DocRef::class);
-    $this->assertInstanceOf(Operation\DocRef::class, $docRef);
-    $this->assertInstanceOf(Document::class, $doc = $docRef->getDocument());
-    $this->assertNotEmpty($doc->getPath());
+    self::assertInstanceOf(Operation\DocRef::class, $docRef);
+    self::assertInstanceOf(Document::class, $doc = $docRef->getDocument());
+    self::assertNotEmpty($doc->getPath());
   }
 
   public function testGetBlob() {
@@ -128,9 +125,9 @@ class OperationTest extends TestCase {
       ->input(self::DOC_PATH)
       ->execute(Blob::class);
 
-    $this->assertRequestPathMatches($client, 'automation/Blob.Get');
-    $this->assertEquals(sprintf('{"params":{},"input":"%s"}', self::DOC_PATH), (string) $client->getRequest()->getBody());
-    $this->assertEquals($blob->getStream()->getContents(), self::DOC_CONTENT);
+    self::assertRequestPathMatches($client, 'automation/Blob.Get');
+    self::assertEquals(sprintf('{"params":{},"input":"%s"}', self::DOC_PATH), (string) $client->getRequest()->getBody());
+    self::assertEquals($blob->getStream()->getContents(), self::DOC_CONTENT);
   }
 
   /**
@@ -144,7 +141,7 @@ class OperationTest extends TestCase {
       ->input(Blob::fromFile('/void', null))
       ->execute(Blob::class);
 
-    $this->assertCount(0, $client->getRequests());
+    self::assertCount(0, $client->getRequests());
   }
 
   public function testLoadBlob() {
@@ -160,17 +157,17 @@ class OperationTest extends TestCase {
     $request = $client->getRequest();
     $requestBody = $request->getBody()->getContents();
 
-    $this->assertRequestPathMatches($client, 'automation/Blob.AttachOnDocument');
-    $this->assertArrayHasKey('content-type', $request->getHeaders());
+    self::assertRequestPathMatches($client, 'automation/Blob.AttachOnDocument');
+    self::assertArrayHasKey('content-type', $request->getHeaders());
 
-    $this->assertStringMatchesFormat(
+    self::assertStringMatchesFormat(
       'multipart/related;boundary=%s',
       $request->getHeader('content-type')[0]);
 
-    $this->assertStringMatchesFormatFile($this->getResource('setblob.txt'),
+    self::assertStringMatchesFormatFile($this->getResource('setblob.txt'),
       preg_replace('/\r\n/', "\n", $requestBody));
 
-    $this->assertContains('content-type: '.$mimeType, $requestBody, '', true);
+    self::assertContains('content-type: '.$mimeType, $requestBody, '', true);
 
   }
 
@@ -183,9 +180,9 @@ class OperationTest extends TestCase {
       ->param('directoryName', 'continent')
       ->execute(Operation\DirectoryEntries::class);
 
-    $this->assertRequestPathMatches($client, 'automation/Directory.Entries');
-    $this->assertInstanceOf(Operation\DirectoryEntries::class, $continents);
-    $this->assertCount(7, $continents);
+    self::assertRequestPathMatches($client, 'automation/Directory.Entries');
+    self::assertInstanceOf(Operation\DirectoryEntries::class, $continents);
+    self::assertCount(7, $continents);
 
     $ids = array('id001', 'id002', 'id003', 'id004');
     $client = $this->getClient()
@@ -201,17 +198,17 @@ class OperationTest extends TestCase {
       ))))
       ->execute();
 
-    $this->assertCount(2, $requests = $client->getRequests());
+    self::assertCount(2, $requests = $client->getRequests());
 
-    $this->assertRequestPathMatches($client, 'automation/Directory.CreateEntries', 1);
-    $this->assertNotNull($decoded = json_decode((string) $client->getRequest(1)->getBody()->getContents(), true));
-    $this->assertTrue(!empty($decoded['params']['entries']) && is_string($decoded['params']['entries']));
-    $this->assertTrue(null !== ($entries = json_decode($decoded['params']['entries'], true)) && !empty($entries[0]['id']));
-    $this->assertEquals('id001', $entries[0]['id']);
-    $this->assertEquals('label.continent.one', $entries[0]['label']);
-    $this->assertEquals(42, $entries[1]['ordering']);
-    $this->assertEquals(5, $entries[3]['obsolete']);
-    $this->assertEquals($ids, $continents);
+    self::assertRequestPathMatches($client, 'automation/Directory.CreateEntries', 1);
+    self::assertNotNull($decoded = json_decode((string) $client->getRequest(1)->getBody()->getContents(), true));
+    self::assertTrue(!empty($decoded['params']['entries']) && is_string($decoded['params']['entries']));
+    self::assertTrue(null !== ($entries = json_decode($decoded['params']['entries'], true)) && !empty($entries[0]['id']));
+    self::assertEquals('id001', $entries[0]['id']);
+    self::assertEquals('label.continent.one', $entries[0]['label']);
+    self::assertEquals(42, $entries[1]['ordering']);
+    self::assertEquals(5, $entries[3]['obsolete']);
+    self::assertEquals($ids, $continents);
   }
 
   public function testCounters() {
@@ -223,16 +220,16 @@ class OperationTest extends TestCase {
       ->param('counterNames', $counterName)
       ->execute(Operation\CounterList::class);
 
-    $this->assertRequestPathMatches($client, 'automation/Counters.GET');
-    $this->assertInstanceOf(Operation\CounterList::class, $counters);
-    $this->assertCount(1, $counters);
+    self::assertRequestPathMatches($client, 'automation/Counters.GET');
+    self::assertInstanceOf(Operation\CounterList::class, $counters);
+    self::assertCount(1, $counters);
 
-    $this->assertCount(0, $counters[$counterName]->getSpeed());
-    $this->assertCount(1, $counters[$counterName]->getDeltas());
-    $this->assertCount(1, $counterValues = $counters[$counterName]->getValues());
+    self::assertCount(0, $counters[$counterName]->getSpeed());
+    self::assertCount(1, $counters[$counterName]->getDeltas());
+    self::assertCount(1, $counterValues = $counters[$counterName]->getValues());
 
-    $this->assertNotEmpty($counterValues[0]->getTimestamp());
-    $this->assertNotEmpty($counterValues[0]->getValue());
+    self::assertNotEmpty($counterValues[0]->getTimestamp());
+    self::assertNotEmpty($counterValues[0]->getValue());
   }
 
   public function testAuditQuery() {
@@ -243,24 +240,24 @@ class OperationTest extends TestCase {
       ->param('query', 'from LogEntry')
       ->execute(Operation\LogEntries::class);
 
-    $this->assertRequestPathMatches($client, 'automation/Audit.Query');
-    $this->assertInstanceOf(Operation\LogEntries::class, $entries);
-    $this->assertCount(2, $entries);
+    self::assertRequestPathMatches($client, 'automation/Audit.Query');
+    self::assertInstanceOf(Operation\LogEntries::class, $entries);
+    self::assertCount(2, $entries);
 
     /** @var LogEntry $entry */
-    $this->assertInstanceOf(LogEntry::class, $entry = $entries[0]);
-    $this->assertNotEmpty($entry->getCategory());
-    $this->assertNotEmpty($entry->getDocLifeCycle());
-    $this->assertNotEmpty($entry->getDocPath());
-    $this->assertNotEmpty($entry->getDocType());
-    $this->assertNotEmpty($entry->getDocUUID());
-    $this->assertNotEmpty($entry->getEventDate());
-    $this->assertNotEmpty($entry->getEventId());
-    $this->assertNotEmpty($entry->getPrincipalName());
-    $this->assertNotEmpty($entry->getRepositoryId());
+    self::assertInstanceOf(LogEntry::class, $entry = $entries[0]);
+    self::assertNotEmpty($entry->getCategory());
+    self::assertNotEmpty($entry->getDocLifeCycle());
+    self::assertNotEmpty($entry->getDocPath());
+    self::assertNotEmpty($entry->getDocType());
+    self::assertNotEmpty($entry->getDocUUID());
+    self::assertNotEmpty($entry->getEventDate());
+    self::assertNotEmpty($entry->getEventId());
+    self::assertNotEmpty($entry->getPrincipalName());
+    self::assertNotEmpty($entry->getRepositoryId());
 
-    $this->assertInstanceOf(LogEntry::class, $entry = $entries[1]);
-    $this->assertNotEmpty($entry->getComment());
+    self::assertInstanceOf(LogEntry::class, $entry = $entries[1]);
+    self::assertNotEmpty($entry->getComment());
   }
 
   public function testActionsGet() {
@@ -272,19 +269,19 @@ class OperationTest extends TestCase {
       ->input(new Operation\DocRef(self::DOC_PATH))
       ->execute(Operation\ActionList::class);
 
-    $this->assertRegExp(sprintf(',doc:%s,', self::DOC_PATH), (string) $client->getRequest()->getBody());
+    self::assertRegExp(sprintf(',doc:%s,', self::DOC_PATH), (string) $client->getRequest()->getBody());
 
-    $this->assertRequestPathMatches($client, 'automation/Actions.GET');
-    $this->assertInstanceOf(Operation\ActionList::class, $actions);
-    $this->assertCount(8, $actions);
+    self::assertRequestPathMatches($client, 'automation/Actions.GET');
+    self::assertInstanceOf(Operation\ActionList::class, $actions);
+    self::assertCount(8, $actions);
 
     /** @var Operation\Action $action */
-    $this->assertInstanceOf(Operation\Action::class, $action = $actions[0]);
-    $this->assertNotEmpty($action->getId());
-    $this->assertNotEmpty($action->getLink());
-    $this->assertNotEmpty($action->getIcon());
-    $this->assertNotEmpty($action->getLabel());
-    $this->assertNotNull($action->getHelp());
+    self::assertInstanceOf(Operation\Action::class, $action = $actions[0]);
+    self::assertNotEmpty($action->getId());
+    self::assertNotEmpty($action->getLink());
+    self::assertNotEmpty($action->getIcon());
+    self::assertNotEmpty($action->getLabel());
+    self::assertNotNull($action->getHelp());
   }
 
   public function testGroupSuggest() {
@@ -294,24 +291,24 @@ class OperationTest extends TestCase {
     $groups = $client->automation('UserGroup.Suggestion')
       ->execute(Operation\UserGroupList::class);
 
-    $this->assertRequestPathMatches($client, 'automation/UserGroup.Suggestion');
-    $this->assertInstanceOf(Operation\UserGroupList::class, $groups);
-    $this->assertCount(4, $groups);
+    self::assertRequestPathMatches($client, 'automation/UserGroup.Suggestion');
+    self::assertInstanceOf(Operation\UserGroupList::class, $groups);
+    self::assertCount(4, $groups);
 
     /** @var Operation\UserGroup $group */
-    $this->assertInstanceOf(Operation\UserGroup::class, $group = $groups[0]);
-    $this->assertNotEmpty($group->getEmail());
-    $this->assertNotEmpty($group->getUsername());
-    $this->assertNotEmpty($group->getId());
-    $this->assertNotEmpty($group->getPrefixedId());
-    $this->assertNotEmpty($group->getDisplayLabel());
-    $this->assertEquals(Operation\UserGroup::USER_TYPE, $group->getType());
+    self::assertInstanceOf(Operation\UserGroup::class, $group = $groups[0]);
+    self::assertNotEmpty($group->getEmail());
+    self::assertNotEmpty($group->getUsername());
+    self::assertNotEmpty($group->getId());
+    self::assertNotEmpty($group->getPrefixedId());
+    self::assertNotEmpty($group->getDisplayLabel());
+    self::assertEquals(Operation\UserGroup::USER_TYPE, $group->getType());
 
-    $this->assertInstanceOf(Operation\UserGroup::class, $group = $groups[1]);
-    $this->assertNotEmpty($group->getDescription());
-    $this->assertNotEmpty($group->getGroupLabel());
-    $this->assertNotEmpty($group->getGroupName());
-    $this->assertEquals(Operation\UserGroup::GROUP_TYPE, $group->getType());
+    self::assertInstanceOf(Operation\UserGroup::class, $group = $groups[1]);
+    self::assertNotEmpty($group->getDescription());
+    self::assertNotEmpty($group->getGroupLabel());
+    self::assertNotEmpty($group->getGroupName());
+    self::assertEquals(Operation\UserGroup::GROUP_TYPE, $group->getType());
   }
 
 }
