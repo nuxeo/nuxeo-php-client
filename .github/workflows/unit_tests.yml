@@ -9,6 +9,11 @@ on:
 jobs:
   phpunit:
     runs-on: ubuntu-latest
+    services:
+      nuxeo:
+        image: "nuxeo:9.10"
+        ports:
+          - 8080:8080
     steps:
       - uses: actions/checkout@v2
       - uses: shivammathur/setup-php@v2
@@ -16,13 +21,15 @@ jobs:
           php-version: "7.1"
           tools: composer
       - run: composer install
-      - run: vendor/bin/phpunit --exclude-group server
-  sonarcloud:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
+      - run: |
+          vendor/bin/phpunit \
+            --coverage-clover target/phpunit.coverage.xml \
+            --log-junit target/phpunit.report.xml
+      - name: fix code coverage paths
+        # https://community.sonarsource.com/t/code-coverage-doesnt-work-with-github-action/16747/5
+        run: |
+          sed -i 's/\/home\/runner\/work\/nuxeo-php-client\/nuxeo-php-client\//\/github\/workspace\//g' target/phpunit.coverage.xml
+          sed -i 's/\/home\/runner\/work\/nuxeo-php-client\/nuxeo-php-client\//\/github\/workspace\//g' target/phpunit.report.xml
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
         env:

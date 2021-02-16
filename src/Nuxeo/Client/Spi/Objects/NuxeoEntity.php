@@ -22,6 +22,7 @@ use Doctrine\Common\Annotations\AnnotationException;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\Reader;
 use GuzzleHttp\Exception\BadResponseException;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\Psr7\UriResolver;
 use JMS\Serializer\Annotation as Serializer;
@@ -244,34 +245,6 @@ abstract class NuxeoEntity extends AbstractConnectable {
 
     return $this;
   }
-
-//  /**
-//   * Sets the default enrichers
-//   *
-//   * @param $entityType
-//   * @param string ...$enrichers
-//   * @return $this
-//   */
-//  public function enrichers($entityType, ...$enrichers) {
-//    $this->interceptors[] = new Interceptor\EnricherInterceptor($entityType, $enrichers);
-//    return $this;
-//  }
-//
-//  /**
-//   * @param $entityType
-//   * @param string $enricher ...
-//   * @param boolean $override
-//   */
-//  public function enrichers($entityType) {
-//    $entityType = strtolower($entityType);
-//    $enrichers = array_slice(func_get_args(), 1);
-//    $override = count($enrichers) > 1 && is_bool($enrichers[-1]) ? array_pop($enrichers) : false;
-//
-//    if(false === $override && array_key_exists($entityType, $this->enrichers)) {
-//      $enrichers = $this->enrichers[$entityType] + $enrichers;
-//    }
-//    $this->enrichers[$entityType] = $enrichers;
-//  }
 
   /**
    * @return Marshaller\NuxeoConverter
