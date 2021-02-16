@@ -140,7 +140,9 @@ class OperationTest extends TestCase {
     $client = $this->getClient()
       ->addResponse($this->createResponse());
 
-    $client->automation('Blob.Attach')->input(Blob::fromFile('/void', null))->execute(Blob::class);
+    $client->automation('Blob.Attach')
+      ->input(Blob::fromFile('/void', null))
+      ->execute(Blob::class);
 
     $this->assertCount(0, $client->getRequests());
   }
@@ -149,20 +151,26 @@ class OperationTest extends TestCase {
     $client = $this->getClient()
       ->addResponse($this->createResponse());
 
+    $mimeType = 'text/plain';
     $client->automation('Blob.AttachOnDocument')
       ->param('document', self::DOC_PATH)
-      ->input(Blob::fromFile($this->getResource('myfile.txt'), null))
+      ->input(Blob::fromFile($this->getResource('myfile.txt'), $mimeType))
       ->execute(Blob::class);
 
+    $request = $client->getRequest();
+    $requestBody = $request->getBody()->getContents();
+
     $this->assertRequestPathMatches($client, 'automation/Blob.AttachOnDocument');
-    $this->assertArrayHasKey('content-type', $client->getRequest()->getHeaders());
+    $this->assertArrayHasKey('content-type', $request->getHeaders());
 
     $this->assertStringMatchesFormat(
       'multipart/related;boundary=%s',
-      $client->getRequest()->getHeader('content-type')[0]);
+      $request->getHeader('content-type')[0]);
 
     $this->assertStringMatchesFormatFile($this->getResource('setblob.txt'),
-      preg_replace('/\r\n/', "\n", (string) $client->getRequest()->getBody()));
+      preg_replace('/\r\n/', "\n", $requestBody));
+
+    $this->assertContains('content-type: '.$mimeType, $requestBody, '', true);
 
   }
 
