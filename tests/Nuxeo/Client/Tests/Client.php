@@ -18,17 +18,18 @@
 
 namespace Nuxeo\Client\Tests;
 
-use function \count;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Nuxeo\Client\NuxeoClient as BaseClient;
 use Nuxeo\Client\Tests\Http\Client as HttpClient;
+use Nuxeo\Client\Tests\Objects\Repository;
+use function count;
 
 class Client extends BaseClient {
 
   protected $httpClient;
 
-  protected function getHttpClient() {
+  public function getHttpClient() {
     if(null === $this->httpClient) {
       $this->httpClient = new HttpClient();
     }
@@ -61,5 +62,14 @@ class Client extends BaseClient {
     }
     return $this->getHttpClient()->getRequests()[$index];
   }
+
+  public function getInterceptors($class = null) {
+    return parent::getInterceptors($class);
+  }
+
+  public function repository() {
+    return new Repository($this);
+  }
+
 
 }

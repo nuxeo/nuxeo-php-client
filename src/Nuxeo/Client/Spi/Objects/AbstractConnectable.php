@@ -18,183 +18,302 @@
 namespace Nuxeo\Client\Spi\Objects;
 
 
-use function \is_array, \is_string;
-use Doctrine\Common\Annotations\AnnotationException;
-use GuzzleHttp\Exception\BadResponseException;
+use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
-use function GuzzleHttp\Psr7\stream_for;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\MessageFormatter;
+use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\Psr7\UriResolver;
 use JMS\Serializer\Annotation as Serializer;
+use Monolog\Formatter\LineFormatter;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use Nuxeo\Client\Constants;
-use Nuxeo\Client\NuxeoClient;
-use Nuxeo\Client\Objects\Blob\Blob;
 use Nuxeo\Client\Request;
-use Nuxeo\Client\Spi\ClassCastException;
-use Nuxeo\Client\Spi\Http\Method\AbstractMethod;
+use Nuxeo\Client\Response;
+use Nuxeo\Client\Spi\Auth\AuthenticationInterceptor;
+use Nuxeo\Client\Spi\Interceptor;
 use Nuxeo\Client\Spi\NuxeoClientException;
-use Nuxeo\Client\Spi\NuxeoException;
-use Nuxeo\Client\Util\HttpUtils;
+use Nuxeo\Client\Spi\SimpleInterceptor;
 use Psr\Http\Message\UriInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
+use function is_string;
 
+/**
+ * Description of AbstractConnectable
+ *
+ * @Serializer\Exclude()
+ */
 class AbstractConnectable {
   /**
-   * @var NuxeoClient
-   * @Serializer\Exclude()
+   * @var Client
    */
-  private $nuxeoClient;
+  private $httpClient;
 
   /**
-   * @param NuxeoClient $nuxeoClient
+   * @var UriInterface
    */
-  public function __construct(NuxeoClient $nuxeoClient = null) {
-    $this->nuxeoClient = $nuxeoClient;
+  private $baseUrl;
+
+  /**
+   * @var LoggerInterface
+   */
+  private $logger;
+
+  /**
+   * @var Interceptor[]
+   */
+  private $interceptors = array();
+
+  public function __construct($connectable = null) {
+    if($connectable instanceof self) {
+      $this->reconnectWith($connectable);
+    } else {
+      $logHandler = new StreamHandler('php://stdout', Logger::INFO);
+      $this->logger = new Logger('nxPHPClientLogger', [$logHandler]);
+
+      $logHandler->setFormatter(new LineFormatter(null, null, true));
+    }
+
   }
 
   /**
-   * @param string $path
-   * @return UriInterface
-   */
-  protected function computeRequestUrl($path) {
-    return UriResolver::resolve($this->getNuxeoClient()->getApiUrl(), new Uri($path));
-  }
-
-  /**
-   * @return array
-   * @throws \ReflectionException
-   */
-  protected function getCall() {
-    $backtrace = debug_backtrace();
-    $reflectionClass = new \ReflectionClass($backtrace[2]['class']);
-    $reflectionMethod = $reflectionClass->getMethod($backtrace[2]['function']);
-
-    $params = array();
-    $paramIndex = 0;
-    $paramValues = $backtrace[2]['args'];
-    $paramNames = array_map(function ($parameter) {
-      /** @var \ReflectionParameter $parameter */
-      return array($parameter->name, $parameter->isDefaultValueAvailable() ? $parameter->getDefaultValue() : null);
-    }, $reflectionMethod->getParameters());
-
-    foreach($paramNames as [$name, $default]) {
-      $params[$name] = $paramValues[$paramIndex] ?? $default;
-      $paramIndex++;
-    }
-
-    return array($reflectionMethod, $params);
-  }
-
-  /**
-   * @param AbstractMethod $method
-   * @param null $type
-   * @return null
-   * @throws \Nuxeo\Client\Spi\NuxeoClientException
-   * @throws \Nuxeo\Client\Spi\ClassCastException
-   */
-  protected function getResponseNew(AbstractMethod $method, $type = null) {
-    $body = $method->getBody();
-    $files = $method->getFiles();
-
-    try {
-      [, $params] = $this->getCall();
-    } catch(\ReflectionException $e) {
-      throw NuxeoClientException::fromPrevious($e);
-    }
-
-    $request = $this->getRequest($method, $params);
-
-    if(is_array($files)) {
-      foreach($files as $file) {
-        $request = $request->addRelatedFile($file);
-      }
-    }
-
-    try {
-      if(null !== $body) {
-        if(!is_string($body)) {
-          $body = $this->nuxeoClient->getConverter()->writeJSON($body);
-        }
-        $request = $request->withBody(stream_for($body));
-      }
-
-      $response = $this->getNuxeoClient()->perform($request);
-
-      if($response->getBody()->getSize() > 0) {
-        if(false === (
-            HttpUtils::isContentType($response, Constants::CONTENT_TYPE_JSON))) {
-
-          if(Blob::class !== $type) {
-            throw new ClassCastException(sprintf('Cannot cast %s as %s', Blob::class, $type));
-          }
-
-          return Blob::fromHttpResponse($response);
-        }
-        $body = $this->nuxeoClient->getConverter()->readJSON((string)$response->getBody(), $type);
-
-        if($body instanceof AbstractConnectable) {
-          $body->reconnectWith($this->nuxeoClient);
-        }
-
-        return $body;
-      }
-    } catch(BadResponseException $e) {
-      $response = $e->getResponse();
-      $responseBody = (string)$response->getBody();
-      if(empty($responseBody)) {
-        throw new NuxeoClientException($response->getReasonPhrase(), $response->getStatusCode());
-      }
-
-      if(!HttpUtils::isContentType($response, Constants::CONTENT_TYPE_JSON)) {
-        throw new NuxeoClientException($responseBody, $response->getStatusCode());
-      }
-
-      try {
-        throw NuxeoClientException::fromPrevious(
-          $this->getNuxeoClient()->getConverter()->readJSON($responseBody, NuxeoException::class),
-          $response->getReasonPhrase(),
-          $response->getStatusCode()
-        );
-      } catch(AnnotationException $e) {
-        throw new NuxeoClientException($responseBody, $response->getStatusCode());
-      }
-    } catch(GuzzleException|AnnotationException $e) {
-      throw NuxeoClientException::fromPrevious($e);
-    }
-    return null;
-  }
-
-  /**
-   * @param AbstractMethod $method
-   * @param $params
-   * @throws NuxeoClientException
-   * @return Request
-   */
-  protected function getRequest(AbstractMethod $method, $params) {
-    try {
-      $request = $this->getNuxeoClient()->createRequest(
-        $method->getName(),
-        $this->computeRequestUrl($method->computePath($params))
-      );
-
-      return $request;
-    } catch(\InvalidArgumentException $e) {
-      throw NuxeoClientException::fromPrevious($e);
-    }
-  }
-
-  /**
-   * @param $nuxeoClient
+   * @param AbstractConnectable $connectable
    * @return self
    */
-  protected function reconnectWith($nuxeoClient) {
-    $this->nuxeoClient = $nuxeoClient;
+  protected function reconnectWith($connectable) {
+    $this->logger = $connectable->logger;
+    $this->baseUrl = $connectable->getBaseUrl();
+    $this->httpClient = $connectable->getHttpClient();
+    $this->interceptors = $connectable->getInterceptors();
+
     return $this;
   }
 
   /**
-   * @return NuxeoClient
+   * @param LoggerInterface $logger
+   * @return self
    */
-  protected function getNuxeoClient() {
-    return $this->nuxeoClient;
+  public function setLogger($logger) {
+    $this->logger = $logger;
+    return $this;
   }
+
+  /**
+   * @param string|Uri $baseUrl
+   * @return self
+   * @throws \InvalidArgumentException
+   */
+  public function setBaseUrl($baseUrl) {
+    if (is_string($baseUrl)) {
+      $baseUrl = new Uri($baseUrl);
+    } elseif (!($baseUrl instanceof UriInterface)) {
+      throw new \InvalidArgumentException(
+        'URI must be an instance of \Psr\Http\Message\UriInterface or a string'
+      );
+    }
+    if('/' !== substr($baseUrl->getPath(), -1)) {
+      $baseUrl = $baseUrl->withPath($baseUrl->getPath().'/');
+    }
+
+    $this->baseUrl = $baseUrl;
+    return $this;
+  }
+
+  /**
+   * @return UriInterface
+   */
+  public function getBaseUrl() {
+    return $this->baseUrl;
+  }
+
+  /**
+   * @return UriInterface
+   */
+  public function getApiUrl() {
+    return UriResolver::resolve($this->getBaseUrl(), new Uri(Constants::API_PATH));
+  }
+
+  /**
+   * @return Client
+   */
+  protected function getHttpClient() {
+    if(null === $this->httpClient) {
+      $stack = HandlerStack::create();
+      $stack->push(Middleware::log($this->logger, new MessageFormatter()), 'log');
+
+      $this->httpClient = new Client([
+        'base_uri' => $this->baseUrl,
+        'handler' => $stack,
+        'headers' => [
+          'content-type' => Constants::CONTENT_TYPE_JSON,
+          'accept' => Constants::CONTENT_TYPE_JSON
+        ]
+      ]);
+    }
+    return $this->httpClient;
+  }
+
+  /**
+   * @return self
+   */
+  public function debug() {
+    /** @var HandlerStack $stack */
+    $stack = $this->getHttpClient()->getConfig('handler');
+
+    $stack->remove('log');
+    $stack->push(Middleware::log($this->logger, new MessageFormatter(MessageFormatter::DEBUG), LogLevel::INFO), 'log');
+
+    return $this;
+  }
+
+  /**
+   * @param string $class
+   * @return Interceptor[]
+   */
+  protected function getInterceptors($class = null) {
+    $interceptors = [];
+
+    if($class) {
+      foreach($this->interceptors as $interceptor) {
+        if($interceptor instanceof $class) {
+          $interceptors[] = $interceptor;
+        }
+      }
+    } else {
+      $interceptors = $this->interceptors;
+    }
+    return $interceptors;
+  }
+
+  /**
+   * @param Request $request
+   * @return Request
+   * @throws NuxeoClientException
+   */
+  protected function applyInterceptors(Request $request) {
+    $new = $request;
+    foreach($this->getInterceptors() as $interceptor) {
+      $new = $interceptor->proceed($this->getHttpClient(), $new);
+    }
+    return $new;
+  }
+
+  /**
+   * @param boolean $value
+   * @return self
+   */
+  public function voidOperation($value) {
+    $this->header(Constants::HEADER_VOID_OPERATION, $value ? 'true' : 'false');
+    return $this;
+  }
+
+  /**
+   * @param string|string[] $schemas
+   * @param bool $append
+   * @return self
+   */
+  public function schemas($schemas, $append = false) {
+    if(is_string($schemas)) {
+      $schemas = [$schemas];
+    }
+
+    $this->header(Constants::HEADER_PROPERTIES, $schemas, $append);
+    return $this;
+  }
+
+  /**
+   * @param $entityType
+   * @param string|string[] $enrichers
+   * @param bool $append
+   * @return self
+   */
+  public function enrichers($entityType, $enrichers, $append = false) {
+    if(is_string($enrichers)) {
+      $enrichers = [$enrichers];
+    }
+
+    $this->header(Constants::HEADER_ENRICHERS.$entityType, $enrichers, $append);
+    return $this;
+  }
+
+  /**
+   * @param $authenticationInterceptor
+   * @return self
+   */
+  protected function withAuthentication($authenticationInterceptor) {
+    foreach($this->interceptors as $i => $interceptor) {
+      if($interceptor instanceof AuthenticationInterceptor) {
+        unset($this->interceptors[$i]);
+      }
+    }
+    $this->interceptors[] = $authenticationInterceptor;
+    return $this;
+  }
+
+  /**
+   * @param string $name
+   * @param string $value
+   * @param bool $append
+   * @return self
+   */
+  public function header($name, $value, $append = false) {
+    $this->interceptors[] = new SimpleInterceptor(
+      function(Request $request) use ($name, $value, $append) {
+        if($append) {
+          return $request->withAddedHeader($name, $value);
+        }
+
+        return $request->withHeader($name, $value);
+      }
+    );
+
+    return $this;
+  }
+
+  /**
+   * @param $request Request
+   * @return Response
+   * @throws NuxeoClientException
+   * @throws GuzzleException
+   */
+  public function perform($request) {
+    $new = $this->applyInterceptors($request);
+
+    return $this->getHttpClient()->send($new, [
+      'query' => $new->getQuery(),
+      'auth' => $new->getAuth()
+    ]);
+  }
+
+  /**
+   * @param string $method
+   * @param string $url
+   * @return Request
+   */
+  public function createRequest($method, $url) {
+    return (new Request($method, $url))
+      ->withHeader('content-type', 'application/json');
+  }
+
+//  /**
+//   * @param AbstractMethod $method
+//   * @param $params
+//   * @throws NuxeoClientException
+//   * @return Request
+//   */
+//  protected function getRequest(AbstractMethod $method, $params) {
+//    try {
+//      $request = $this->createRequest(
+//        $method->getName(),
+//        $this->computeRequestUrl($method->computePath($params))
+//      );
+//
+//      return $request;
+//    } catch(\InvalidArgumentException $e) {
+//      throw NuxeoClientException::fromPrevious($e);
+//    }
+//  }
 }

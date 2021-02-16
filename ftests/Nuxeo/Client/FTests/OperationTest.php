@@ -37,7 +37,7 @@ class OperationTest extends TestCase {
       ->param('query', 'SELECT * FROM Document')
       ->execute(Documents::class);
 
-    $this->assertGreaterThan(5, count($documents));
+    self::assertGreaterThan(5, count($documents));
   }
 
   public function testCreateDocument() {
@@ -51,13 +51,13 @@ class OperationTest extends TestCase {
         'properties' => 'dc:title=Some file'
       ))->execute(Document::class);
 
-    $this->assertNotNull($doc->getUid());
+    self::assertNotNull($doc->getUid());
 
     $this->getClient()
       ->automation('Blob.Attach')
       ->param('document', $doc->getPath())
       ->input(Blob::fromFile($this->getResource('nuxeo.png'), null))
-      ->execute();
+      ->execute(Blob::class);
 
     $blob = $this->getClient()
       ->voidOperation(false)
@@ -65,7 +65,7 @@ class OperationTest extends TestCase {
       ->input($doc->getPath())
       ->execute(Blob::class);
 
-    $this->assertInstanceOf(Blob::class, $blob);
+    self::assertInstanceOf(Blob::class, $blob);
   }
 
   public function testDirectories() {
@@ -75,7 +75,7 @@ class OperationTest extends TestCase {
       ->param('directoryName', 'continent')
       ->execute(DirectoryEntries::class);
 
-    $this->assertCount(7, $continents);
+    self::assertCount(7, $continents);
   }
 
 }

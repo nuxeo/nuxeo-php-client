@@ -1,0 +1,27 @@
+name: Dependencies checks
+
+on:
+  pull_request:
+
+jobs:
+  composer_outdated:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "7.1"
+          tools: composer
+      - run: composer install
+      - run: composer outdated -D --strict
+
+  security_check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "7.1"
+          tools: composer
+      - run: composer install
+      - run: php vendor/bin/security-checker security:check composer.lock

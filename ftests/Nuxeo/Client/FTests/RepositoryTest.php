@@ -29,11 +29,8 @@ class RepositoryTest extends TestCase {
 
   public function testFetchDocument() {
     $repository = $this->getClient()->repository();
-
-    /** @var Document $workspace */
     $workspace = $repository->fetchDocumentByPath('/');
 
-    /** @var Document $doc */
     $doc = $repository->createDocumentById($workspace->getUid(), Document::create()
       ->setType('File')
       ->setName('Some file'));
@@ -42,11 +39,11 @@ class RepositoryTest extends TestCase {
       ->automation('Blob.Attach')
       ->param('document', $doc->getPath())
       ->input(Blob::fromFile($this->getResource('nuxeo.png'), null))
-      ->execute();
+      ->execute(Blob::class);
 
     $blob = $doc->fetchBlob();
 
-    $this->assertNotNull($blob);
+    self::assertNotNull($blob);
 
   }
 

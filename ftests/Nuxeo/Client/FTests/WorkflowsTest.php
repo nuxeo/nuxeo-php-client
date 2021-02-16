@@ -38,14 +38,14 @@ class WorkflowsTest extends TestCase {
 
     $workflow = $document->startWorkflow(self::SERIAL_WORKFLOW_NAME);
 
-    $this->assertEquals(self::SERIAL_WORKFLOW_NAME, $workflow->getWorkflowModelName());
-    $this->assertEquals('running', $workflow->getState());
-    $this->assertCount(1, $workflow->getAttachedDocumentIds());
-    $this->assertEquals($document->getUid(), $workflow->getAttachedDocumentIds()[0]);
+    self::assertEquals(self::SERIAL_WORKFLOW_NAME, $workflow->getWorkflowModelName());
+    self::assertEquals('running', $workflow->getState());
+    self::assertCount(1, $workflow->getAttachedDocumentIds());
+    self::assertEquals($document->getUid(), $workflow->getAttachedDocumentIds()[0]);
 
-    $this->assertNotNull($document->fetchWorkflows());
+    self::assertNotNull($document->fetchWorkflows());
     $tasks = $this->getClient()->workflows()->fetchTasks(self::LOGIN);
-    $this->assertCount(1, $tasks);
+    self::assertCount(1, $tasks);
 
     /** @var Task $task */
     $task = $tasks[0];
@@ -58,9 +58,9 @@ class WorkflowsTest extends TestCase {
     $workflow->cancel();
     try {
       $workflow->cancel();
-      $this->fail('you should not be able to cancel this workflow twice');
+      self::fail('you should not be able to cancel this workflow twice');
     } catch(NuxeoClientException $e) {
-      $this->assertEquals(500, $e->getCode());
+      self::assertEquals(500, $e->getCode());
     }
   }
 

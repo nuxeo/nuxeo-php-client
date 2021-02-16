@@ -1,12 +1,14 @@
 nuxeo:
-  image: nuxeo:8.3
+  image: nuxeo:9.10
   ports:
     - "9081:8080"
     - "8787:8787"
   environment:
-      NUXEO_PACKAGES: nuxeo-jsf-ui nuxeo-api-playground
+      NUXEO_PACKAGES: nuxeo-jsf-ui nuxeo-9.10-HF01
       NUXEO_TEMPLATES: "\\/opt\\/nuxeo\\/config\\/custom"
+      NUXEO_INSTALL_HOTFIX: "false"
   volumes:
+    - /home/pgmillon/instance-pgm.clid:/var/lib/nuxeo/data/instance.clid
     - ./docker/nuxeo/nuxeo.conf:/nuxeo.conf
     - ./docker/nuxeo/nuxeo.defaults:/opt/nuxeo/config/custom/nuxeo.defaults
     - ./docker/nuxeo/custom-config.xml:/opt/nuxeo/config/custom/nxserver/config/custom-config.xml
@@ -16,18 +18,15 @@ php:
   links:
     - nuxeo
   volumes:
-    - ./docker/php-fpm/php-fpm.conf:/etc/php-fpm.conf
-    - ./docker/php-fpm/custom.ini:/etc/php.d/zzz-custom.ini
+    - ./docker/php-fpm/custom.ini:/usr/local/etc/php/conf.d/zzz-custom.ini
     - ./:/var/www/html:rw
 
 nginx:
-  build: docker/nginx
+  image: nginx:stable
   links:
     - php
-    - nuxeo
   ports:
     - "9080:80"
   volumes:
-    - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
     - ./docker/nginx/localhost.lan.conf:/etc/nginx/conf.d/localhost.lan.conf
-    - ./:/var/www/html:rw
+    - ./:/var/www/html

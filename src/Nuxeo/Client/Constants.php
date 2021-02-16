@@ -26,6 +26,8 @@ class Constants {
 
   const HEADER_PROPERTIES = 'X-NXProperties';
 
+  const HEADER_ENRICHERS = 'enrichers-';
+
   const HEADER_VOID_OPERATION = 'X-NXVoidOperation';
 
   const CONTENT_TYPE_JSON = 'application/json';
