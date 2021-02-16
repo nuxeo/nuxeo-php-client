@@ -1,9 +1,13 @@
 name: Unit tests
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
     paths:
       - src/**
+      - ftests/**
       - tests/**
 
 jobs:

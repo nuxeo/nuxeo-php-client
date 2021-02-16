@@ -1,6 +1,11 @@
 name: Dependencies checks
 
 on:
+  schedule:
+    - cron:  '0 9 * * 1-5'
+  push:
+    branches:
+      - main
   pull_request:
 
 jobs:
