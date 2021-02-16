@@ -84,7 +84,7 @@ class Request extends BaseRequest {
         'contents' => $file->getContent(),
         'headers' => [
           'Content-Disposition' => $file->getContentDisposition(),
-          'Content-Type' => $contentType
+          'Content-Type' => $contentType ?? $file->getContentType()
         ],
         'filename' => $file->getFilename()
       ];
