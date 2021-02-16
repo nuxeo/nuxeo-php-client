@@ -60,14 +60,14 @@ class UserManagerTest extends TestCase {
       $users[] = $u->getUsername();
     }
 
-    $this->assertEquals('Meta Cortex', $user->getCompany());
-    $this->assertEquals('Meta Cortex', $group->getGroupLabel());
-    $this->assertContains($user->getUsername(), $users);
+    self::assertEquals('Meta Cortex', $user->getCompany());
+    self::assertEquals('Meta Cortex', $group->getGroupLabel());
+    self::assertContains($user->getUsername(), $users);
 
     $test = $group->getGroupName();
     $test2 = $user->getProperties()['groups'];
 
-    $this->assertContains($test, $test2);
+    self::assertContains($test, $test2);
   }
 
 }
