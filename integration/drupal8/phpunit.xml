@@ -40,5 +40,7 @@
 
     <ini name="error_reporting" value="32767"/>
     <ini name="memory_limit" value="-1"/>
+
+    <includePath>../../tests/resources</includePath>
   </php>
 </phpunit>

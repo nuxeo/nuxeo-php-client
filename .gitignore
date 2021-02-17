@@ -36,3 +36,6 @@ integration/drupal8/web/sites/example.sites.php
 integration/drupal8/web/themes/
 integration/drupal8/web/update.php
 integration/drupal8/web/web.config
+
+integration/symfony4/var/
+integration/symfony4/vendor/
