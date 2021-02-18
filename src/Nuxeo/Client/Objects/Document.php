@@ -64,10 +64,28 @@ class Document extends NuxeoEntity {
   private $versionLabel;
 
   /**
-   * @var string
-   * @Serializer\Type("string")
+   * @var boolean
+   * @Serializer\Type("boolean")
    */
   private $isCheckedOut;
+
+  /**
+   * @var boolean
+   * @Serializer\Type("boolean")
+   */
+  private $isTrashed;
+
+  /**
+   * @var boolean
+   * @Serializer\Type("boolean")
+   */
+  private $isVersion;
+
+  /**
+   * @var boolean
+   * @Serializer\Type("boolean")
+   */
+  private $isProxy;
 
   /**
    * @var string
@@ -233,6 +251,26 @@ class Document extends NuxeoEntity {
     throw new NuxeoClientException('You should pass to your Nuxeo object the client instance');
   }
 
+  public function trash() {
+    if($this->getNuxeoClient()) {
+      return $this->getNuxeoClient()
+        ->automation('Document.Trash')
+        ->input($this)
+        ->execute();
+    }
+    throw new NuxeoClientException('You should pass to your Nuxeo object the client instance');
+  }
+
+  public function untrash() {
+    if($this->getNuxeoClient()) {
+      return $this->getNuxeoClient()
+        ->automation('Document.Untrash')
+        ->input($this)
+        ->execute();
+    }
+    throw new NuxeoClientException('You should pass to your Nuxeo object the client instance');
+  }
+
   /**
    * @return string
    */
@@ -330,18 +368,83 @@ class Document extends NuxeoEntity {
   }
 
   /**
+   * @deprecated Use isCheckedOut()
    * @return string
    */
   public function getIsCheckedOut() {
-    return $this->isCheckedOut;
+    return (string) $this->isCheckedOut();
   }
 
   /**
+   * @deprecated Use setCheckedOut()
    * @param string $isCheckedOut
    * @return self
    */
   public function setIsCheckedOut($isCheckedOut) {
-    $this->isCheckedOut = $isCheckedOut;
+    return $this->setCheckedOut((bool) $isCheckedOut);
+  }
+
+  /**
+   * @return bool
+   */
+  public function isCheckedOut() {
+    return $this->isCheckedOut;
+  }
+
+  /**
+   * @param $checkedOut
+   * @return $this
+   */
+  public function setCheckedOut($checkedOut) {
+    $this->isCheckedOut = $checkedOut;
+    return $this;
+  }
+
+  /**
+   * @return bool
+   */
+  public function isTrashed() {
+    return $this->isTrashed;
+  }
+
+  /**
+   * @param bool $isTrashed
+   * @return Document
+   */
+  public function setTrashed($isTrashed) {
+    $this->isTrashed = $isTrashed;
+    return $this;
+  }
+
+  /**
+   * @return bool
+   */
+  public function isVersion() {
+    return $this->isVersion;
+  }
+
+  /**
+   * @param bool $isVersion
+   * @return Document
+   */
+  public function setVersion($isVersion) {
+    $this->isVersion = $isVersion;
+    return $this;
+  }
+
+  /**
+   * @return bool
+   */
+  public function isProxy() {
+    return $this->isProxy;
+  }
+
+  /**
+   * @param bool $isProxy
+   * @return Document
+   */
+  public function setProxy($isProxy) {
+    $this->isProxy = $isProxy;
     return $this;
   }
 

@@ -316,4 +316,15 @@ class OperationTest extends TestCase {
     self::assertEquals(Operation\UserGroup::GROUP_TYPE, $group->getType());
   }
 
+  public function testTrash() {
+    $client = $this->getClient()
+      ->addResponse($this->createJsonResponseFromFile('document.json'));
+
+    (new Document($client))
+      ->setUid(self::DOC_UID)
+      ->untrash();
+
+    self::assertRequestPathMatches($client, 'automation/Document.Untrash');
+  }
+
 }

@@ -107,6 +107,9 @@ class RepositoryTest extends TestCase {
 
     $this->assertFetched($client, 'id/'.self::DOC_UID, $document, 'Note', 'document');
     self::assertEquals(self::DOC_UID, $document->getUid());
+    self::assertFalse($document->isTrashed());
+    self::assertFalse($document->isProxy());
+    self::assertFalse($document->isVersion());
 
     /** @var Objects\Document $document */
     $document = $client->repository()->fetchDocumentById($uid, 'default');
