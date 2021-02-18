@@ -1,0 +1,22 @@
+{
+  "name": "nuxeo/nuxeo-php-oauth2-integration",
+  "type": "project",
+  "require": {
+    "symfony/framework-bundle": "4.4.*",
+    "league/oauth2-client": "^2.6",
+
+    "guzzlehttp/guzzle": "~6.0, <6.6",
+    "monolog/monolog": "~1.3, <1.27",
+    "jms/serializer": "~1.8, <1.15"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "~7.1, <7.6"
+  },
+  "autoload": {
+    "psr-4": {
+      "Nuxeo\\": "../../src/Nuxeo",
+      "Nuxeo\\Client\\Tests\\": "../../tests/Nuxeo/Client/Tests",
+      "App\\": "src/"
+    }
+  }
+}

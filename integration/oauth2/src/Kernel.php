@@ -20,10 +20,19 @@ class Kernel extends BaseKernel {
   }
 
   protected function configureContainer(ContainerBuilder $container, LoaderInterface $loader): void {
-    $container->loadFromExtension('framework', ['test' => true]);
+    $container->loadFromExtension('framework', [
+      'test' => true,
+      'session' => [
+        'enabled' => true,
+        'handler_id' => null,
+        'cookie_secure' => 'auto',
+        'cookie_samesite' => 'lax',
+      ]
+    ]);
   }
 
   protected function configureRoutes(RouteCollectionBuilder $routes): void {
     $routes->add('/', 'App\Controller\NuxeoController::index');
+    $routes->add('/login', 'App\Controller\NuxeoController::login');
   }
 }
