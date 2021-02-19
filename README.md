@@ -1,5 +1,19 @@
 
-[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=Client/nuxeo-php-client/master)](https://qa.nuxeo.org/jenkins/job/Client/job/nuxeo-php-client/job/master/)
+![Packagist Version](https://img.shields.io/packagist/v/nuxeo/nuxeo-php-client)
+![Packagist Downloads](https://img.shields.io/packagist/dt/nuxeo/nuxeo-php-client)
+![GitHub](https://img.shields.io/github/license/nuxeo/nuxeo-php-client)
+
+[![Dependencies checks](https://github.com/nuxeo/nuxeo-php-client/actions/workflows/dependencies_check.yml/badge.svg)](https://github.com/nuxeo/nuxeo-php-client/actions/workflows/dependencies_check.yml)
+[![Unit tests](https://github.com/nuxeo/nuxeo-php-client/actions/workflows/unit_tests.yml/badge.svg)](https://github.com/nuxeo/nuxeo-php-client/actions/workflows/unit_tests.yml)
+[![Functional tests](https://github.com/nuxeo/nuxeo-php-client/actions/workflows/ftests.yml/badge.svg)](https://github.com/nuxeo/nuxeo-php-client/actions/workflows/ftests.yml)
+[![Integration tests](https://github.com/nuxeo/nuxeo-php-client/actions/workflows/integration_tests.yml/badge.svg)](https://github.com/nuxeo/nuxeo-php-client/actions/workflows/integration_tests.yml)
+
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=org.nuxeo%3Anuxeo-php-client&metric=alert_status)](https://sonarcloud.io/dashboard?id=org.nuxeo%3Anuxeo-php-client)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=org.nuxeo%3Anuxeo-php-client&metric=security_rating)](https://sonarcloud.io/dashboard?id=org.nuxeo%3Anuxeo-php-client)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=org.nuxeo%3Anuxeo-php-client&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=org.nuxeo%3Anuxeo-php-client)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=org.nuxeo%3Anuxeo-php-client&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=org.nuxeo%3Anuxeo-php-client)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=org.nuxeo%3Anuxeo-php-client&metric=coverage)](https://sonarcloud.io/dashboard?id=org.nuxeo%3Anuxeo-php-client)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=org.nuxeo%3Anuxeo-php-client&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=org.nuxeo%3Anuxeo-php-client)
 
 # Nuxeo PHP Client
 
@@ -11,8 +25,10 @@ This is supported by Nuxeo and compatible with Nuxeo LTS 2015 and latest Fast Tr
 
 ## Requirements
 
- * PHP >= 5.3.3
+ * ![Packagist PHP Version Support](https://img.shields.io/packagist/php-v/nuxeo/nuxeo-php-client)
  * [Composer](https://getcomposer.org/)
+
+Stuck with an old PHP version ? Have a look at [v1.5](https://github.com/nuxeo/nuxeo-php-client/tree/1.5), it offers limited but effective support and requires PHP 5.3+
 
 ## Getting Started
 
@@ -37,14 +53,15 @@ This is supported by Nuxeo and compatible with Nuxeo LTS 2015 and latest Fast Tr
 
 ### Library import
 
-Download the latest build [Nuxeo PHP Client master](https://github.com/nuxeo/nuxeo-php-client/archive/master.zip).
-Download the latest stable release [Nuxeo Automation PHP Client 1.5.0](https://github.com/nuxeo/nuxeo-php-client/archive/1.5.0.tar.gz).
+Download the latest build [Nuxeo PHP Client main](https://github.com/nuxeo/nuxeo-php-client/archive/main.zip).
+
+Download the latest stable ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/nuxeo/nuxeo-php-client).
 
 Composer:
 
 ```
   "require": {
-    "nuxeo/nuxeo-automation-php-client": "~1.5.0"
+    "nuxeo/nuxeo-php-client": "~2.0"
   }
 ```
 
@@ -68,7 +85,15 @@ use Nuxeo\Client\NuxeoClient;
 $client = new NuxeoClient($url, 'Administrator', 'Administrator');
 ```
 
-Options:
+##### Options
+
+Options can be set on client or API objects. This ensure inheritance and isolation of options on the object whose options are applied. As it, the client gives its options to API objects.
+
+```php
+// To define global schemas, global enrichers and global headers in general
+$client = $client->schemas("dublincore", "common")
+  ->enrichers('document', ['acls'])
+```
 
 ```php
 // For defining all schemas
@@ -86,6 +111,14 @@ $client = $client->setAuthenticationMethod(new PortalSSOAuthentication($secret, 
 
 // TokenAuthentication
 $client = $client->setAuthenticationMethod(new TokenAuthentication($token));
+
+// OAuth2Authentication
+// The PHP client doesn't implement OAuth2 authorization flow as 
+// it depends completely on the architecture choices of your app.
+// To help understanding and implement, please find a sample SF4 app under intergation/oauth2.
+// Once the authorization flow is ready and you have an access token,
+// you can use the OAuth2Authentication in the PHP client:
+$client = $client->setAuthenticationMethod(new OAuth2Authentication($accessToken));
 ```
 
 #### APIs
@@ -143,6 +176,75 @@ use Nuxeo\Client\Objects\Operation\DocRef;
 // Enforce type of a property
 $doc = $client->automation('Document.Fetch')->param('value', '0fa9d2a0-e69f-452d-87ff-0c5bd3b30d7d')->execute(Document::class);
 $property = $doc->getProperty('custom:related', DocRef::class);
+```
+
+##### Repository API
+
+```php
+// Fetch the root document
+$document = $client->repository()->fetchDocumentRoot();
+```
+
+```php
+// Fetch document by path
+$document = $client->repository()->fetchDocumentByPath('/folders_2');
+```
+
+```php
+// Create a document
+$document = Objects\Document::create()
+  ->setProperty('dc:title', 'Some title');
+```
+
+```php
+// Update a document
+$repository = $client->repository(); 
+$document = $repository->fetchDocumentByPath('/note_0');
+document->setPropertyValue("dc:title", "note updated");
+$repository->updateDocumentByPath('/note_0', $document);
+```
+
+```php
+// Delete a document
+$client->repository()->deleteDocumentByPath('/note_2');
+```
+
+##### Users/Groups
+
+```php
+// Get current user used to connect to Nuxeo Server
+/** @var \Nuxeo\Client\Objects\User\User $user */
+$user = $client->userManager()->fetchCurrentUser();
+```
+
+```php
+// Create User
+$userManager->createUser((new User())
+      ->setUsername('my_login')
+      ->setCompany('Nuxeo')
+      ->setEmail('user@company.com')
+      ->setFirstName('Thomas A.')
+      ->setLastName('Anderson')
+      ->setPassword('passw0rd'));
+```
+
+```php
+//Update user
+$userManager->updateUser($user);
+```
+
+```php
+//Attach user to group
+$userManager->attachGroupToUser('username', 'group_name');
+$userManager->attachUserToGroup('group_name', 'username');
+```
+
+##### Workflows
+
+```php
+// Fetch current user workflow tasks
+/** @var \Nuxeo\Client\Objects\Workflow\Tasks $tasks */
+$tasks = $client->workflows()->fetchTasks();
 ```
 
 #### Errors/Exceptions
