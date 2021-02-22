@@ -4,7 +4,7 @@ nuxeo:
     - "9081:8080"
     - "8787:8787"
   environment:
-      NUXEO_PACKAGES: nuxeo-jsf-ui nuxeo-9.10-HF01
+      NUXEO_PACKAGES: nuxeo-jsf-ui
       NUXEO_TEMPLATES: "\\/opt\\/nuxeo\\/config\\/custom"
       NUXEO_INSTALL_HOTFIX: "false"
   volumes:

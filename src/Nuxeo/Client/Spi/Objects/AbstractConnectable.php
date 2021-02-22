@@ -243,7 +243,7 @@ class AbstractConnectable {
    * @param $authenticationInterceptor
    * @return self
    */
-  protected function withAuthentication($authenticationInterceptor) {
+  public function withAuthentication($authenticationInterceptor) {
     foreach($this->interceptors as $i => $interceptor) {
       if($interceptor instanceof AuthenticationInterceptor) {
         unset($this->interceptors[$i]);

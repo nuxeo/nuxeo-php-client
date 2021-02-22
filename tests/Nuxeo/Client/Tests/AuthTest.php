@@ -19,6 +19,7 @@ namespace Nuxeo\Client\Tests;
 
 
 use GuzzleHttp\Exception\ClientException;
+use Nuxeo\Client\Auth\OAuth2Authentication;
 use Nuxeo\Client\Auth\PortalSSOAuthentication;
 use Nuxeo\Client\Auth\TokenAuthentication;
 use Nuxeo\Client\Constants;
@@ -108,6 +109,22 @@ class AuthTest extends Framework\TestCase {
       'permission' => Constants::SECURITY_READ_WRITE,
       'revoke' => false
     ), $queryParams);
+  }
+
+  public function testOAuth2Authentication() {
+    $accessToken = 'some_token';
+    $client = $this->getClient()
+      ->withAuthentication(new OAuth2Authentication($accessToken))
+      ->addResponse($this->createResponse());
+
+    $client->get('/');
+
+    /** @var Request $request */
+    [$request] = $client->getRequests();
+
+    self::assertEquals(
+      OAuth2Authentication::HEADER_VALUE_PREFIX.' '.$accessToken,
+      $request->getHeaderLine(OAuth2Authentication::HEADER_TOKEN));
   }
 
 }

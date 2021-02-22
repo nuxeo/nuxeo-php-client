@@ -35,8 +35,9 @@ class NuxeoController extends ControllerBase {
    */
   protected function fetchDocuments() {
     $client = new NuxeoClient;
+    $documentListPath = __DIR__.'/../../../../../../../tests/resources/document-list.json';
 
-    $file = new \SplFileObject(__DIR__ . '/../../resources/document-list.json', 'rb', true);
+    $file = new \SplFileObject($documentListPath, 'rb', true);
     $client->addResponse(new Response(200, ['Content-Type' => Constants::CONTENT_TYPE_JSON], file_get_contents($file->getRealPath())));
 
     $documents = (function ($items) {

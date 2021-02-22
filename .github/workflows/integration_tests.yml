@@ -34,3 +34,16 @@ jobs:
       - run: php vendor/bin/drush en nuxeo
       - run: php vendor/bin/drush cr
       - run: vendor/bin/phpunit
+  symfony4:
+    defaults:
+      run:
+        working-directory: integration/symfony4
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "7.1"
+          tools: composer
+      - run: composer install
+      - run: vendor/bin/phpunit

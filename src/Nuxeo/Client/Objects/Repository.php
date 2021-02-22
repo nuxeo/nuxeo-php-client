@@ -1,5 +1,10 @@
 <?php
+
 /**
+ * @noinspection PhpUnusedParameterInspection
+ */
+
+/*
  * (C) Copyright 2018 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,6 +38,8 @@ use Nuxeo\Client\Spi\Objects\NuxeoEntity;
 
 
 class Repository extends NuxeoEntity {
+  public const DOCUMENT_ID = 'id/{documentId}';
+  public const DOCUMENT_ID_WITH_REPOSITORY = 'repo/{repositoryName}/id/{documentId}';
 
   /**
    * Repository constructor.
@@ -122,9 +129,9 @@ class Repository extends NuxeoEntity {
    * @throws ClassCastException
    */
   public function fetchDocumentById($documentId, $repositoryName = null, $type = null) {
-    $path = 'id/{documentId}';
+    $path = self::DOCUMENT_ID;
     if(null !== $repositoryName) {
-      $path = 'repo/{repositoryName}/id/{documentId}';
+      $path = self::DOCUMENT_ID_WITH_REPOSITORY;
     }
     return $this->getResponseNew(GET::create($path), $type);
   }
@@ -165,9 +172,9 @@ class Repository extends NuxeoEntity {
    * @throws ClassCastException
    */
   public function updateDocumentById($documentId, $document, $repositoryName = null, $type = null) {
-    $path = 'id/{documentId}';
+    $path = self::DOCUMENT_ID;
     if(null !== $repositoryName) {
-      $path = 'repo/{repositoryName}/id/{documentId}';
+      $path = self::DOCUMENT_ID_WITH_REPOSITORY;
     }
     return $this->getResponseNew(PUT::create($path)
       ->setBody($document),
@@ -200,9 +207,9 @@ class Repository extends NuxeoEntity {
    * @throws ClassCastException
    */
   public function deleteDocumentById($documentId, $repositoryName = null) {
-    $path = 'id/{documentId}';
+    $path = self::DOCUMENT_ID;
     if(null !== $repositoryName) {
-      $path = 'repo/{repositoryName}/id/{documentId}';
+      $path = self::DOCUMENT_ID_WITH_REPOSITORY;
     }
     $this->getResponseNew(DELETE::create($path));
   }
