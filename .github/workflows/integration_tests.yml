@@ -6,6 +6,8 @@ on:
       - main
   pull_request:
     paths:
+      - composer.json
+      - composer.lock
       - src/**
       - integration/**
 
