@@ -19,6 +19,7 @@ namespace Nuxeo\Client\FTests;
 
 
 use Nuxeo\Client\Objects\Blob\Blob;
+use Nuxeo\Client\Objects\Blob\Blobs;
 use Nuxeo\Client\Objects\Document;
 use Nuxeo\Client\Objects\Documents;
 use Nuxeo\Client\Objects\Operation\DirectoryEntries;
@@ -66,6 +67,35 @@ class OperationTest extends TestCase {
       ->execute(Blob::class);
 
     self::assertInstanceOf(Blob::class, $blob);
+  }
+
+  public function testBlobsGetList() {
+    $blob = $this->getResource('nuxeo.png');
+
+    /** @var Document $doc */
+    $doc = $this->getClient()
+      ->automation('Document.Create')
+      ->input('doc:/')
+      ->params(array(
+        'type' => 'Note',
+        'name' => 'Some note'
+      ))->execute(Document::class);
+
+    $this->getClient()
+      ->automation('Blob.Attach')
+      ->param('document', $doc->getPath())
+      ->param('xpath', 'files:files')
+      ->input(new Blobs([Blob::fromFile($blob, null)]))
+      ->execute();
+
+    /** @var Blobs $blobList */
+    $blobList = $this->getClient()
+      ->automation('Blob.GetList')
+      ->input('doc:'.$doc->getUid())
+      ->execute(Blobs::class);
+
+    self::assertCount(1, $blobList);
+    self::assertEquals(filesize($blob), $blobList->getBlobs()[0]->getStream()->getSize());
   }
 
   public function testDirectories() {

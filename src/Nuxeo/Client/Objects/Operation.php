@@ -109,7 +109,6 @@ class Operation extends NuxeoEntity {
     }
 
     $input = $this->body->getInput();
-    $client = $this->getNuxeoClient();
     $files = [];
 
     if(null === $operationId) {
@@ -121,7 +120,7 @@ class Operation extends NuxeoEntity {
     }
 
     if($input instanceof Blobs) {
-      $client->voidOperation(true);
+      $this->voidOperation(true);
       foreach($input->getBlobs() as $blob) {
         $files[] = new RelatedFile($blob->getFilename(), $blob->getStream(), $blob->getMimeType());
       }
