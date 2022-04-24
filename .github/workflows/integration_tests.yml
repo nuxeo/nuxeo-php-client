@@ -13,6 +13,9 @@ on:
 
 jobs:
   drupal8:
+    strategy:
+      matrix:
+        php: ["7.2", "7.3"]
     defaults:
       run:
         working-directory: integration/drupal8
@@ -21,7 +24,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: "7.2"
+          php-version: "${{ matrix.php }}"
           tools: composer
       - run: composer install
       - run: |
@@ -37,6 +40,9 @@ jobs:
       - run: php vendor/bin/drush cr
       - run: vendor/bin/phpunit
   drupal9:
+    strategy:
+      matrix:
+        php: ["7.3"]
     defaults:
       run:
         working-directory: integration/drupal9
@@ -45,7 +51,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: "7.3"
+          php-version: "${{ matrix.php }}"
           tools: composer
       - run: composer install
       - run: |
@@ -61,6 +67,9 @@ jobs:
       - run: php vendor/bin/drush cr
       - run: vendor/bin/phpunit
   symfony4:
+    strategy:
+      matrix:
+        php: ["7.2", "7.3"]
     defaults:
       run:
         working-directory: integration/symfony4
@@ -69,7 +78,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: "7.2"
+          php-version: "${{ matrix.php }}"
           tools: composer
       - run: composer install
       - run: vendor/bin/phpunit
