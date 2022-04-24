@@ -200,19 +200,6 @@ class NuxeoClient extends AbstractConnectable {
   }
 
   /**
-   * @return Reader
-   * @throws AnnotationException
-   */
-  public function getAnnotationReader() {
-    //TODO: deprecated
-    return (new class($this) extends NuxeoEntity {
-      public function __construct($nuxeoClient) {
-        parent::__construct(null, $nuxeoClient);
-      }
-    })->getAnnotationReader();
-  }
-
-  /**
    * @param string $applicationName
    * @param string $deviceId
    * @param string $deviceDescription

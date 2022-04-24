@@ -101,7 +101,7 @@ class Request extends BaseRequest {
    * @return StreamInterface
    * @throws \InvalidArgumentException
    */
-  public function getBody() {
+  public function getBody(): StreamInterface {
     if($this->relatedFiles) {
       $body = new MultipartStream(array_merge( [[
         'name' => 'ignored',

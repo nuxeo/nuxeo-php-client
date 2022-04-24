@@ -1,6 +1,6 @@
 <?php
-/**
- * (C) Copyright 2018 Nuxeo SA (http://nuxeo.com/) and contributors.
+/*
+ * (C) Copyright 2022 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,27 +22,26 @@ use JMS\Serializer\DeserializationContext;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Visitor\DeserializationVisitorInterface;
 use JMS\Serializer\Visitor\SerializationVisitorInterface;
+use Nuxeo\Client\Objects\Blob\Blob;
+use Nuxeo\Client\Spi\Objects\Operation\OperationBody;
 
-class BlobMarshaller implements NuxeoMarshaller {
+class OperationBodyMarshaller implements NuxeoMarshaller {
 
-  /**
-   * @param $in
-   * @param DeserializationVisitorInterface $visitor
-   * @param DeserializationContext $context
-   * @return null
-   */
   public function read($in, DeserializationVisitorInterface $visitor, DeserializationContext $context) {
-    return null;
+    return $context->getNavigator()->accept($in, ['name' => 'array', 'params' => [['name' => OperationBody::class]]]);
   }
 
-  /**
-   * @param $object
-   * @param SerializationVisitorInterface $visitor
-   * @param SerializationContext $context
-   * @return null
-   */
   public function write($object, SerializationVisitorInterface $visitor, SerializationContext $context) {
-    return null;
-  }
+    if($object instanceof OperationBody) {
+      $result = [
+        'params' => $object->serializeParams()
+      ];
 
+      if(($input = $object->getInput()) && !$input instanceof Blob) {
+        $result['input'] = $context->getNavigator()->accept($input);
+      }
+
+      return $result;
+    }
+  }
 }

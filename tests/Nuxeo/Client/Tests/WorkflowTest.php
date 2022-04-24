@@ -20,7 +20,7 @@ class WorkflowTest extends TestCase {
 
   public const WORKFLOW_MODEL = 'ParallelDocumentReview';
 
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $document = Document::create()->setType('note')->setName('note');

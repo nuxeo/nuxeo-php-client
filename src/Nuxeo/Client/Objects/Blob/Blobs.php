@@ -17,14 +17,12 @@
 
 namespace Nuxeo\Client\Objects\Blob;
 
+use GuzzleHttp\Psr7\AppendStream;
+use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Utils;
 use JMS\Serializer\Annotation as Serializer;
-use Laminas\Mail\Header\ContentDisposition;
-use Laminas\Mail\Header\ContentType;
-use Laminas\Mime\Decode;
-use Nuxeo\Client\Response;
 use Nuxeo\Client\Spi\Objects\NuxeoEntity;
-use Riverline\MultiPartParser\StreamedPart;
+use ZBateson\MailMimeParser\MailMimeParser;
 
 
 class Blobs extends NuxeoEntity implements \Countable {
@@ -48,18 +46,18 @@ class Blobs extends NuxeoEntity implements \Countable {
   /**
    * @return Blob[]
    */
-  public function getBlobs() {
+  public function getBlobs(): array {
     return $this->blobs;
   }
 
   /**
    * @param Blob $blob
    */
-  public function add($blob) {
+  public function add($blob): void {
     $this->blobs[] = $blob;
   }
 
-  public function count() {
+  public function count(): int {
     return count($this->blobs);
   }
 
@@ -67,24 +65,19 @@ class Blobs extends NuxeoEntity implements \Countable {
    * @param Response $response
    * @return Blobs
    */
-  public static function fromHttpResponse($response) {
-    $matches = [];
+  public static function fromHttpResponse(Response $response): Blobs {
     $blobs = [];
+    $parser = new MailMimeParser();
+    $message = $parser->parse(new AppendStream([
+      Utils::streamFor(sprintf("Content-Type: %s\n", $response->getHeaderLine('Content-Type'))),
+      $response->getBody()
+    ]), true);
 
-    if(preg_match(',multipart/mixed; boundary="([^"]*)",', $response->getHeaderLine('content-type'), $matches)) {
-      [,$boundary] = $matches;
+    foreach($message->getAllParts() as $part) {
+      $copy = Utils::streamFor(fopen('php://temp', 'rb+'));
+      Utils::copyToStream($part->getBinaryContentStream(), $copy);
 
-      foreach (Decode::splitMessageStruct($response->getBody()->__toString(), $boundary) as $part) {
-        /** @var ContentDisposition $disposition */
-        $disposition = $part['header']->get('content-disposition');
-
-        /** @var ContentType $mimetype */
-        $mimetype = $part['header']->get('content-type');
-
-        $blobs[] = new Blob($disposition->getParameter('filename'), Utils::streamFor($part['body']), $mimetype->getType());
-      }
-    } else {
-      // raise exception should be multipart
+      $blobs[] = new Blob($part->getFilename(), $copy, $part->getContentType());
     }
 
     return new Blobs($blobs);

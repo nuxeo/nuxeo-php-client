@@ -52,7 +52,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase {
     return str_replace(PHP_EOL, "\r\n", $part);
   }
 
-  protected function tearDown() {
+  protected function tearDown(): void {
     unset($this->client);
   }
 
@@ -106,9 +106,17 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase {
    * @param string $relativePath
    * @return string
    */
-  public function getResource($relativePath) {
-    $file = new \SplFileObject($relativePath, 'rb', true);
-    return $file->getRealPath();
+  public function getResource(string $relativePath): string {
+    return (new \SplFileObject($relativePath, 'rb', true))->getRealPath();
+  }
+
+  /**
+   * Get a handle to a file located in the tests resources
+   * @param string $relativePath
+   * @return resource
+   */
+  public function getResourceHandle(string $relativePath) {
+    return @fopen($relativePath, 'rb', true);
   }
 
 }

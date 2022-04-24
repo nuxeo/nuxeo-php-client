@@ -25,6 +25,7 @@ use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\Psr7\UriResolver;
+use GuzzleHttp\Psr7\Utils;
 use JMS\Serializer\Annotation as Serializer;
 use Nuxeo\Client\Constants;
 use Nuxeo\Client\Marshaller;
@@ -37,9 +38,9 @@ use Nuxeo\Client\Spi\ClassCastException;
 use Nuxeo\Client\Spi\Http\Method\AbstractMethod;
 use Nuxeo\Client\Spi\NuxeoClientException;
 use Nuxeo\Client\Spi\NuxeoException;
+use Nuxeo\Client\Spi\Objects\Operation\OperationBody;
 use Nuxeo\Client\Util\HttpUtils;
 use Psr\Http\Message\UriInterface;
-use function GuzzleHttp\Psr7\stream_for;
 
 abstract class NuxeoEntity extends AbstractConnectable {
 
@@ -69,12 +70,6 @@ abstract class NuxeoEntity extends AbstractConnectable {
   private $converter;
 
   /**
-   * @var Reader
-   * @Serializer\Exclude()
-   */
-  private $annotationReader;
-
-  /**
    * NuxeoEntity constructor.
    * @param $entityType
    * @param NuxeoClient $nuxeoClient
@@ -98,55 +93,6 @@ abstract class NuxeoEntity extends AbstractConnectable {
    */
   public function getRepositoryName() {
     return $this->repositoryName;
-  }
-
-  /**
-   * @return self
-   *
-   * @throws AnnotationException
-   */
-  protected function setupDefaultMarshallers() {
-    $this->getConverter()->registerMarshaller(Blob::class, new Marshaller\BlobMarshaller());
-    $this->getConverter()->registerMarshaller(Blobs::class, new Marshaller\BlobsMarshaller());
-    $this->getConverter()->registerMarshaller(Operation\ActionList::class, new Marshaller\ActionListMarshaller());
-    $this->getConverter()->registerMarshaller(Operation\CounterList::class, new Marshaller\CounterListMarshaller());
-    $this->getConverter()->registerMarshaller(Operation\CounterTimestampedValue::class, new Marshaller\CounterTimestampedValueMarshaller());
-    $this->getConverter()->registerMarshaller(Operation\DirectoryEntries::class, new Marshaller\DirectoryEntriesMarshaller());
-    $this->getConverter()->registerMarshaller(Operation\DocRef::class, new Marshaller\DocRefMarshaller($this->getNuxeoClient()));
-    $this->getConverter()->registerMarshaller(Operation\LogEntries::class, new Marshaller\LogEntriesMarshaller());
-    $this->getConverter()->registerMarshaller(Operation\UserGroupList::class, new Marshaller\UserGroupListMarshaller());
-    $this->getConverter()->registerMarshaller(NuxeoException::class, new Marshaller\NuxeoExceptionMarshaller());
-    return $this;
-  }
-
-  /**
-   * @return Marshaller\NuxeoConverter
-   * @throws AnnotationException
-   */
-  public function getConverter() {
-    if (null === $this->converter) {
-      $this->converter = new Marshaller\NuxeoConverter($this->getAnnotationReader());
-      $this->setupDefaultMarshallers();
-    }
-    return $this->converter;
-  }
-
-  /**
-   * @return Reader
-   * @throws AnnotationException
-   */
-  public function getAnnotationReader() {
-    if (null === $this->annotationReader) {
-      $this->annotationReader = new AnnotationReader();
-    }
-    return $this->annotationReader;
-  }
-
-  /**
-   * @return NuxeoClient
-   */
-  public function getNuxeoClient() {
-    return $this->nuxeoClient;
   }
 
   /**
@@ -179,7 +125,7 @@ abstract class NuxeoEntity extends AbstractConnectable {
         if (!is_string($body)) {
           $body = $this->getConverter()->writeJSON($body);
         }
-        $request = $request->withBody(stream_for($body));
+        $request = $request->withBody(Utils::streamFor($body));
       }
 
       $response = $this->perform($request);
@@ -224,7 +170,7 @@ abstract class NuxeoEntity extends AbstractConnectable {
       } catch (AnnotationException $e) {
         throw new NuxeoClientException($responseBody, $response->getStatusCode());
       }
-    } catch (GuzzleException | AnnotationException $e) {
+    } catch (GuzzleException|AnnotationException $e) {
       throw NuxeoClientException::fromPrevious($e);
     }
     return null;
@@ -275,11 +221,50 @@ abstract class NuxeoEntity extends AbstractConnectable {
   }
 
   /**
+   * @return NuxeoClient
+   */
+  public function getNuxeoClient() {
+    return $this->nuxeoClient;
+  }
+
+  /**
    * @param string $path
    * @return UriInterface
    */
   protected function computeRequestUrl($path) {
     return UriResolver::resolve($this->getNuxeoClient()->getApiUrl(), new Uri($path));
+  }
+
+  /**
+   * @return Marshaller\NuxeoConverter
+   * @throws AnnotationException
+   */
+  public function getConverter() {
+    if (null === $this->converter) {
+      $this->converter = new Marshaller\NuxeoConverter();
+      $this->setupDefaultMarshallers();
+    }
+    return $this->converter;
+  }
+
+  /**
+   * @return self
+   *
+   * @throws AnnotationException
+   */
+  protected function setupDefaultMarshallers() {
+    $this->getConverter()->registerMarshaller(Blob::class, new Marshaller\BlobMarshaller());
+    $this->getConverter()->registerMarshaller(Blobs::class, new Marshaller\BlobsMarshaller());
+    $this->getConverter()->registerMarshaller(Operation\ActionList::class, new Marshaller\ActionListMarshaller());
+    $this->getConverter()->registerMarshaller(Operation\CounterList::class, new Marshaller\CounterListMarshaller());
+    $this->getConverter()->registerMarshaller(Operation\CounterTimestampedValue::class, new Marshaller\CounterTimestampedValueMarshaller());
+    $this->getConverter()->registerMarshaller(Operation\DirectoryEntries::class, new Marshaller\DirectoryEntriesMarshaller());
+    $this->getConverter()->registerMarshaller(Operation\DocRef::class, new Marshaller\DocRefMarshaller($this->getNuxeoClient()));
+    $this->getConverter()->registerMarshaller(Operation\LogEntries::class, new Marshaller\LogEntriesMarshaller());
+    $this->getConverter()->registerMarshaller(Operation\UserGroupList::class, new Marshaller\UserGroupListMarshaller());
+    $this->getConverter()->registerMarshaller(NuxeoException::class, new Marshaller\NuxeoExceptionMarshaller());
+    $this->getConverter()->registerMarshaller(OperationBody::class, new Marshaller\OperationBodyMarshaller());
+    return $this;
   }
 
   /**

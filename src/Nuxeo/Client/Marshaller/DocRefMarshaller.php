@@ -20,7 +20,8 @@ namespace Nuxeo\Client\Marshaller;
 
 use JMS\Serializer\DeserializationContext;
 use JMS\Serializer\SerializationContext;
-use JMS\Serializer\VisitorInterface;
+use JMS\Serializer\Visitor\DeserializationVisitorInterface;
+use JMS\Serializer\Visitor\SerializationVisitorInterface;
 use Nuxeo\Client\NuxeoClient;
 use Nuxeo\Client\Objects\Operation\DocRef;
 
@@ -41,21 +42,21 @@ class DocRefMarshaller implements NuxeoMarshaller {
 
   /**
    * @param DocRef $object
-   * @param VisitorInterface $visitor
+   * @param SerializationVisitorInterface $visitor
    * @param SerializationContext $context
    * @return string
    */
-  public function write($object, VisitorInterface $visitor, SerializationContext $context) {
+  public function write($object, SerializationVisitorInterface $visitor, SerializationContext $context) {
     return 'doc:'.$object->getRef();
   }
 
   /**
    * @param $in
-   * @param VisitorInterface $visitor
+   * @param DeserializationVisitorInterface $visitor
    * @param DeserializationContext $context
    * @return DocRef
    */
-  public function read($in, VisitorInterface $visitor, DeserializationContext $context) {
+  public function read($in, DeserializationVisitorInterface $visitor, DeserializationContext $context) {
     return new DocRef($in, $this->nuxeoClient);
   }
 

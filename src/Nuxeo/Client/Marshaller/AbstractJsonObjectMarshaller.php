@@ -20,7 +20,8 @@ namespace Nuxeo\Client\Marshaller;
 
 use JMS\Serializer\DeserializationContext;
 use JMS\Serializer\SerializationContext;
-use JMS\Serializer\VisitorInterface;
+use JMS\Serializer\Visitor\DeserializationVisitorInterface;
+use JMS\Serializer\Visitor\SerializationVisitorInterface;
 
 abstract class AbstractJsonObjectMarshaller implements NuxeoMarshaller {
 
@@ -30,12 +31,12 @@ abstract class AbstractJsonObjectMarshaller implements NuxeoMarshaller {
 
   /**
    * @param $in
-   * @param VisitorInterface $visitor
+   * @param DeserializationVisitorInterface $visitor
    * @param DeserializationContext $context
    * @return mixed
    */
-  public function read($in, VisitorInterface $visitor, DeserializationContext $context) {
-    $data = $context->accept($in, $this->getType());
+  public function read($in, DeserializationVisitorInterface $visitor, DeserializationContext $context) {
+    $data = $context->getNavigator()->accept($in, $this->getType());
     if($context->getDepth() === 1) {
       $visitor->setNavigator($context->getNavigator());
     }
@@ -46,12 +47,12 @@ abstract class AbstractJsonObjectMarshaller implements NuxeoMarshaller {
 
   /**
    * @param mixed $object
-   * @param VisitorInterface $visitor
+   * @param SerializationVisitorInterface $visitor
    * @param SerializationContext $context
    * @return string
    */
-  public function write($object, VisitorInterface $visitor, SerializationContext $context) {
-    return $context->accept($object, $this->getType());
+  public function write($object, SerializationVisitorInterface $visitor, SerializationContext $context) {
+    return $context->getNavigator()->accept($object, $this->getType());
   }
 
 }

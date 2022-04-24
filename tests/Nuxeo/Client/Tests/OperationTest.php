@@ -29,6 +29,9 @@ use Nuxeo\Client\Objects\Operation;
 use Nuxeo\Client\Tests\Framework\TestCase;
 use Nuxeo\Client\Tests\Objects\Character;
 use Nuxeo\Client\Tests\Objects\MyDocType;
+use Symfony\Component\Mime\MimeTypes;
+use Symfony\Component\Mime\Part\DataPart;
+use Symfony\Component\Mime\Part\Multipart\MixedPart;
 
 class OperationTest extends TestCase {
 
@@ -137,21 +140,24 @@ class OperationTest extends TestCase {
   }
 
   public function testListBlobs() {
-    $boundary = 'my_boundary';
-    $body = file_get_contents($this->getResource('blob.getlist.txt'))
-      . file_get_contents($this->getResource(self::IMG_FS_PATH))
-      . "--$boundary--";
+    $part = new MixedPart(new DataPart(
+      $this->getResourceHandle(self::IMG_FS_PATH),
+      basename(self::IMG_FS_PATH),
+      (new MimeTypes())->guessMimeType($this->getResource(self::IMG_FS_PATH)),
+      '8bit'
+    ));
 
     $client = $this->getClient()
-      ->addResponse($this->createResponse(200, array(
-        'Content-Type' => 'multipart/mixed; boundary="my_boundary"',
-      ), $body));
+      ->addResponse($this->createResponse(200, [
+        'Content-Type' => $part->getPreparedHeaders()->get('Content-Type')->getBodyAsString()
+      ], $part->bodyToString()));
 
     $blobs = $client->automation('Blob.GetList')
       ->input('/default-domain/workspaces/My Workspace/MyFile')
       ->execute(Blobs::class);
 
     self::assertCount(1, $blobs);
+    self::assertEquals(filesize($this->getResource(self::IMG_FS_PATH)), $blobs->getBlobs()[0]->getStream()->getSize());
   }
 
   /**

@@ -18,6 +18,7 @@
 namespace Nuxeo\Client\Objects\Blob;
 
 
+use GuzzleHttp\Psr7\Utils;
 use function GuzzleHttp\Psr7\stream_for;
 use Nuxeo\Client\Response;
 use Nuxeo\Client\Spi\NoSuchFileException;
@@ -67,7 +68,7 @@ class Blob extends NuxeoEntity {
   public static function fromFile($filename, $mimeType) {
     $fileInfo = new \SplFileInfo($filename);
     if($fileInfo->isReadable()) {
-      return new Blob($fileInfo->getFilename(), stream_for($fileInfo->openFile('rb')), $mimeType);
+      return new Blob($fileInfo->getFilename(), Utils::streamFor($fileInfo->openFile('rb')), $mimeType);
     }
     throw NuxeoClientException::fromPrevious(new NoSuchFileException($filename));
   }
