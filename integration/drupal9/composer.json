@@ -26,9 +26,9 @@
   ],
   "require": {
     "composer/installers": "^1.9",
-    "drupal/core-composer-scaffold": "^9.3",
-    "drupal/core-project-message": "^9.3",
-    "drupal/core-recommended": "^9.3",
+    "drupal/core-composer-scaffold": "~9.0.0",
+    "drupal/core-project-message": "~9.0.0",
+    "drupal/core-recommended": "~9.0.0",
     "drush/drush": "^10.2",
 
     "guzzlehttp/guzzle": "~6.0 <= 6.5.5 || ~7.0 <= 7.4.2",
@@ -37,11 +37,9 @@
     "jms/serializer": "~2.0, <2.4"
   },
   "require-dev": {
-    "symfony/phpunit-bridge": "^3.4.3",
-    "symfony/web-server-bundle": "^3.4.3",
-    "behat/mink-goutte-driver": "^1.2",
-
-    "phpunit/phpunit": "~7.1, <7.6"
+    "drupal/core-dev": "~9.0.0",
+    "phpunit/phpunit": "~8.4.1",
+    "symfony/web-server-bundle": "^3.4.3"
   },
   "conflict": {
     "drupal/drupal": "*"
@@ -59,7 +57,8 @@
     "allow-plugins": {
       "composer/installers": true,
       "drupal/core-composer-scaffold": true,
-      "drupal/core-project-message": true
+      "drupal/core-project-message": true,
+      "dealerdirect/phpcodesniffer-composer-installer": true
     }
   },
   "extra": {
@@ -89,9 +88,6 @@
       ],
       "web/modules/custom/{$name}": [
         "type:drupal-custom-module"
-      ],
-      "web/profiles/custom/{$name}": [
-        "type:drupal-custom-profile"
       ],
       "web/themes/custom/{$name}": [
         "type:drupal-custom-theme"
