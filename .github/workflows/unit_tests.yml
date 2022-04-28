@@ -41,9 +41,13 @@ jobs:
           vendor/bin/phpunit \
             --coverage-clover target/phpunit.coverage.xml \
             --log-junit target/phpunit.report.xml
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
-        with:
-          files: ./target/phpunit.coverage.xml
-          flags: unit
-          env_vars: PHP
+      - name: fix code coverage paths
+        # https://community.sonarsource.com/t/code-coverage-doesnt-work-with-github-action/16747/5
+        run: |
+          sed -i 's/\/home\/runner\/work\/nuxeo-php-client\/nuxeo-php-client\//\/github\/workspace\//g' target/phpunit.coverage.xml
+          sed -i 's/\/home\/runner\/work\/nuxeo-php-client\/nuxeo-php-client\//\/github\/workspace\//g' target/phpunit.report.xml
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
