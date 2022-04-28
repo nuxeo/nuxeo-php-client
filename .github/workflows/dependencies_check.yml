@@ -17,6 +17,8 @@ jobs:
         with:
           php-version: "7.2"
           tools: composer
+        env:
+          COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: composer install
       - run: composer outdated -D --strict
 

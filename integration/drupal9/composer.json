@@ -1,7 +1,10 @@
 {
-  "name": "nuxeo/nuxeo-php-client-drupal-integration",
-  "description": "Nuxeo PHP Client Drupal 8 Integration test",
-  "keywords": ["nuxeo", "drupal"],
+  "name": "nuxeo/nuxeo-php-client-drupal9-integration",
+  "description": "Nuxeo PHP Client Drupal 9 Integration test",
+  "keywords": [
+    "nuxeo",
+    "drupal"
+  ],
   "type": "project",
   "license": "Apache-2.0",
   "homepage": "http://www.nuxeo.com",
@@ -22,10 +25,10 @@
     }
   ],
   "require": {
-    "composer/installers": "^1.2",
-    "drupal/core-composer-scaffold": "^8.8",
-    "drupal/core-project-message": "^8.8",
-    "drupal/core-recommended": "^8.8",
+    "composer/installers": "^1.9",
+    "drupal/core-composer-scaffold": "~9.0.0",
+    "drupal/core-project-message": "~9.0.0",
+    "drupal/core-recommended": "~9.0.0",
     "drush/drush": "^10.2",
 
     "guzzlehttp/guzzle": "~6.0 <= 6.5.5 || ~7.0 <= 7.4.2",
@@ -34,11 +37,9 @@
     "jms/serializer": "~2.0, <2.4"
   },
   "require-dev": {
-    "symfony/phpunit-bridge": "^3.4.3",
-    "symfony/web-server-bundle": "^3.4.3",
-    "behat/mink-goutte-driver": "^1.2",
-
-    "phpunit/phpunit": "~7.1, <7.6"
+    "drupal/core-dev": "~9.0.0",
+    "phpunit/phpunit": "~8.4.1",
+    "symfony/web-server-bundle": "^3.4.3"
   },
   "conflict": {
     "drupal/drupal": "*"
@@ -49,14 +50,15 @@
       "Nuxeo\\Client\\Tests\\": "../../tests/Nuxeo/Client/Tests"
     }
   },
-  "minimum-stability": "dev",
+  "minimum-stability": "stable",
   "prefer-stable": true,
   "config": {
     "sort-packages": true,
     "allow-plugins": {
       "composer/installers": true,
       "drupal/core-composer-scaffold": true,
-      "drupal/core-project-message": true
+      "drupal/core-project-message": true,
+      "dealerdirect/phpcodesniffer-composer-installer": true
     }
   },
   "extra": {

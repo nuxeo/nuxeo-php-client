@@ -1,0 +1,8 @@
+name: Nuxeo Module
+description: Nuxeo Drupal 9 Integration Module
+package: Custom
+
+type: module
+core_version_requirement: ^8 || ^9
+
+version: 1.0
