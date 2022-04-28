@@ -20,6 +20,7 @@ jobs:
         monolog: ["<= 1.27.0", "<= 2.3.5"]
         mail-mime-parser: ["<= 1.3.3", "<= 2.2.1"]
         nuxeo: ["9.10"]
+        php: ["7.2", "7.3"]
     runs-on: ubuntu-latest
     services:
       nuxeo:
@@ -30,7 +31,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: "7.2"
+          php-version: "${{ matrix.php }}"
           tools: composer
         env:
           COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}

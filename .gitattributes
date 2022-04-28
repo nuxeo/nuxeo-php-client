@@ -1,0 +1,5 @@
+docker export-ignore
+tests export-ignore
+ftests export-ignore
+integration export-ignore
+phpunit.xml export-ignore
