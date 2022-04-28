@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3b8b4fd28c191af3cf7899667e6aaaed",
+    "content-hash": "ea26e9ccb9190ee981e281a9931233a5",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -333,16 +333,16 @@
         },
         {
             "name": "consolidation/annotated-command",
-            "version": "4.5.4",
+            "version": "4.5.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/consolidation/annotated-command.git",
-                "reference": "93398c3166d9026ab93219ce23b2092b4d7b7904"
+                "reference": "67cea8e8e7656b74da651ea6f49321853996c0fd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation/annotated-command/zipball/93398c3166d9026ab93219ce23b2092b4d7b7904",
-                "reference": "93398c3166d9026ab93219ce23b2092b4d7b7904",
+                "url": "https://api.github.com/repos/consolidation/annotated-command/zipball/67cea8e8e7656b74da651ea6f49321853996c0fd",
+                "reference": "67cea8e8e7656b74da651ea6f49321853996c0fd",
                 "shasum": ""
             },
             "require": {
@@ -383,9 +383,9 @@
             "description": "Initialize Symfony Console commands from annotated command class methods.",
             "support": {
                 "issues": "https://github.com/consolidation/annotated-command/issues",
-                "source": "https://github.com/consolidation/annotated-command/tree/4.5.4"
+                "source": "https://github.com/consolidation/annotated-command/tree/4.5.5"
             },
-            "time": "2022-04-05T17:58:10+00:00"
+            "time": "2022-04-26T16:18:25+00:00"
         },
         {
             "name": "consolidation/config",
@@ -3851,16 +3851,16 @@
         },
         {
             "name": "monolog/monolog",
-            "version": "2.3.5",
+            "version": "2.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/monolog.git",
-                "reference": "fd4380d6fc37626e2f799f29d91195040137eba9"
+                "reference": "4192345e260f1d51b365536199744b987e160edc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/fd4380d6fc37626e2f799f29d91195040137eba9",
-                "reference": "fd4380d6fc37626e2f799f29d91195040137eba9",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/4192345e260f1d51b365536199744b987e160edc",
+                "reference": "4192345e260f1d51b365536199744b987e160edc",
                 "shasum": ""
             },
             "require": {
@@ -3882,7 +3882,7 @@
                 "phpstan/phpstan": "^0.12.91",
                 "phpunit/phpunit": "^8.5",
                 "predis/predis": "^1.1",
-                "rollbar/rollbar": "^1.3",
+                "rollbar/rollbar": "^1.3 || ^2 || ^3",
                 "ruflin/elastica": ">=0.90@dev",
                 "swiftmailer/swiftmailer": "^5.3|^6.0"
             },
@@ -3934,7 +3934,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Seldaek/monolog/issues",
-                "source": "https://github.com/Seldaek/monolog/tree/2.3.5"
+                "source": "https://github.com/Seldaek/monolog/tree/2.5.0"
             },
             "funding": [
                 {
@@ -3946,7 +3946,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-10-01T21:08:31+00:00"
+            "time": "2022-04-08T15:43:54+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -5210,16 +5210,16 @@
         },
         {
             "name": "symfony/finder",
-            "version": "v4.4.37",
+            "version": "v4.4.41",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/finder.git",
-                "reference": "b17d76d7ed179f017aad646e858c90a2771af15d"
+                "reference": "40790bdf293b462798882ef6da72bb49a4a6633a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/finder/zipball/b17d76d7ed179f017aad646e858c90a2771af15d",
-                "reference": "b17d76d7ed179f017aad646e858c90a2771af15d",
+                "url": "https://api.github.com/repos/symfony/finder/zipball/40790bdf293b462798882ef6da72bb49a4a6633a",
+                "reference": "40790bdf293b462798882ef6da72bb49a4a6633a",
                 "shasum": ""
             },
             "require": {
@@ -5252,7 +5252,7 @@
             "description": "Finds files and directories via an intuitive fluent interface",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/finder/tree/v4.4.37"
+                "source": "https://github.com/symfony/finder/tree/v4.4.41"
             },
             "funding": [
                 {
@@ -5268,7 +5268,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-01-02T09:41:36+00:00"
+            "time": "2022-04-14T15:36:10+00:00"
         },
         {
             "name": "symfony/http-client-contracts",
@@ -10382,16 +10382,16 @@
         },
         {
             "name": "symfony/config",
-            "version": "v4.4.37",
+            "version": "v4.4.41",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/config.git",
-                "reference": "e8c2d2c951ddedecb6d28954d336cb7d2e852d0e"
+                "reference": "9d031eb2d4292aed117b0f7fafd5c436dcf3dfd7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/config/zipball/e8c2d2c951ddedecb6d28954d336cb7d2e852d0e",
-                "reference": "e8c2d2c951ddedecb6d28954d336cb7d2e852d0e",
+                "url": "https://api.github.com/repos/symfony/config/zipball/9d031eb2d4292aed117b0f7fafd5c436dcf3dfd7",
+                "reference": "9d031eb2d4292aed117b0f7fafd5c436dcf3dfd7",
                 "shasum": ""
             },
             "require": {
@@ -10440,7 +10440,7 @@
             "description": "Helps you find, load, combine, autofill and validate configuration values of any kind",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/config/tree/v4.4.37"
+                "source": "https://github.com/symfony/config/tree/v4.4.41"
             },
             "funding": [
                 {
@@ -10456,7 +10456,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-01-03T09:46:22+00:00"
+            "time": "2022-04-12T15:19:55+00:00"
         },
         {
             "name": "symfony/css-selector",
@@ -10678,16 +10678,16 @@
         },
         {
             "name": "symfony/phpunit-bridge",
-            "version": "v4.4.37",
+            "version": "v4.4.41",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/phpunit-bridge.git",
-                "reference": "c28ae0cc18c9aa753f836be4630b672657de64eb"
+                "reference": "66d1857e9565b70855d79e2639672b33baa9cbc8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/phpunit-bridge/zipball/c28ae0cc18c9aa753f836be4630b672657de64eb",
-                "reference": "c28ae0cc18c9aa753f836be4630b672657de64eb",
+                "url": "https://api.github.com/repos/symfony/phpunit-bridge/zipball/66d1857e9565b70855d79e2639672b33baa9cbc8",
+                "reference": "66d1857e9565b70855d79e2639672b33baa9cbc8",
                 "shasum": ""
             },
             "require": {
@@ -10740,7 +10740,7 @@
             "description": "Provides utilities for PHPUnit, especially user deprecation notices management",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/phpunit-bridge/tree/v4.4.37"
+                "source": "https://github.com/symfony/phpunit-bridge/tree/v4.4.41"
             },
             "funding": [
                 {
@@ -10756,7 +10756,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-01-26T16:15:26+00:00"
+            "time": "2022-04-12T15:19:55+00:00"
         },
         {
             "name": "symfony/polyfill-php81",
