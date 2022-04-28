@@ -98,3 +98,19 @@ jobs:
           tools: composer
       - run: composer install
       - run: vendor/bin/phpunit
+  laravel8:
+    strategy:
+      matrix:
+        php: ["7.3"]
+    defaults:
+      run:
+        working-directory: integration/laravel8
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "${{ matrix.php }}"
+          tools: composer
+      - run: composer install
+      - run: vendor/bin/phpunit
