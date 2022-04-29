@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: "7.2"
+          php-version: "8.1"
           tools: composer
         env:
           COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -28,7 +28,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: "7.2"
+          php-version: "8.1"
           tools: composer
       - run: composer install
       - run: php vendor/bin/security-checker security:check composer.lock

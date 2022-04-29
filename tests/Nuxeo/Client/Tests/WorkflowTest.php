@@ -118,7 +118,7 @@ class WorkflowTest extends TestCase {
     $this->getClient()->addResponse($this->createResponse());
     $workfow->cancel();
 
-    self::assertContains('workflow/'.$workfow->getId(), (string) $this->getClient()->getRequest()->getUri());
+    self::assertStringContainsString('workflow/'.$workfow->getId(), (string) $this->getClient()->getRequest()->getUri());
     self::assertEquals('DELETE', $this->getClient()->getRequest()->getMethod());
   }
 
