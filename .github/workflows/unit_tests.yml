@@ -14,29 +14,21 @@ on:
 
 jobs:
   phpunit:
-    strategy:
-      matrix:
-        guzzle: ["<= 6.5.5", "<= 7.4.2"]
-        monolog: ["<= 1.27.0", "<= 2.3.5"]
-        mail-mime-parser: ["<= 1.3.3", "<= 2.2.1"]
-        nuxeo: ["9.10"]
-        php: ["7.2", "7.3", "7.4"]
     runs-on: ubuntu-latest
     services:
       nuxeo:
-        image: "nuxeo:${{ matrix.nuxeo }}"
+        image: "nuxeo:9.10"
         ports:
           - 8080:8080
     steps:
       - uses: actions/checkout@v2
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: "${{ matrix.php }}"
+          php-version: "7.2"
           tools: composer
         env:
           COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: composer install
-      - run: composer update -W "guzzlehttp/guzzle:${{ matrix.guzzle }}" "monolog/monolog:${{ matrix.monolog }}" "zbateson/mail-mime-parser:${{ matrix.mail-mime-parser }}"
       - run: |
           vendor/bin/phpunit \
             --coverage-clover target/phpunit.coverage.xml \
@@ -51,3 +43,33 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  compatibility:
+    strategy:
+      matrix:
+        guzzle: ["<= 6.5.5", "<= 7.4.2"]
+        monolog: ["<= 1.27.0", "<= 2.3.5"]
+        mail-mime-parser: ["<= 1.3.3", "<= 2.2.1"]
+        serializer: ["<= 3.17.1"]
+        nuxeo: ["9.10"]
+        php: ["7.2", "7.3", "7.4", "8.0"]
+    runs-on: ubuntu-latest
+    services:
+      nuxeo:
+        image: "nuxeo:${{ matrix.nuxeo }}"
+        ports:
+          - 8080:8080
+    steps:
+      - uses: actions/checkout@v2
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "${{ matrix.php }}"
+          tools: composer
+        env:
+          COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: composer update
+      - run: |
+          composer update -W "guzzlehttp/guzzle:${{ matrix.guzzle }}" \
+            "monolog/monolog:${{ matrix.monolog }}" \
+            "zbateson/mail-mime-parser:${{ matrix.mail-mime-parser }}" \
+            "jms/serializer:${{ matrix.serializer }}"
+      - run: vendor/bin/phpunit

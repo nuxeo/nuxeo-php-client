@@ -20,7 +20,7 @@ jobs:
         env:
           COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: composer install
-      - run: composer outdated -D --strict
+      - run: composer outdated -D --strict --no-dev
 
   security_check:
     runs-on: ubuntu-latest

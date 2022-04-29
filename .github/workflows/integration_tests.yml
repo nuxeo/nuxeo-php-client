@@ -26,7 +26,7 @@ jobs:
         with:
           php-version: "${{ matrix.php }}"
           tools: composer
-      - run: composer install
+      - run: composer update
       - run: |
           php vendor/bin/drush site:install \
             --db-url=sqlite://sites/default/files/.ht.sqlite \
@@ -53,7 +53,7 @@ jobs:
         with:
           php-version: "${{ matrix.php }}"
           tools: composer
-      - run: composer install
+      - run: composer update
       - run: |
           php vendor/bin/drush site:install \
             --db-url=sqlite://sites/default/files/.ht.sqlite \
@@ -80,12 +80,12 @@ jobs:
         with:
           php-version: "${{ matrix.php }}"
           tools: composer
-      - run: composer install
+      - run: composer update
       - run: vendor/bin/phpunit
   symfony5:
     strategy:
       matrix:
-        php: ["7.2", "7.3", "7.4"]
+        php: ["7.2", "7.3", "7.4", "8.0"]
     defaults:
       run:
         working-directory: integration/symfony5
@@ -96,12 +96,12 @@ jobs:
         with:
           php-version: "${{ matrix.php }}"
           tools: composer
-      - run: composer install
+      - run: composer update
       - run: vendor/bin/phpunit
   laravel8:
     strategy:
       matrix:
-        php: ["7.3", "7.4"]
+        php: ["7.3", "7.4", "8.0"]
     defaults:
       run:
         working-directory: integration/laravel8
@@ -112,5 +112,5 @@ jobs:
         with:
           php-version: "${{ matrix.php }}"
           tools: composer
-      - run: composer install
+      - run: composer update
       - run: vendor/bin/phpunit
