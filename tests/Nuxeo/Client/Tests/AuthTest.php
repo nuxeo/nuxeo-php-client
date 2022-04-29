@@ -18,6 +18,7 @@
 namespace Nuxeo\Client\Tests;
 
 
+use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use GuzzleHttp\Exception\ClientException;
 use Nuxeo\Client\Auth\OAuth2Authentication;
 use Nuxeo\Client\Auth\PortalSSOAuthentication;
@@ -27,6 +28,8 @@ use Nuxeo\Client\Request;
 use Nuxeo\Client\Spi\NuxeoClientException;
 
 class AuthTest extends Framework\TestCase {
+
+  use ArraySubsetAsserts;
 
   public const TOKEN_APP_NAME = 'myApplication';
   public const TOKEN_DEVICE = 'myDevice';

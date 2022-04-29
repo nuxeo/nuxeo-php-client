@@ -19,6 +19,7 @@
 namespace Nuxeo\Client\Tests;
 
 
+use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Nuxeo\Client\Constants;
 use Nuxeo\Client\Objects;
 use Nuxeo\Client\Request;
@@ -28,6 +29,9 @@ use Nuxeo\Client\Tests\Framework\TestCase;
 use Nuxeo\Client\Tests\Objects\MyDocType;
 
 class RepositoryTest extends TestCase {
+
+  use ArraySubsetAsserts;
+
   /**
    * @param Client $client
    * @param string $path

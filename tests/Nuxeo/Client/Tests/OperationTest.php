@@ -26,6 +26,7 @@ use Nuxeo\Client\Objects\Blob\Blobs;
 use Nuxeo\Client\Objects\Document;
 use Nuxeo\Client\Objects\Documents;
 use Nuxeo\Client\Objects\Operation;
+use Nuxeo\Client\Spi\NuxeoClientException;
 use Nuxeo\Client\Tests\Framework\TestCase;
 use Nuxeo\Client\Tests\Objects\Character;
 use Nuxeo\Client\Tests\Objects\MyDocType;
@@ -160,10 +161,8 @@ class OperationTest extends TestCase {
     self::assertEquals(filesize($this->getResource(self::IMG_FS_PATH)), $blobs->getBlobs()[0]->getStream()->getSize());
   }
 
-  /**
-   * @expectedException \Nuxeo\Client\Spi\NuxeoClientException
-   */
   public function testCannotLoadBlob() {
+    $this->expectException(NuxeoClientException::class);
     $client = $this->getClient()
       ->addResponse($this->createResponse());
 
@@ -197,7 +196,7 @@ class OperationTest extends TestCase {
     self::assertStringMatchesFormatFile($this->getResource('setblob.txt'),
       preg_replace('/\r\n/', "\n", $requestBody));
 
-    self::assertContains('content-type: '.$mimeType, $requestBody, '', true);
+    self::assertStringContainsStringIgnoringCase('content-type: ' . $mimeType, $requestBody, '');
 
   }
 
