@@ -15,7 +15,7 @@ jobs:
   drupal8:
     strategy:
       matrix:
-        php: ["7.2", "7.3"]
+        php: ["7.2", "7.3", "7.4"]
     defaults:
       run:
         working-directory: integration/drupal8
@@ -42,7 +42,7 @@ jobs:
   drupal9:
     strategy:
       matrix:
-        php: ["7.3"]
+        php: ["7.3", "7.4"]
     defaults:
       run:
         working-directory: integration/drupal9
@@ -69,7 +69,7 @@ jobs:
   symfony4:
     strategy:
       matrix:
-        php: ["7.2", "7.3"]
+        php: ["7.2", "7.3", "7.4"]
     defaults:
       run:
         working-directory: integration/symfony4
@@ -85,7 +85,7 @@ jobs:
   symfony5:
     strategy:
       matrix:
-        php: ["7.2", "7.3"]
+        php: ["7.2", "7.3", "7.4"]
     defaults:
       run:
         working-directory: integration/symfony5
@@ -101,7 +101,7 @@ jobs:
   laravel8:
     strategy:
       matrix:
-        php: ["7.3"]
+        php: ["7.3", "7.4"]
     defaults:
       run:
         working-directory: integration/laravel8
