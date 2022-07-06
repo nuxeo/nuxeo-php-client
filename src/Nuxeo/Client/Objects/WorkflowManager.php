@@ -98,9 +98,9 @@ class WorkflowManager extends NuxeoEntity {
    * @return Tasks
    */
   public function fetchTasksByDocumentId($documentId, $repositoryName = null) {
-    $path = 'id/{documentId}/@tasks';
+    $path = 'id/{documentId}/@task';
     if(null !== $repositoryName) {
-      $path = 'repo/{repositoryName}/id/{documentId}/@tasks';
+      $path = 'repo/{repositoryName}/id/{documentId}/@task';
     }
     return $this->getResponseNew(GET::create($path), Tasks::class);
   }
